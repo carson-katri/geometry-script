@@ -13,7 +13,8 @@
 
 import bpy
 import os
-from .lib import *
+
+from .tree import *
 
 bl_info = {
     "name" : "Geometry Script",

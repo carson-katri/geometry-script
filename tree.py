@@ -6,14 +6,14 @@ try:
 except:
     pass
 from .state import State
-from .types import Type
+from .types import *
 from .node_mapper import *
 
-def _as_iterable(input):
+def _as_iterable(x):
     try:
-        return iter(input)
+        return iter(x)
     except TypeError:
-        return {input}
+        return [x,]
 
 def tree(name):
     tree_name = name
