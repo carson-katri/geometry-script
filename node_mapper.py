@@ -202,11 +202,11 @@ def create_documentation():
     """
     with open('docs/documentation.html', 'w') as f:
         f.write(html)
-    with open('typeshed/geometry_script.pyi', 'w') as f:
+    with open('typeshed/geometry_script.pyi', 'w') as fpyi, open('typeshed/geometry_script.py', 'w') as fpy:
         newline = '\n'
         def type_symbol(t):
             return f"class {t.__name__}(Type): pass"
-        f.write(f"""from typing import *
+        contents = f"""from typing import *
 def tree(builder):
   \"\"\"
   Marks a function as a node tree.
@@ -215,7 +215,9 @@ def tree(builder):
 class Type:
   {(newline + '  ').join(filter(lambda x: x.startswith('def'), symbols))}
 {newline.join(map(type_symbol, Type.__subclasses__()))}
-{newline.join(symbols)}""")
+{newline.join(symbols)}"""
+        fpyi.write(contents)
+        fpy.write(contents)
 
 def create_docs():
     create_documentation()
