@@ -2,6 +2,12 @@
 
 A scripting API for Blender's Geometry Nodes:
 
+<table>
+<tbody>
+<tr>
+
+<td>
+
 ```python
 from geometry_script import *
 
@@ -13,6 +19,16 @@ def repeat_grid(geometry: Geometry, width: Int, height: Int):
     ).mesh_to_points()
     return g.instance_on_points(instance=geometry)
 ```
+
+</td>
+<td>
+
+![Generated node tree](resources/example_generated_tree.png)
+
+</td>
+</tr>
+</tbody>
+</table>
 
 ## Installation
 1. [Download the source code](https://github.com/carson-katri/geometry-script/archive/refs/heads/main.zip)
