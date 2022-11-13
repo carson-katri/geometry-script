@@ -16,6 +16,10 @@ import os
 
 from .tree import *
 
+# Set the `geometry_script` module to the current module in case the folder is named differently.
+import sys
+sys.modules['geometry_script'] = sys.modules[__name__]
+
 bl_info = {
     "name" : "Geometry Script",
     "author" : "Carson Katri",
