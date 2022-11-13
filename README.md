@@ -35,12 +35,20 @@ def repeat_grid(geometry: Geometry, width: Int, height: Int):
 2. Open *Blender* > *Preferences* > *Add-ons*
 3. Choose *Install...* and select the downloaded ZIP file
 
+## What is Geometry Script?
+*Geometry Script* is a robust yet easy to use Python API for creating Geometry Nodes with code.
+
+At a certain point, Geometry Node trees become unmanagably large. Creating node trees in Python enables quicker editing and reorganization of large, complex trees.
+
+*Geometry Script* has all of the performance and capabilities of Geometry Nodes, but in a more managable format. The scripts are converted directly to Geometry Node trees making them easy to tweak for others unfamiliar with scripting.
+
 ## How it Works
-When you run your script, *Geometry Script* builds a node tree based on the functions you call.
+When the script is run, *Geometry Script* builds a node tree based on the functions you call.
 
 Take this script for example:
 
 ```python
+from geometry_script import *
 @tree
 def example(geometry: Geometry):
     my_cube = cube(size=(1, 2, 3))
@@ -49,13 +57,14 @@ def example(geometry: Geometry):
 
 Let's break it down line by line:
 
-1. The `@tree(...)` decorator marks this function as a node tree builder. If you pass a name to the decorator it will use that as the name of the node tree. Otherwise, it will use the name of the function it is on. Any marked function will be built automatically when the script is run.
-2. All arguments used in the function must be annotated with a type, such as `Geometry`, `Float`, `Vector`, etc. Each of these arguments is added to the *Group Input* node. They can be configured on the *Geometry Node* modifier.
-3. The `cube` function maps to the *Cube* node. When you call this function, it creates that node in the tree, and returns the output socket. In this case, the output socket is stored in the variable `my_cube`.
-4. Whatever is returned from the function will be connected to the *Group Output* node. You must return at least one `Geometry` type.
+1. Import all of the types and functions available in *Geometry Script*.
+2. The `@tree(...)` decorator marks this function as a node tree builder. If you pass a name to the decorator it will use that as the name of the node tree. Otherwise, it will use the name of the function it is on. Any marked function will be built automatically when the script is run.
+3. All arguments used in the function must be annotated with a type, such as `Geometry`, `Float`, `Vector`, etc. Each of these arguments is added to the *Group Input* node. They can be configured on the *Geometry Node* modifier.
+4. The `cube` function maps to the *Cube* node. When you call this function, it creates that node in the tree, and returns the output socket. In this case, the output socket is stored in the variable `my_cube`.
+5. Whatever is returned from the function will be connected to the *Group Output* node. You must return at least one `Geometry` type.
 
 ### Sockets
-The types used as arguments in a *Geometry Script* cannot be native Python types. Instead, they must be one of the special socket types:
+The types used as arguments in a *Geometry Script* are typically not native Python types. Instead, they are one of the special socket types:
 
 * `Geometry`
 * `Float`
