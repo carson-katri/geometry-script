@@ -142,7 +142,7 @@ def create_documentation():
                 return f"""
                 <h4>Chain Syntax</h4>
                 <pre><code>{primary_arg[0]}: {primary_arg[1]} = ...
-    {primary_arg[0]}.{func}(...)</code></pre>
+{primary_arg[0]}.{func}(...)</code></pre>
                 """
             docstrings.append(f"""
             <details style="margin: 10px 0;">

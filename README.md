@@ -106,6 +106,19 @@ some_node_name(some_input=5, some_vector=(1, 2, 3))
 ### External Editing
 Blender's *Text Editor* leaves a lot to be desired. Editing scripts in an IDE like Visual Studio Code can provide a nicer experience with code completion, type hints, and more.
 
-Documentation and typeshed files are automatically generated when you install the add-on. You can find instructions for using them in your IDE in the add-on preferences.
+To open an external Python file:
+
+1. Select the open icon in Blender's Text Editor
+2. Navigate to the file, then open the sidebar (click the gear icon or press *N*) and uncheck *Make Internal*
+
+![A screenshot of Blender's file selector with 'Make Internal' unchecked](resources/open_file.png)
+
+3. Click *Open Text*
+4. At the top of the Text Editor, enable Geometry Script's *Auto Resolve* feature. This will make sure the opened file automatically accepts any changes made in an external editor.
+
+![A screenshot of the top of the Text Editor, with the Auto Resolve option checked](resources/auto_resolve.png)
+
+### Documentation
+Documentation and typeshed files are automatically generated when you install the add-on. You can find instructions for using them with your IDE in the add-on preferences.
 
 ![IDE screenshot showing the available documentation for the `grid` function](resources/ide_docs.png)
