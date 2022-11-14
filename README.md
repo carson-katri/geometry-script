@@ -118,6 +118,10 @@ To open an external Python file:
 
 ![A screenshot of the top of the Text Editor, with the Auto Resolve option checked](resources/auto_resolve.png)
 
+5. *(Optional)* Enable *Text* > *Live Edit* to automatically rebuild the Geometry Node tree every time the file is changed.
+
+![A screenshot of the top of the Text Editor, with the Live Edit option checked](resources/live_edit.png)
+
 ### Documentation
 Documentation and typeshed files are automatically generated when you install the add-on. You can find instructions for using them with your IDE in the add-on preferences.
 

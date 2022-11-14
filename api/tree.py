@@ -1,6 +1,5 @@
 import bpy
-import re
-from inspect import getfullargspec
+import inspect
 try:
     import node_arrange as node_arrange
 except:
@@ -18,6 +17,8 @@ def _as_iterable(x):
 def tree(name):
     tree_name = name
     def build_tree(builder):
+        signature = inspect.signature(builder)
+
         # Locate or create the node group
         node_group = None
         if tree_name in bpy.data.node_groups:
@@ -27,8 +28,8 @@ def tree(name):
         # Clear the node group before building
         for node in node_group.nodes:
             node_group.nodes.remove(node)
-        for group_input in node_group.inputs:
-            node_group.inputs.remove(group_input)
+        while len(node_group.inputs) > len(signature.parameters):
+            node_group.inputs.remove(node_group.inputs[-1])
         for group_output in node_group.outputs:
             node_group.outputs.remove(group_output)
         
@@ -37,21 +38,31 @@ def tree(name):
         group_output_node = node_group.nodes.new('NodeGroupOutput')
 
         # Collect the inputs
-        argspec = getfullargspec(builder)
         inputs = {}
-        for arg in argspec.args:
-            if not arg in argspec.annotations:
-                raise Exception(f"Tree input '{arg}' has no type specified. Please specify a valid NodeInput subclass.")
-            type_annotation = argspec.annotations[arg]
-            if not issubclass(type_annotation, Type):
-                raise Exception(f"Type of tree input '{arg}' is not a valid 'Type' subclass.")
-            inputs[arg] = type_annotation
+        for param in signature.parameters.values():
+            if param.annotation == inspect.Parameter.empty:
+                raise Exception(f"Tree input '{param.name}' has no type specified. Please annotate with a valid node input type.")
+            if not issubclass(param.annotation, Type):
+                raise Exception(f"Type of tree input '{param.name}' is not a valid 'Type' subclass.")
+            inputs[param.name] = (param.annotation, param.default)
 
         # Create the input sockets and collect input values.
+        for i, node_input in enumerate(node_group.inputs):
+            if node_input.bl_socket_idname != list(inputs.values())[i][0].socket_type:
+                for ni in node_group.inputs:
+                    node_group.inputs.remove(ni)
+                break
         builder_inputs = []
         for i, arg in enumerate(inputs.items()):
-            node_group.inputs.new(arg[1].socket_type, re.sub('([A-Z])', r' \1', arg[0]).title())
-            builder_inputs.append(arg[1](group_input_node.outputs[i]))
+            input_name = arg[0].replace('_', ' ').title()
+            if len(node_group.inputs) > i:
+                node_group.inputs[i].name = input_name
+                node_input = node_group.inputs[i]
+            else:
+                node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
+            if arg[1][1] != inspect.Parameter.empty:
+                node_input.default_value = arg[1][1]
+            builder_inputs.append(arg[1][0](group_input_node.outputs[i]))
 
         # Run the builder function
         State.current_node_tree = node_group

@@ -1,7 +1,8 @@
 import bpy
-from bpy.types import GeometryNodeCurveToMesh
+import bl_ui
 from .state import State
 from .types import *
+from ..absolute_path import absolute_path
 
 class OutputsList(dict):
     __getattr__ = dict.get
@@ -14,7 +15,7 @@ def build_node(node_type):
         if _primary_arg is not None:
             State.current_node_tree.links.new(_primary_arg._socket, node.inputs[0])
         for prop in node.bl_rna.properties:
-            argname = prop.name.lower().replace(' ', '_')
+            argname = prop.identifier.lower().replace(' ', '_')
             if argname in kwargs:
                 setattr(node, prop.identifier, kwargs[argname])
         for node_input in (node.inputs[1:] if _primary_arg is not None else node.inputs):
@@ -58,10 +59,29 @@ def register_node(node_type, category_path=None):
     registered_nodes.add(node_type)
 for category_name in list(filter(lambda x: x.startswith('NODE_MT_category_GEO_'), dir(bpy.types))):
     category = getattr(bpy.types, category_name)
-    category_path = category.category.name.lower().replace(' ', '_')
-    for node in category.category.items(None):
-        node_type = getattr(bpy.types, node.nodetype)
-        register_node(node_type, category_path)
+    if not hasattr(category, 'category'):
+        category_path = category.bl_label.lower().replace(' ', '_')
+        add_node_type = bl_ui.node_add_menu.add_node_type
+        draw_node_group_add_menu = bl_ui.node_add_menu.draw_node_group_add_menu
+        draw_assets_for_catalog = bl_ui.node_add_menu.draw_assets_for_catalog
+        bl_ui.node_add_menu.add_node_type = lambda _layout, node_type_name: register_node(getattr(bpy.types, node_type_name), category_path)
+        bl_ui.node_add_menu.draw_node_group_add_menu = lambda _context, _layout: None
+        bl_ui.node_add_menu.draw_assets_for_catalog = lambda _context, _layout: None
+        class CategoryStub:
+            bl_label = ""
+            def __init__(self):
+                self.layout = Layout()
+        class Layout:
+            def separator(self): pass
+        category.draw(CategoryStub(), None)
+        bl_ui.node_add_menu.add_node_type = add_node_type
+        bl_ui.node_add_menu.draw_node_group_add_menu = draw_node_group_add_menu
+        bl_ui.node_add_menu.draw_assets_for_catalog = draw_assets_for_catalog
+    else:
+        category_path = category.category.name.lower().replace(' ', '_')
+        for node in category.category.items(None):
+            node_type = getattr(bpy.types, node.nodetype)
+            register_node(node_type, category_path)
 for node_type_name in list(filter(lambda x: 'GeometryNode' in x, dir(bpy.types))):
     node_type = getattr(bpy.types, node_type_name)
     if issubclass(node_type, bpy.types.GeometryNode):
@@ -200,9 +220,9 @@ def create_documentation():
     </body>
     </html>
     """
-    with open('docs/documentation.html', 'w') as f:
+    with open(absolute_path('docs/documentation.html'), 'w') as f:
         f.write(html)
-    with open('typeshed/geometry_script.pyi', 'w') as fpyi, open('typeshed/geometry_script.py', 'w') as fpy:
+    with open(absolute_path('typeshed/geometry_script.pyi'), 'w') as fpyi, open(absolute_path('typeshed/geometry_script.py'), 'w') as fpy:
         newline = '\n'
         def type_symbol(t):
             return f"class {t.__name__}(Type): pass"

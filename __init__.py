@@ -17,6 +17,7 @@ import webbrowser
 
 from .api.tree import *
 from .preferences import GeometryScriptPreferences
+from .absolute_path import absolute_path
 
 # Set the `geometry_script` module to the current module in case the folder is named differently.
 import sys
@@ -49,7 +50,7 @@ class OpenDocumentation(bpy.types.Operator):
     bl_label = "Open Documentation"
 
     def execute(self, context):
-        webbrowser.open('file://' + os.path.join(os.path.dirname(__file__), 'docs/documentation.html'))
+        webbrowser.open('file://' + absolute_path('docs/documentation.html'))
         return {'FINISHED'}
 
 class GeometryScriptSettings(bpy.types.PropertyGroup):
@@ -75,13 +76,18 @@ def editor_header_draw(self, context):
 
 def auto_resolve():
     if bpy.context.scene.geometry_script_settings.auto_resolve:
-        for area in bpy.context.screen.areas:
-            for space in area.spaces:
-                if space.type == 'NODE_EDITOR':
-                    with bpy.context.temp_override(area=area, space=space):
-                        text = bpy.context.space_data.text
-                        if text and text.is_modified:
-                            bpy.ops.text.resolve_conflict(resolution='RELOAD')
+        try:
+            for area in bpy.context.screen.areas:
+                for space in area.spaces:
+                    if space.type == 'TEXT_EDITOR':
+                        with bpy.context.temp_override(area=area, space=space):
+                            text = bpy.context.space_data.text
+                            if text and text.is_modified:
+                                bpy.ops.text.resolve_conflict(resolution='RELOAD')
+                                if bpy.context.space_data.use_live_edit:
+                                    bpy.ops.text.run_script()
+        except:
+            pass
     return 1
 
 def register():
