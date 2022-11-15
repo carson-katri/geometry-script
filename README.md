@@ -93,6 +93,38 @@ socket_integer * 2 # creates a `Math` node that multiplies the `Integer` node by
 socket_integer = random_value(data_type='INT', seed=socket_integer) # use the `Integer` node as the seed for a new random integer
 ```
 
+### Generators
+Tree builder functions can also be generators:
+
+```python
+@tree
+def cube_and_cylinder():
+    yield cube()
+    yield cylinder().mesh
+```
+
+Because all of the generated values are `Geometry` types, they will be automatically joined with a *Join Geometry* node and sent as the output.
+
+You can `yield` other types as well, however:
+
+```python
+@tree
+def cube_cylinder_and_int():
+    yield cube() # The first output of a Geometry Nodes tree must be `Geometry`
+    yield cylinder()
+    yield 5
+```
+
+This will create three outputs, one for the cube, one for the cylinder, and one for an *Integer* node with the value `5`.
+
+### Default Values
+```python
+@tree
+def cube_with_height(height: Float = 0.5):
+    return cube(size=combine_xyz(z=height))
+```
+The value `0.5` will show as the default in the Geometry Nodes modifier.
+
 ### Available Nodes
 Every node available in your current version of Blender can be used as a function. The name will be converted to snake case:
 ```python

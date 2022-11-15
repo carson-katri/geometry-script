@@ -34,6 +34,8 @@ def build_node(node_type):
                         State.current_node_tree.links.new(constant._socket, node_input)
         outputs = {}
         for node_output in node.outputs:
+            if not node_output.enabled:
+                continue
             outputs[node_output.name.lower().replace(' ', '_')] = Type(node_output)
         if len(outputs) == 1:
             return list(outputs.values())[0]

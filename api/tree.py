@@ -66,7 +66,14 @@ def tree(name):
 
         # Run the builder function
         State.current_node_tree = node_group
-        outputs = builder(*builder_inputs)
+        if inspect.isgeneratorfunction(builder):
+            generated_outputs = [*builder(*builder_inputs)]
+            if all(map(lambda x: issubclass(type(x), Type) and x._socket.type == 'GEOMETRY', generated_outputs)):
+                outputs = join_geometry(geometry=generated_outputs)
+            else:
+                outputs = generated_outputs
+        else:
+            outputs = builder(*builder_inputs)
 
         # Create the output sockets
         for i, result in enumerate(_as_iterable(outputs)):

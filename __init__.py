@@ -102,7 +102,7 @@ def register():
 
     bpy.types.Scene.geometry_script_settings = bpy.props.PointerProperty(type=GeometryScriptSettings)
 
-    bpy.app.timers.register(auto_resolve)
+    bpy.app.timers.register(auto_resolve, persistent=True)
 
 def unregister():
     bpy.utils.unregister_class(TEXT_MT_templates_geometryscript)

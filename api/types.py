@@ -81,23 +81,28 @@ class Type:
     
     def __ge__(self, other):
         return self._compare(other, 'GREATER_EQUAL')
+    
+    def _get_xyz_component(self, component):
+        if self._socket.type != 'VECTOR':
+            raise Exception("`x`, `y`, `z` properties are not available on non-Vector types.")
+        separate_node = State.current_node_tree.nodes.new('ShaderNodeSeparateXYZ')
+        State.current_node_tree.links.new(self._socket, separate_node.inputs[0])
+        return Type(separate_node.outputs[component])
+    @property
+    def x(self):
+        return self._get_xyz_component(0)
+    @property
+    def y(self):
+        return self._get_xyz_component(1)
+    @property
+    def z(self):
+        return self._get_xyz_component(2)
 
 for standard_socket in list(filter(lambda x: 'NodeSocket' in x, dir(bpy.types))):
     name = standard_socket.replace('NodeSocket', '')
     if len(name) < 1:
         continue
     globals()[name] = type(name, (Type,), { 'socket_type': standard_socket, '__module__': Type.__module__ })
-    if name == 'Vector':
-        def get_component(component):
-            @property
-            def get(self):
-                separate_node = State.current_node_tree.nodes.new('ShaderNodeSeparateXYZ')
-                State.current_node_tree.links.new(self._socket, separate_node.inputs[0])
-                return Type(separate_node.outputs[component])
-            return get
-        globals()[name].x = get_component(0)
-        globals()[name].y = get_component(1)
-        globals()[name].z = get_component(2)
     if name == 'Int':
         class IntIterator:
             def __init__(self, integer):
