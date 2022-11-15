@@ -57,11 +57,20 @@ class Type:
         compare_node = State.current_node_tree.nodes.new('FunctionNodeCompare')
         compare_node.data_type = 'FLOAT' if self._socket.type == 'VALUE' else self._socket.type
         compare_node.operation = operation
-        State.current_node_tree.links.new(self._socket, compare_node.inputs[0])
+        a = None
+        b = None
+        for node_input in compare_node.inputs:
+            if not node_input.enabled:
+                continue
+            elif a is None:
+                a = node_input
+            else:
+                b = node_input
+        State.current_node_tree.links.new(self._socket, a)
         if issubclass(type(other), Type):
-            State.current_node_tree.links.new(other._socket, compare_node.inputs[1])
+            State.current_node_tree.links.new(other._socket, b)
         else:
-            compare_node.inputs[1].default_value = other
+            b.default_value = other
         return Type(compare_node.outputs[0])
     
     def __eq__(self, other):

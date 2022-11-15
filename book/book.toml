@@ -1,0 +1,6 @@
+[book]
+authors = ["Carson Katri"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Geometry Script"

@@ -1,4 +1,4 @@
-![Geometry Script wordmark](resources/wordmark.png)
+![Geometry Script wordmark](book/src/images/wordmark.png)
 
 A scripting API for Blender's Geometry Nodes:
 
@@ -23,7 +23,7 @@ def repeat_grid(geometry: Geometry, width: Int, height: Int):
 </td>
 <td>
 
-![Generated node tree](resources/example_generated_tree.png)
+![Generated node tree](book/src/images/example_generated_tree.png)
 
 </td>
 </tr>
@@ -143,18 +143,18 @@ To open an external Python file:
 1. Select the open icon in Blender's Text Editor
 2. Navigate to the file, then open the sidebar (click the gear icon or press *N*) and uncheck *Make Internal*
 
-![A screenshot of Blender's file selector with 'Make Internal' unchecked](resources/open_file.png)
+![A screenshot of Blender's file selector with 'Make Internal' unchecked](book/src/images/open_file.png)
 
 3. Click *Open Text*
 4. At the top of the Text Editor, enable Geometry Script's *Auto Resolve* feature. This will make sure the opened file automatically accepts any changes made in an external editor.
 
-![A screenshot of the top of the Text Editor, with the Auto Resolve option checked](resources/auto_resolve.png)
+![A screenshot of the top of the Text Editor, with the Auto Resolve option checked](book/src/images/auto_resolve.png)
 
 5. *(Optional)* Enable *Text* > *Live Edit* to automatically rebuild the Geometry Node tree every time the file is changed.
 
-![A screenshot of the top of the Text Editor, with the Live Edit option checked](resources/live_edit.png)
+![A screenshot of the top of the Text Editor, with the Live Edit option checked](book/src/images/live_edit.png)
 
 ### Documentation
 Documentation and typeshed files are automatically generated when you install the add-on. You can find instructions for using them with your IDE in the add-on preferences.
 
-![IDE screenshot showing the available documentation for the `grid` function](resources/ide_docs.png)
+![IDE screenshot showing the available documentation for the `grid` function](book/src/images/ide_docs.png)
