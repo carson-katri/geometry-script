@@ -57,7 +57,7 @@ def voxelize(geometry: Geometry, resolution: Float = 0.2):
         interior_band_width=resolution,
         fill_volume=False
     ).distribute_points_in_volume( # Uniform grid distribution
-        mode='DENSITY_GRID',
+        mode=DistributePointsInVolume.Mode.DENSITY_GRID,
         spacing=resolution
     )
 ```
@@ -73,7 +73,7 @@ def voxelize(geometry: Geometry, resolution: Float = 0.2):
         interior_band_width=resolution,
         fill_volume=False
     ).distribute_points_in_volume(
-        mode='DENSITY_GRID',
+        mode=DistributePointsInVolume.Mode.DENSITY_GRID,
         spacing=resolution
     ).instance_on_points( # Cube instancing
         instance=cube(size=resolution)
@@ -97,7 +97,7 @@ def voxelize(geometry: Geometry, resolution: Float = 0.2):
         interior_band_width=resolution,
         fill_volume=False
     ).distribute_points_in_volume(
-        mode='DENSITY_GRID',
+        mode=DistributePointsInVolume.Mode.DENSITY_GRID,
         spacing=resolution
     ).instance_on_points(
         instance=cube(size=resolution)

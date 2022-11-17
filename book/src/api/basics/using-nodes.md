@@ -26,8 +26,8 @@ Many nodes have enum properties. For example, the math node lets you choose whic
 
 ```python
 # Access it by Node.Enum Name.Case
-math(operation=Math.Operation.Add)
-math(operation=Math.Operation.Subtract)
+math(operation=Math.Operation.ADD)
+math(operation=Math.Operation.SUBTRACT)
 math(operation='MULTIPLY') # Or manually pass a string
 ```
 
@@ -37,9 +37,9 @@ Internally, this type is generated as:
 import enum
 class Math:
   class Operation(enum.Enum):
-    Add = 'ADD'
-    Subtract = 'SUBTRACT'
-    Multiply = 'MULTIPLY'
+    ADD = 'ADD'
+    SUBTRACT = 'SUBTRACT'
+    MULTIPLY = 'MULTIPLY'
     ...
   ...
 ```
@@ -51,9 +51,9 @@ The cases will appear in code completion if you setup an [external editor](../..
 Some nodes use the same input name multiple times. For example, the *Math* node has three inputs named `value`. To specify each value, pass a tuple for the input:
 
 ```python
-math(operation=Math.Operation.Wrap, value=(0.5, 1, 0)) # Pass all 3
-math(operation=Math.Operation.Wrap, value=(0.5, 1)) # Only pass 2/3
-math(operation=Math.Operation.Wrap, value=0.5) # Only pass 1/3
+math(operation=Math.Operation.WRAP, value=(0.5, 1, 0)) # Pass all 3
+math(operation=Math.Operation.WRAP, value=(0.5, 1)) # Only pass 2/3
+math(operation=Math.Operation.WRAP, value=0.5) # Only pass 1/3
 ```
 
 ![](./math_wrap.png)
@@ -122,7 +122,7 @@ size.cube(...)
 The node can now be used as a function:
 
 ```python
-result = capture_attribute(data_type=CaptureAttribute.DataType.Boolean, geometry=cube_geo) # Specify a property and an input
+result = capture_attribute(data_type=CaptureAttribute.DataType.BOOLEAN, geometry=cube_geo) # Specify a property and an input
 result.geometry # Access the geometry
 result.attribute # Access the attribute
 ```

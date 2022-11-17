@@ -44,7 +44,7 @@ def city_builder(...):
     ...
     return building_points.instance_on_points(
         instance=cube().transform(translation=(0, 0, 0.5)),
-        scale=random_value(data_type='FLOAT_VECTOR', min=building_size_min, max=building_size_max, seed=seed),
+        scale=random_value(data_type=RandomValue.DataType.FLOAT_VECTOR, min=building_size_min, max=building_size_max, seed=seed),
     )
 ```
 
@@ -67,10 +67,10 @@ But now the buildings are overlapping the road. We need to remove any point that
 def city_builder(...):
     ...
     building_points = ...
-    road_points = geometry.curve_to_points(mode='EVALUATED').points
+    road_points = geometry.curve_to_points(mode=CurveToPoints.Mode.EVALUATED).points
     building_points = building_points.delete_geometry(
-        domain='POINT',
-        selection=geometry_proximity(target_element='POINTS', target=road_points, source_position=position()).distance < road_width
+        domain=DeleteGeometry.Domain.POINT,
+        selection=geometry_proximity(target_element=GeometryProximity.TargetElement.POINTS, target=road_points, source_position=position()).distance < road_width
     )
     ...
 ```
@@ -101,16 +101,16 @@ def city_builder(
     ))
     # Building points
     building_points = grid(size_x=size_x, size_y=size_y).distribute_points_on_faces(density=density, seed=seed).points
-    road_points = geometry.curve_to_points(mode='EVALUATED').points
+    road_points = geometry.curve_to_points(mode=CurveToPoints.Mode.EVALUATED).points
     # Delete points within the curve
     building_points = building_points.delete_geometry(
-        domain='POINT',
-        selection=geometry_proximity(target_element='POINTS', target=road_points, source_position=position()).distance < road_width
+        domain=DeleteGeometry.Domain.POINT,
+        selection=geometry_proximity(target_element=GeometryProximity.TargetElement.POINTS, target=road_points, source_position=position()).distance < road_width
     )
     # Building instances
     yield building_points.instance_on_points(
         instance=cube().transform(translation=(0, 0, 0.5)),
-        scale=random_value(data_type='FLOAT_VECTOR', min=building_size_min, max=building_size_max, seed=seed),
+        scale=random_value(data_type=RandomValue.DataType.FLOAT_VECTOR, min=building_size_min, max=building_size_max, seed=seed),
     )
 ```
 
