@@ -1,5 +1,7 @@
 import bpy
 import bl_ui
+import itertools
+import enum
 from .state import State
 from .types import *
 from ..absolute_path import absolute_path
@@ -17,21 +19,39 @@ def build_node(node_type):
         for prop in node.bl_rna.properties:
             argname = prop.identifier.lower().replace(' ', '_')
             if argname in kwargs:
-                setattr(node, prop.identifier, kwargs[argname])
+                value = kwargs[argname]
+                if isinstance(value, enum.Enum):
+                    value = value.value
+                setattr(node, prop.identifier, value)
         for node_input in (node.inputs[1:] if _primary_arg is not None else node.inputs):
             argname = node_input.name.lower().replace(' ', '_')
+            all_with_name = []
+            for node_input2 in (node.inputs[1:] if _primary_arg is not None else node.inputs):
+                if node_input2.name.lower().replace(' ', '_') == argname and node_input2.type == node_input.type:
+                    all_with_name.append(node_input2)
             if argname in kwargs:
-                if node_input.is_multi_input and hasattr(kwargs[argname], '__iter__') and len(kwargs[argname]) > 0 and issubclass(type(next(iter(kwargs[argname]))), Type):
-                    for x in kwargs[argname]:
+                def set_or_create_link(x, node_input):
+                    if issubclass(type(x), Type):
                         State.current_node_tree.links.new(x._socket, node_input)
-                elif issubclass(type(kwargs[argname]), Type):
-                    State.current_node_tree.links.new(kwargs[argname]._socket, node_input)
+                    else:
+                        try:
+                            node_input.default_value = x
+                        except:
+                            constant = Type(value=x)
+                            State.current_node_tree.links.new(constant._socket, node_input)
+                value = kwargs[argname]
+                if isinstance(value, enum.Enum):
+                    value = value.value
+                if node_input.is_multi_input and hasattr(value, '__iter__') and len() > 0 and issubclass(type(next(iter(value))), Type):
+                    for x in value:
+                        for node_input in all_with_name:
+                            State.current_node_tree.links.new(x._socket, node_input)
+                elif len(all_with_name) > 1 and issubclass(type(value), tuple) and len(value) > 0:
+                    for i, x in enumerate(value):
+                        set_or_create_link(x, all_with_name[i])
                 else:
-                    try:
-                        node_input.default_value = kwargs[argname]
-                    except:
-                        constant = Type(value=kwargs[argname])
-                        State.current_node_tree.links.new(constant._socket, node_input)
+                    for node_input in all_with_name:
+                        set_or_create_link(value, node_input)
         outputs = {}
         for node_output in node.outputs:
             if not node_output.enabled:
@@ -49,6 +69,7 @@ def register_node(node_type, category_path=None):
     if node_type in registered_nodes:
         return
     snake_case_name = node_type.bl_rna.name.lower().replace(' ', '_')
+    node_namespace_name = snake_case_name.replace('_', ' ').title().replace(' ', '')
     globals()[snake_case_name] = build_node(node_type)
     globals()[snake_case_name].bl_category_path = category_path
     globals()[snake_case_name].bl_node_type = node_type
@@ -58,6 +79,16 @@ def register_node(node_type, category_path=None):
             return build_node(node_type)(self, *args, **kwargs)
         return build
     setattr(Type, snake_case_name, build_node_method(node_type))
+    parent_props = [prop.identifier for base in node_type.__bases__ for prop in base.bl_rna.properties]
+    for prop in node_type.bl_rna.properties:
+        if not prop.identifier in parent_props and prop.type == 'ENUM':
+            if node_namespace_name not in globals():
+                class NodeNamespace: pass
+                NodeNamespace.__name__ = node_namespace_name
+                globals()[node_namespace_name] = NodeNamespace
+            enum_type_name = prop.identifier.replace('_', ' ').title().replace(' ', '')
+            enum_type = enum.Enum(enum_type_name, { map_case_name(i): i.identifier for i in prop.enum_items })
+            setattr(globals()[node_namespace_name], enum_type_name, enum_type)
     registered_nodes.add(node_type)
 for category_name in list(filter(lambda x: x.startswith('NODE_MT_category_GEO_'), dir(bpy.types))):
     category = getattr(bpy.types, category_name)
@@ -108,6 +139,7 @@ def create_documentation():
     default_color = '#A1A1A1'
     docstrings = []
     symbols = []
+    enums = {}
     for func in sorted(documentation.keys()):
         try:
             method = documentation[func]
@@ -117,15 +149,21 @@ def create_documentation():
             props_inputs = {}
             symbol_inputs = {}
             parent_props = [prop.identifier for base in method.bl_node_type.__bases__ for prop in base.bl_rna.properties]
+            node_namespace_name = func.replace('_', ' ').title().replace(' ', '')
             for prop in method.bl_node_type.bl_rna.properties:
                 if not prop.identifier in parent_props:
                     if prop.type == 'ENUM':
-                        enum_items = 'Literal[' + ', '.join(map(lambda i: f"'{i.identifier}'", prop.enum_items)) + ']'
-                        props_inputs[prop.identifier] = f"<span style=\"color: {color_mappings['STRING']};\">{enum_items}</span>"
-                        symbol_inputs[prop.identifier] = enum_items
+                        enum_name = prop.identifier.replace('_', ' ').title().replace(' ', '')
+                        enum_cases = '\n    '.join(map(lambda i: f"{map_case_name(i)} = '{i.identifier}'", prop.enum_items))
+                        if node_namespace_name not in enums:
+                            enums[node_namespace_name] = []
+                        enums[node_namespace_name].append(f"""  class {enum_name}(enum.Enum):
+    {enum_cases}""")
+                        props_inputs[prop.identifier] = {f"<span style=\"color: {color_mappings['STRING']};\">{node_namespace_name}.{enum_name}</span>":1}
+                        symbol_inputs[prop.identifier] = {f"{node_namespace_name}.{enum_name}": 1}
                     else:
-                        props_inputs[prop.identifier] = f"<span style=\"color: {color_mappings.get(prop.type, default_color)};\">{prop.type.title()}</span>"
-                        symbol_inputs[prop.identifier] = prop.type.title()
+                        props_inputs[prop.identifier] = {f"<span style=\"color: {color_mappings.get(prop.type, default_color)};\">{prop.type.title()}</span>":1}
+                        symbol_inputs[prop.identifier] = {prop.type.title(): 1}
             primary_arg = None
             for node_input in node_instance.inputs:
                 name = node_input.name.lower().replace(' ', '_')
@@ -134,13 +172,32 @@ def create_documentation():
                     typename = f"List[{typename}]"
                 type_str = f"<span style=\"color: {color_mappings.get(node_input.type, default_color)};\">{typename}</span>"
                 if name in props_inputs:
-                    props_inputs[name] = props_inputs[name] + f' | {type_str}'
-                    symbol_inputs[name] = symbol_inputs[name] + f' | {typename}'
+                    if type_str in props_inputs[name]:
+                        props_inputs[name][type_str] += 1
+                        symbol_inputs[name][typename] += 1
+                    else:
+                        props_inputs[name][type_str] = 1
+                        symbol_inputs[name][typename] = 1
                 else:
-                    props_inputs[name] = type_str
-                    symbol_inputs[name] = typename
+                    props_inputs[name] = {type_str: 1}
+                    symbol_inputs[name] = {typename: 1}
                 if primary_arg is None:
-                    primary_arg = (name, props_inputs[name])
+                    primary_arg = (name, list(props_inputs[name].keys())[0])
+            def collapse_inputs(inputs):
+                for k, v in inputs.items():
+                    values = []
+                    for t, c in v.items():
+                        for c in range(1, c + 1):
+                            value = ""
+                            if c > 1:
+                                value += "Tuple["
+                            value += ', '.join(itertools.repeat(t, c))
+                            if c > 1:
+                                value += "]"
+                            values.append(value)
+                    inputs[k] = ' | '.join(values)
+            collapse_inputs(props_inputs)
+            collapse_inputs(symbol_inputs)
             arg_docs = []
             symbol_args = []
             for name, value in props_inputs.items():
@@ -181,14 +238,20 @@ def create_documentation():
                 </div>
             </details>
             """)
-            output_symbol_separator = '\n  '
-            symbol_return_type = f"_{func}_result"
+            output_symbol_separator = '\n    '
             if len(output_symbols) > 1:
-                symbols.append(f"""class {symbol_return_type}:
-  {output_symbol_separator.join(output_symbols)}""")
-            return_type_hint = list(symbol_outputs.values())[0] if len(output_symbols) == 1 else symbol_return_type
+                if node_namespace_name not in enums:
+                    enums[node_namespace_name] = []
+                enums[node_namespace_name].append(f"""  class Result:
+    {output_symbol_separator.join(output_symbols)}""")
+            return_type_hint = list(symbol_outputs.values())[0] if len(output_symbols) == 1 else f"{node_namespace_name}.Result"
             symbols.append(f"""def {func}({', '.join(symbol_args)}) -> {return_type_hint}: \"\"\"![]({image}.webp)\"\"\"""")
-        except:
+        except Exception as e:
+            import os, sys
+            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             continue
     bpy.data.node_groups.remove(temp_node_group)
     html = f"""
@@ -228,15 +291,40 @@ def create_documentation():
         newline = '\n'
         def type_symbol(t):
             return f"class {t.__name__}(Type): pass"
+        def enum_namespace(k):
+            return f"""class {k}:
+{newline.join(enums[k])}"""
         contents = f"""from typing import *
+import enum
 def tree(builder):
   \"\"\"
   Marks a function as a node tree.
   \"\"\"
   pass
 class Type:
-  {(newline + '  ').join(filter(lambda x: x.startswith('def'), symbols))}
+  def __add__(self, other) -> Type: return self
+  def __radd__(self, other) -> Type: return self
+  def __sub__(self, other) -> Type: return self
+  def __rsub__(self, other) -> Type: return self
+  def __mul__(self, other) -> Type: return self
+  def __rmul__(self, other) -> Type: return self
+  def __truediv__(self, other) -> Type: return self
+  def __rtruediv__(self, other) -> Type: return self
+  def __mod__(self, other) -> Type: return self
+  def __rmod__(self, other) -> Type: return self
+  def __eq__(self, other) -> Type: return self
+  def __ne__(self, other) -> Type: return self
+  def __lt__(self, other) -> Type: return self
+  def __le__(self, other) -> Type: return self
+  def __gt__(self, other) -> Type: return self
+  def __ge__(self, other) -> Type: return self
+  x = Type()
+  y = Type()
+  z = Type()
+  {(newline + '  ').join(map(lambda x: x.replace('(', '(self, '), filter(lambda x: x.startswith('def'), symbols)))}
+  
 {newline.join(map(type_symbol, Type.__subclasses__()))}
+{newline.join(map(enum_namespace, enums.keys()))}
 {newline.join(symbols)}"""
         fpyi.write(contents)
         fpy.write(contents)

@@ -122,3 +122,29 @@ The same script without chaining calls is written more verbosely as:
 def cube_tree(size: Vector):
     return mesh_to_volume(mesh=cube(size=size))
 ```
+
+### Spanning Multiple Lines
+
+Often times you want each chained calls to be on a separate line. There are a few ways to do this in Python:
+
+1. Newlines around arguments
+
+```python
+cube(
+    size=size
+).mesh_to_volume()
+```
+
+2. Parentheses
+
+```python
+(cube(size=size)
+ .mesh_to_volume())
+```
+
+3. Line continuation
+
+```python
+cube(size=size) \
+    .mesh_to_volume()
+```

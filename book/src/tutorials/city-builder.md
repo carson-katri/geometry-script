@@ -26,7 +26,7 @@ def city_builder(
     return geometry
 ```
 
-Run the script to create the tree, then add a *Geometry Nodes* modifier to your curve object and select the *City Builger* node group.
+Run the script to create the tree, then add a *Geometry Nodes* modifier to your curve object and select the *City Builder* node group.
 
 ## Buildings
 Let's start with the buildings. We'll distribute points on a grid with `size_x` and `size_y`.

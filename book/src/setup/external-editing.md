@@ -3,9 +3,9 @@
 Blender's *Text Editor* leaves a lot to be desired. Writing scripts without code completion can be tough.
 Using an external code editor is one way to improve the editing experience.
 
-This guide will show how to setup [Visual Studio Code](https://code.visualstudio.com/) to edit Geometry Scripts. However, the same concepts apply to IDEs.
+This guide will show how to setup [Visual Studio Code](https://code.visualstudio.com/) to edit Geometry Scripts. However, the same concepts apply to other IDEs.
 
-> This guide assumes you have already installed Visual Studio Code and setup the [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python). If not, please follow the setup guides for those tools before continuing.
+> This guide assumes you have already installed Visual Studio Code and setup the [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python). If not, please setup those tools before continuing.
 
 ## Code Completion
 When the Geometry Script add-on starts, it generates a Python typeshed file that can be used to provide code completion.

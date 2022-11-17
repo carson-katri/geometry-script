@@ -3,6 +3,15 @@ from bpy.types import NodeSocketStandard
 import nodeitems_utils
 from .state import State
 
+def map_case_name(i):
+    r = i.identifier.replace('_', ' ').title().replace(' ', '')
+    if r == 'None':
+        return 'NONE'
+    elif not r[0].isalpha():
+        return f'_{r}'
+    else:
+        return r
+
 # The base class all exposed socket types conform to.
 class Type:
     socket_type: str
@@ -28,30 +37,45 @@ class Type:
         self._socket = socket
         self.socket_type = type(socket).__name__
     
-    def _math(self, other, operation):
+    def _math(self, other, operation, reverse=False):
         math_node = State.current_node_tree.nodes.new('ShaderNodeVectorMath' if self._socket.type == 'VECTOR' else 'ShaderNodeMath')
         math_node.operation = operation
-        State.current_node_tree.links.new(self._socket, math_node.inputs[0])
+        State.current_node_tree.links.new(self._socket, math_node.inputs[1 if reverse else 0])
         if issubclass(type(other), Type):
-            State.current_node_tree.links.new(other._socket, math_node.inputs[1])
+            State.current_node_tree.links.new(other._socket, math_node.inputs[0 if reverse else 1])
         else:
-            math_node.inputs[1].default_value = other
+            math_node.inputs[0 if reverse else 1].default_value = other
         return Type(math_node.outputs[0])
 
     def __add__(self, other):
         return self._math(other, 'ADD')
     
+    def __radd__(self, other):
+        return self._math(other, 'ADD', True)
+    
     def __sub__(self, other):
         return self._math(other, 'SUBTRACT')
+    
+    def __rsub__(self, other):
+        return self._math(other, 'SUBTRACT', True)
     
     def __mul__(self, other):
         return self._math(other, 'MULTIPLY')
     
+    def __rmul__(self, other):
+        return self._math(other, 'MULTIPLY', True)
+    
     def __truediv__(self, other):
         return self._math(other, 'DIVIDE')
     
+    def __rtruediv__(self, other):
+        return self._math(other, 'DIVIDE', True)
+    
     def __mod__(self, other):
         return self._math(other, 'MODULO')
+    
+    def __rmod__(self, other):
+        return self._math(other, 'MODULO', True)
     
     def _compare(self, other, operation):
         compare_node = State.current_node_tree.nodes.new('FunctionNodeCompare')

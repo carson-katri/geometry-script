@@ -4,3 +4,8 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Geometry Script"
+
+[output.html]
+default-theme = "coal"
+preferred-dark-theme = "coal"
+additional-css = ["style.css"]
