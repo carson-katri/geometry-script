@@ -4,6 +4,7 @@ import itertools
 import enum
 from .state import State
 from .types import *
+from .static.input_group import InputGroup
 from ..absolute_path import absolute_path
 
 class OutputsList(dict):
@@ -13,6 +14,10 @@ class OutputsList(dict):
 
 def build_node(node_type):
     def build(_primary_arg=None, **kwargs):
+        for k, v in kwargs.items():
+            if isinstance(v, InputGroup):
+                kwargs = { **kwargs, **v.__dict__ }
+                del kwargs[k]
         node = State.current_node_tree.nodes.new(node_type.__name__)
         if _primary_arg is not None:
             State.current_node_tree.links.new(_primary_arg._socket, node.inputs[0])
@@ -42,7 +47,7 @@ def build_node(node_type):
                 value = kwargs[argname]
                 if isinstance(value, enum.Enum):
                     value = value.value
-                if node_input.is_multi_input and hasattr(value, '__iter__') and len() > 0 and issubclass(type(next(iter(value))), Type):
+                if node_input.is_multi_input and hasattr(value, '__iter__') and len(value) > 0 and issubclass(type(next(iter(value))), Type):
                     for x in value:
                         for node_input in all_with_name:
                             State.current_node_tree.links.new(x._socket, node_input)
@@ -326,6 +331,14 @@ class Type:
 {newline.join(map(type_symbol, Type.__subclasses__()))}
 {newline.join(map(enum_namespace, enums.keys()))}
 {newline.join(symbols)}"""
+
+        static_path = absolute_path('api/static')
+        for path in os.listdir(static_path):
+            if os.path.splitext(path)[-1] != '.py':
+                continue
+            with open(os.path.join(static_path, path), 'r') as static_api:
+                contents += f"\n\n# {path}\n{static_api.read()}"
+
         fpyi.write(contents)
         fpy.write(contents)
 

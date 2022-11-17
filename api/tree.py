@@ -7,6 +7,7 @@ except:
 from .state import State
 from .types import *
 from .node_mapper import *
+from .static.input_group import *
 
 def _as_iterable(x):
     try:
@@ -39,12 +40,19 @@ def tree(name):
 
         # Collect the inputs
         inputs = {}
-        for param in signature.parameters.values():
+        input_groups = {}
+        def validate_param(param):
             if param.annotation == inspect.Parameter.empty:
                 raise Exception(f"Tree input '{param.name}' has no type specified. Please annotate with a valid node input type.")
             if not issubclass(param.annotation, Type):
                 raise Exception(f"Type of tree input '{param.name}' is not a valid 'Type' subclass.")
-            inputs[param.name] = (param.annotation, param.default)
+        for param in signature.parameters.values():
+            if issubclass(param.annotation, InputGroup):
+                for group_param, annotation in param.annotation.__annotations__.items():
+                    inputs[group_param] = (annotation, inspect.Parameter.empty, param.name)
+            else:
+                validate_param(param)
+                inputs[param.name] = (param.annotation, param.default, None)
 
         # Create the input sockets and collect input values.
         for i, node_input in enumerate(node_group.inputs):
@@ -52,7 +60,7 @@ def tree(name):
                 for ni in node_group.inputs:
                     node_group.inputs.remove(ni)
                 break
-        builder_inputs = []
+        builder_inputs = {}
         for i, arg in enumerate(inputs.items()):
             input_name = arg[0].replace('_', ' ').title()
             if len(node_group.inputs) > i:
@@ -62,18 +70,23 @@ def tree(name):
                 node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
             if arg[1][1] != inspect.Parameter.empty:
                 node_input.default_value = arg[1][1]
-            builder_inputs.append(arg[1][0](group_input_node.outputs[i]))
+            if arg[1][2] is not None:
+                if arg[1][2] not in builder_inputs:
+                    builder_inputs[arg[1][2]] = signature.parameters[arg[1][2]].annotation()
+                setattr(builder_inputs[arg[1][2]], arg[0], arg[1][0](group_input_node.outputs[i]))
+            else:
+                builder_inputs[arg[0]] = arg[1][0](group_input_node.outputs[i])
 
         # Run the builder function
         State.current_node_tree = node_group
         if inspect.isgeneratorfunction(builder):
-            generated_outputs = [*builder(*builder_inputs)]
+            generated_outputs = [*builder(**builder_inputs)]
             if all(map(lambda x: issubclass(type(x), Type) and x._socket.type == 'GEOMETRY', generated_outputs)):
                 outputs = join_geometry(geometry=generated_outputs)
             else:
                 outputs = generated_outputs
         else:
-            outputs = builder(*builder_inputs)
+            outputs = builder(**builder_inputs)
 
         # Create the output sockets
         for i, result in enumerate(_as_iterable(outputs)):

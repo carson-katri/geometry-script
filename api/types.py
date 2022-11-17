@@ -4,7 +4,7 @@ import nodeitems_utils
 from .state import State
 
 def map_case_name(i):
-    return i.identifier.replace(' ', '_').upper()
+    return ('_' if not i.identifier[0].isalpha() else '') + i.identifier.replace(' ', '_').upper()
 
 # The base class all exposed socket types conform to.
 class Type:
