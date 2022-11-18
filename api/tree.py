@@ -29,7 +29,7 @@ def tree(name):
         # Clear the node group before building
         for node in node_group.nodes:
             node_group.nodes.remove(node)
-        while len(node_group.inputs) > len(signature.parameters):
+        while len(node_group.inputs) > sum(map(lambda p: len(p.annotation.__annotations__) if issubclass(p.annotation, InputGroup) else 1, list(signature.parameters.values()))):
             node_group.inputs.remove(node_group.inputs[-1])
         for group_output in node_group.outputs:
             node_group.outputs.remove(group_output)
