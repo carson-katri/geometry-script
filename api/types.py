@@ -6,6 +6,15 @@ from .state import State
 def map_case_name(i):
     return ('_' if not i.identifier[0].isalpha() else '') + i.identifier.replace(' ', '_').upper()
 
+def socket_type_to_data_type(socket_type):
+    match socket_type:
+        case 'VECTOR':
+            return 'FLOAT_VECTOR'
+        case 'COLOR':
+            return 'FLOAT_COLOR'
+        case _:
+            return socket_type
+
 # The base class all exposed socket types conform to.
 class Type:
     socket_type: str
@@ -124,6 +133,11 @@ class Type:
     @property
     def z(self):
         return self._get_xyz_component(2)
+    
+    def capture(self, value):
+        data_type = socket_type_to_data_type(value._socket.type)
+        captured = self.capture_attribute(data_type=data_type, value=value)
+        return captured.geometry.transfer_attribute(data_type=data_type, attribute=captured.attribute)
 
 for standard_socket in list(filter(lambda x: 'NodeSocket' in x, dir(bpy.types))):
     name = standard_socket.replace('NodeSocket', '')
