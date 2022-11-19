@@ -668,6 +668,18 @@ def terrain_generator(
         )
     ).mesh_to_points()
 </code></pre>
+<h2 id="input-group-prefix"><a class="header" href="#input-group-prefix">Input Group Prefix</a></h2>
+<p>If you use the same <code>InputGroup</code> multiple times, you need to provide a prefix. Otherwise, inputs with duplicate names will be created on your tree.</p>
+<p>To do this, use square brackets next to the annotation with a string for the prefix.</p>
+<pre><code class="language-python">def mountain_or_canyon(
+    mountain_inputs: TerrainInputs[&quot;Mountain&quot;], # Prefixed with 'Mountain'
+    canyon_inputs: TerrainInputs[&quot;Canyon&quot;], # Prefixed with 'Canyon'
+    is_mountain: Bool
+):
+    return terrain_generator(
+        inputs=switch(switch=is_mountain, true=mountain_inputs, false=canyon_inputs)
+    )
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
 <p>An important concept in Geometry Nodes is attributes. Many trees transfer attributes between geometry, using a combination of <em>Capture Attribute</em> and <em>Transfer Attribute</em>.</p>
 <p>Unfortunately, it takes quite a bit of code to use this common pattern.</p>
