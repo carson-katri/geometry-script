@@ -2,6 +2,7 @@ import bpy
 import bl_ui
 import itertools
 import enum
+import re
 from .state import State
 from .types import *
 from .static.input_group import InputGroup
@@ -299,6 +300,8 @@ def create_documentation():
         def enum_namespace(k):
             return f"""class {k}:
 {newline.join(enums[k])}"""
+        def add_self_arg(x):
+            return re.sub('\(', '(self, ', x, 1)
         contents = f"""from typing import *
 import enum
 def tree(builder):
@@ -327,7 +330,7 @@ class Type:
   y = Type()
   z = Type()
   def capture(self, attribute: Type, **kwargs) -> Callable[[], Type]: return transfer_attribute
-  {(newline + '  ').join(map(lambda x: x.replace('(', '(self, '), filter(lambda x: x.startswith('def'), symbols)))}
+  {(newline + '  ').join(map(add_self_arg, filter(lambda x: x.startswith('def'), symbols)))}
   
 {newline.join(map(type_symbol, Type.__subclasses__()))}
 {newline.join(map(enum_namespace, enums.keys()))}

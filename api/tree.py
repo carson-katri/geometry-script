@@ -47,11 +47,12 @@ def tree(name):
                 raise Exception(f"Type of tree input '{param.name}' is not a valid 'Type' subclass.")
         for param in signature.parameters.values():
             if issubclass(param.annotation, InputGroup):
+                prefix = (param.annotation.prefix + "_") if hasattr(param.annotation, "prefix") else ""
                 for group_param, annotation in param.annotation.__annotations__.items():
-                    inputs[group_param] = (annotation, inspect.Parameter.empty, param.name)
+                    inputs[prefix + group_param] = (annotation, inspect.Parameter.empty, param.name, prefix)
             else:
                 validate_param(param)
-                inputs[param.name] = (param.annotation, param.default, None)
+                inputs[param.name] = (param.annotation, param.default, None, None)
 
         # Create the input sockets and collect input values.
         for i, node_input in enumerate(node_group.inputs):
@@ -72,7 +73,7 @@ def tree(name):
             if arg[1][2] is not None:
                 if arg[1][2] not in builder_inputs:
                     builder_inputs[arg[1][2]] = signature.parameters[arg[1][2]].annotation()
-                setattr(builder_inputs[arg[1][2]], arg[0], arg[1][0](group_input_node.outputs[i]))
+                setattr(builder_inputs[arg[1][2]], arg[0].replace(arg[1][3], ''), arg[1][0](group_input_node.outputs[i]))
             else:
                 builder_inputs[arg[0]] = arg[1][0](group_input_node.outputs[i])
 
@@ -132,7 +133,10 @@ def tree(name):
             group_outputs = []
             for group_output in result._socket.node.outputs:
                 group_outputs.append(Type(group_output))
-            return tuple(group_outputs)
+            if len(group_outputs) == 1:
+                return group_outputs[0]
+            else:
+                return tuple(group_outputs)
         return group_reference
     if isinstance(name, str):
         return build_tree

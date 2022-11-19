@@ -2,6 +2,7 @@ import bpy
 from bpy.types import NodeSocketStandard
 import nodeitems_utils
 from .state import State
+import geometry_script
 
 def map_case_name(i):
     return ('_' if not i.identifier[0].isalpha() else '') + i.identifier.replace(' ', '_').upper()
@@ -16,7 +17,16 @@ def socket_type_to_data_type(socket_type):
             return socket_type
 
 # The base class all exposed socket types conform to.
-class Type:
+class _TypeMeta(type):
+    def __getitem__(self, args):
+        for s in filter(lambda x: isinstance(x, slice), args):
+            if (isinstance(s.start, float) or isinstance(s.start, int)) and (isinstance(s.stop, float) or isinstance(s.stop, int)):
+                print(f"minmax: ({s.start}, {s.stop})")
+            elif isinstance(s.start, str):
+                print(f"{s.start} = {s.stop}")
+        return self
+
+class Type(metaclass=_TypeMeta):
     socket_type: str
 
     def __init__(self, socket: bpy.types.NodeSocket = None, value = None):
@@ -41,14 +51,10 @@ class Type:
         self.socket_type = type(socket).__name__
     
     def _math(self, other, operation, reverse=False):
-        math_node = State.current_node_tree.nodes.new('ShaderNodeVectorMath' if self._socket.type == 'VECTOR' else 'ShaderNodeMath')
-        math_node.operation = operation
-        State.current_node_tree.links.new(self._socket, math_node.inputs[1 if reverse else 0])
-        if issubclass(type(other), Type):
-            State.current_node_tree.links.new(other._socket, math_node.inputs[0 if reverse else 1])
+        if self._socket.type == 'VECTOR':
+            return geometry_script.vector_math(operation=operation, vector=(other, self) if reverse else (self, other))
         else:
-            math_node.inputs[0 if reverse else 1].default_value = other
-        return Type(math_node.outputs[0])
+            return geometry_script.math(operation=operation, value=(other, self) if reverse else (self, other))
 
     def __add__(self, other):
         return self._math(other, 'ADD')
@@ -81,30 +87,19 @@ class Type:
         return self._math(other, 'MODULO', True)
     
     def _compare(self, other, operation):
-        compare_node = State.current_node_tree.nodes.new('FunctionNodeCompare')
-        compare_node.data_type = 'FLOAT' if self._socket.type == 'VALUE' else self._socket.type
-        compare_node.operation = operation
-        a = None
-        b = None
-        for node_input in compare_node.inputs:
-            if not node_input.enabled:
-                continue
-            elif a is None:
-                a = node_input
-            else:
-                b = node_input
-        State.current_node_tree.links.new(self._socket, a)
-        if issubclass(type(other), Type):
-            State.current_node_tree.links.new(other._socket, b)
-        else:
-            b.default_value = other
-        return Type(compare_node.outputs[0])
+        return geometry_script.compare(operation=operation, a=self, b=other)
     
     def __eq__(self, other):
-        return self._compare(other, 'EQUAL')
+        if self._socket.type == 'BOOLEAN':
+            return self._boolean_math(other, 'XNOR')
+        else:
+            return self._compare(other, 'EQUAL')
     
     def __ne__(self, other):
-        return self._compare(other, 'NOT_EQUAL')
+        if self._socket.type == 'BOOLEAN':
+            return self._boolean_math(other, 'XOR')
+        else:
+            return self._compare(other, 'NOT_EQUAL')
     
     def __lt__(self, other):
         return self._compare(other, 'LESS_THAN')
@@ -117,6 +112,44 @@ class Type:
     
     def __ge__(self, other):
         return self._compare(other, 'GREATER_EQUAL')
+    
+    def _boolean_math(self, other, operation, reverse=False):
+        boolean_math_node = State.current_node_tree.nodes.new('FunctionNodeBooleanMath')
+        boolean_math_node.operation = operation
+        a = None
+        b = None
+        for node_input in boolean_math_node.inputs:
+            if not node_input.enabled:
+                continue
+            elif a is None:
+                a = node_input
+            else:
+                b = node_input
+        State.current_node_tree.links.new(self._socket, a)
+        if other is not None:
+            if issubclass(type(other), Type):
+                State.current_node_tree.links.new(other._socket, b)
+            else:
+                b.default_value = other
+        return Type(boolean_math_node.outputs[0])
+    
+    def __and__(self, other):
+        return self._boolean_math(other, 'AND')
+
+    def __rand__(self, other):
+        return self._boolean_math(other, 'AND', reverse=True)
+    
+    def __or__(self, other):
+        return self._boolean_math(other, 'OR')
+    
+    def __ror__(self, other):
+        return self._boolean_math(other, 'OR', reverse=True)
+    
+    def __invert__(self):
+        if self._socket.type == 'BOOLEAN':
+            return self._boolean_math(None, 'NOT')
+        else:
+            return self._math(-1, 'MULTIPLY')
     
     def _get_xyz_component(self, component):
         if self._socket.type != 'VECTOR':
