@@ -326,6 +326,7 @@ class Type:
   x = Type()
   y = Type()
   z = Type()
+  def capture(self, attribute: Type, **kwargs) -> Callable[[], Type]: return transfer_attribute
   {(newline + '  ').join(map(lambda x: x.replace('(', '(self, '), filter(lambda x: x.startswith('def'), symbols)))}
   
 {newline.join(map(type_symbol, Type.__subclasses__()))}

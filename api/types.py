@@ -134,10 +134,10 @@ class Type:
     def z(self):
         return self._get_xyz_component(2)
     
-    def capture(self, value):
+    def capture(self, value, **kwargs):
         data_type = socket_type_to_data_type(value._socket.type)
-        captured = self.capture_attribute(data_type=data_type, value=value)
-        return captured.geometry.transfer_attribute(data_type=data_type, attribute=captured.attribute)
+        captured = self.capture_attribute(data_type=data_type, value=value, **kwargs)
+        return lambda **kwargs: captured.geometry.transfer_attribute(data_type=data_type, attribute=captured.attribute, **kwargs)
 
 for standard_socket in list(filter(lambda x: 'NodeSocket' in x, dir(bpy.types))):
     name = standard_socket.replace('NodeSocket', '')

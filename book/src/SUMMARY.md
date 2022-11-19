@@ -19,6 +19,7 @@
     - [Node Groups](./api/advanced-scripting/node-groups.md)
     - [Generators](./api/advanced-scripting/generators.md)
     - [Input Groups](./api/advanced-scripting/input-groups.md)
+    - [Attributes](./api/advanced-scripting/attributes.md)
 
 # Tutorials
 
