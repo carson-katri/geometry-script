@@ -77,7 +77,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -667,6 +667,59 @@ def terrain_generator(
             w=0
         )
     ).mesh_to_points()
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
+<p>An important concept in Geometry Nodes is attributes. Many trees transfer attributes between geometry, using a combination of <em>Capture Attribute</em> and <em>Transfer Attribute</em>.</p>
+<p>Unfortunately, it takes quite a bit of code to use this common pattern.</p>
+<pre><code class="language-python">@tree(&quot;Skin&quot;)
+def skin():
+    # Create a cube
+    c = cube()
+    # Capture the position
+    cube_position_attribute = c.capture_attribute(
+        data_type=CaptureAttribute.DataType.FLOAT_VECTOR,
+        value=position()
+    )
+    # Create a sphere
+    sphere = uv_sphere()
+    # Transfer the position to the sphere
+    transferred_position = cube_position_attribute.geometry.transfer_attribute(
+        data_type=TransferAttribute.DataType.FLOAT_VECTOR,
+        attribute=cube_position_attribute.attribute
+    )
+    # Make the sphere conform to the shape of the cube
+    return sphere.set_position(position=transferred_position)
+</code></pre>
+<p>Thankfully, a convenient <code>capture(...)</code> method is available on <code>Geometry</code>, which simplifies this function quite a bit.</p>
+<pre><code class="language-python">@tree(&quot;Skin&quot;)
+def skin():
+    # Create a cube
+    c = cube()
+    # Capture the position
+    cube_position = c.capture(position())
+    # Create a sphere
+    sphere = uv_sphere()
+    # Make the sphere conform to the shape of the cube
+    return sphere.set_position(position=cube_position())
+</code></pre>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h2>
+<p>Internally, <code>capture(...)</code> works just like the more manual approach.</p>
+<ol>
+<li>Capture the attribute from the source</li>
+</ol>
+<p>In the example above, we capture the <code>position()</code> from the cube.
+The data type is automatically inferred from the input. If you want to customize other options, simply pass them as keyword arguments to <code>capture(...)</code>.</p>
+<pre><code class="language-python">cube_position = c.capture(position())
+cube_position = c.capture(position(), domain=CaptureAttribute.Domain.FACE) # Optionally pass other arguments available on `capture_attribute`.
+</code></pre>
+<ol start="2">
+<li>Transfer the attribute to the target</li>
+</ol>
+<p><code>capture(...)</code> returns another function that calls <code>transfer_attribute</code> with the correct arguments passed automatically.
+Call this returned function (which we store in the variable <code>cube_position</code>) to transfer the attribute.
+In this example we also set the transferred cube position back onto the sphere.</p>
+<pre><code class="language-python">sphere.set_position(position=cube_position())
+sphere.set_position(position=cube_position(mapping=TransferAttribute.Mapping.NEAREST)) # Optionally pass other arguments available on `transfer_attribute`.
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="voxelize"><a class="header" href="#voxelize">Voxelize</a></h1>
 <p>This tutorial walks you through creating a script that turns any mesh into voxels.</p>

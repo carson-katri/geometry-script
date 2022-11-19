@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Node Groups - Geometry Script</title>
+        <title>Attributes - Geometry Script</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html" class="active"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html" class="active"><strong aria-hidden="true">5.4.</strong> Attributes</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,32 +135,68 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="node-groups"><a class="header" href="#node-groups">Node Groups</a></h1>
-<p>A Geometry Script can have more than one tree function. Each tree function is a node group, and tree functions can be used in other tree functions to create <em>Node Group</em> nodes.</p>
-<pre><code class="language-python">@tree(&quot;Instance Grid&quot;)
-def instance_grid(instance: Geometry):
-    &quot;&quot;&quot; Instance the input geometry on a grid &quot;&quot;&quot;
-    return grid().mesh_to_points().instance_on_points(instance=instance)
-
-@tree(&quot;Cube Grid&quot;)
-def cube_grid():
-    &quot;&quot;&quot; Create a grid of cubes &quot;&quot;&quot;
-    return instance_grid(instance=cube(size=0.2))
+                        <h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
+<p>An important concept in Geometry Nodes is attributes. Many trees transfer attributes between geometry, using a combination of <em>Capture Attribute</em> and <em>Transfer Attribute</em>.</p>
+<p>Unfortunately, it takes quite a bit of code to use this common pattern.</p>
+<pre><code class="language-python">@tree(&quot;Skin&quot;)
+def skin():
+    # Create a cube
+    c = cube()
+    # Capture the position
+    cube_position_attribute = c.capture_attribute(
+        data_type=CaptureAttribute.DataType.FLOAT_VECTOR,
+        value=position()
+    )
+    # Create a sphere
+    sphere = uv_sphere()
+    # Transfer the position to the sphere
+    transferred_position = cube_position_attribute.geometry.transfer_attribute(
+        data_type=TransferAttribute.DataType.FLOAT_VECTOR,
+        attribute=cube_position_attribute.attribute
+    )
+    # Make the sphere conform to the shape of the cube
+    return sphere.set_position(position=transferred_position)
 </code></pre>
-<p>The <em>Cube Grid</em> tree uses the <em>Instance Grid</em> node group by calling the <code>instance_grid</code> function:</p>
-<p><img src="./cube_grid.png" alt="" /></p>
-<p>The <em>Instance Grid</em> node group uses the passed in <code>instance</code> argument to create a grid of instances:</p>
-<p><img src="./instance_grid.png" alt="" /></p>
-<p>This concept can scale to complex interconnected node trees, while keeping everything neatly organized in separate functions.</p>
+<p>Thankfully, a convenient <code>capture(...)</code> method is available on <code>Geometry</code>, which simplifies this function quite a bit.</p>
+<pre><code class="language-python">@tree(&quot;Skin&quot;)
+def skin():
+    # Create a cube
+    c = cube()
+    # Capture the position
+    cube_position = c.capture(position())
+    # Create a sphere
+    sphere = uv_sphere()
+    # Make the sphere conform to the shape of the cube
+    return sphere.set_position(position=cube_position())
+</code></pre>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it Works</a></h2>
+<p>Internally, <code>capture(...)</code> works just like the more manual approach.</p>
+<ol>
+<li>Capture the attribute from the source</li>
+</ol>
+<p>In the example above, we capture the <code>position()</code> from the cube.
+The data type is automatically inferred from the input. If you want to customize other options, simply pass them as keyword arguments to <code>capture(...)</code>.</p>
+<pre><code class="language-python">cube_position = c.capture(position())
+cube_position = c.capture(position(), domain=CaptureAttribute.Domain.FACE) # Optionally pass other arguments available on `capture_attribute`.
+</code></pre>
+<ol start="2">
+<li>Transfer the attribute to the target</li>
+</ol>
+<p><code>capture(...)</code> returns another function that calls <code>transfer_attribute</code> with the correct arguments passed automatically.
+Call this returned function (which we store in the variable <code>cube_position</code>) to transfer the attribute.
+In this example we also set the transferred cube position back onto the sphere.</p>
+<pre><code class="language-python">sphere.set_position(position=cube_position())
+sphere.set_position(position=cube_position(mapping=TransferAttribute.Mapping.NEAREST)) # Optionally pass other arguments available on `transfer_attribute`.
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../api/advanced-scripting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../api/advanced-scripting/input-groups.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../../api/advanced-scripting/generators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../tutorials/voxelize.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -169,10 +205,10 @@ def cube_grid():
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../api/advanced-scripting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../api/advanced-scripting/input-groups.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../../api/advanced-scripting/generators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../tutorials/voxelize.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
