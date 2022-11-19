@@ -73,3 +73,20 @@ def point_terrain():
         )
     ).mesh_to_points()
 ```
+
+## Input Group Prefix
+
+If you use the same `InputGroup` multiple times, you need to provide a prefix. Otherwise, inputs with duplicate names will be created on your tree.
+
+To do this, use square brackets next to the annotation with a string for the prefix.
+
+```python
+def mountain_or_canyon(
+    mountain_inputs: TerrainInputs["Mountain"], # Prefixed with 'Mountain'
+    canyon_inputs: TerrainInputs["Canyon"], # Prefixed with 'Canyon'
+    is_mountain: Bool
+):
+    return terrain_generator(
+        inputs=switch(switch=is_mountain, true=mountain_inputs, false=canyon_inputs)
+    )
+```
