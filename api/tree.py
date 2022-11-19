@@ -40,7 +40,6 @@ def tree(name):
 
         # Collect the inputs
         inputs = {}
-        input_groups = {}
         def validate_param(param):
             if param.annotation == inspect.Parameter.empty:
                 raise Exception(f"Tree input '{param.name}' has no type specified. Please annotate with a valid node input type.")
@@ -129,7 +128,11 @@ def tree(name):
         # Return a function that creates a NodeGroup node in the tree.
         # This lets @trees be used in other @trees via simple function calls.
         def group_reference(*args, **kwargs):
-            return group(node_tree=node_group, *args, **kwargs)
+            result = group(node_tree=node_group, *args, **kwargs)
+            group_outputs = []
+            for group_output in result._socket.node.outputs:
+                group_outputs.append(Type(group_output))
+            return tuple(group_outputs)
         return group_reference
     if isinstance(name, str):
         return build_tree
