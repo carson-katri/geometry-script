@@ -38,6 +38,8 @@ class Type(metaclass=_TypeMeta):
                 tuple: ('FunctionNodeInputVector', 'vector'),
                 float: ('ShaderNodeValue', None),
             }
+            if type(value) == int:
+                print("Making an integer node?")
             if not type(value) in input_nodes:
                 raise Exception(f"'{value}' cannot be expressed as a node.")
             input_node_info = input_nodes[type(value)]

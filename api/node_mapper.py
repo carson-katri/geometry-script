@@ -30,6 +30,8 @@ def build_node(node_type):
                     value = value.value
                 setattr(node, prop.identifier, value)
         for node_input in (node.inputs[1:] if _primary_arg is not None else node.inputs):
+            if not node_input.enabled:
+                continue
             argname = node_input.name.lower().replace(' ', '_')
             all_with_name = []
             for node_input2 in (node.inputs[1:] if _primary_arg is not None else node.inputs):

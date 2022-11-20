@@ -8,6 +8,7 @@ from .state import State
 from .types import *
 from .node_mapper import *
 from .static.input_group import *
+from .static.expression import *
 
 def _as_iterable(x):
     try:
