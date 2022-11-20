@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Input Groups - Geometry Script</title>
+        <title>Boolean Math - Geometry Script</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html" class="active"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/boolean-math.html"><strong aria-hidden="true">5.5.</strong> Boolean Math</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/boolean-math.html" class="active"><strong aria-hidden="true">5.5.</strong> Boolean Math</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,81 +135,49 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="input-groups"><a class="header" href="#input-groups">Input Groups</a></h1>
-<p>Some geometry node trees need a lot of arguments.</p>
-<pre><code class="language-python">@tree(&quot;Terrain Generator&quot;)
-def terrain_generator(
-    width: Float
-    height: Float
-    resolution: Int
-    scale: Float
-    w: Float
-):
-    ...
-</code></pre>
-<p>There are a couple of problems with this. Firstly, the function signature is getting long. This can make it harder to visually parse the script. And, if we want to use the same arguments in another tree and pass them through to <code>terrain</code>, we need to make sure to keep everything up to date.</p>
-<p>This is where input groups come in. An input group is class that contains properties annotated with valid socket types.</p>
-<p>To create an input group, declare a new class that derives from <code>InputGroup</code>.</p>
-<pre><code class="language-python">class TerrainInputs(InputGroup):
-    width: Float
-    height: Float
-    resolution: Int
-    scale: Float
-    w: Float
-</code></pre>
-<p>Then annotate an argument in your tree function with this class.</p>
-<pre><code class="language-python">@tree(&quot;Terrain Generator&quot;)
-def terrain_generator(
-    inputs: TerrainInputs
-):
-    ...
-</code></pre>
-<p>This will create a node tree with the exact same structure as the original implementation. The inputs can be accessed with dot notation.</p>
-<pre><code class="language-python">size = combine_xyz(x=input.width, y=input.height)
-</code></pre>
-<p>And now passing the inputs through from another function is much simpler.</p>
-<pre><code class="language-python">def point_terrain(
-    terrain_inputs: TerrainInputs,
-    radius: Float
-):
-    return terrain_generator(
-        inputs=terrain_inputs
-    ).mesh_to_points(radius=radius)
-</code></pre>
-<h2 id="instantiating-input-groups"><a class="header" href="#instantiating-input-groups">Instantiating Input Groups</a></h2>
-<p>If you nest calls to tree functions, you can instantiate the <code>InputGroup</code> subclass to pass the correct inputs.</p>
-<pre><code class="language-python">def point_terrain():
-    return terrain_generator(
-        inputs=TerrainInputs(
-            width=5,
-            height=5,
-            resolution=10,
-            scale=1,
-            w=0
-        )
-    ).mesh_to_points()
-</code></pre>
-<h2 id="input-group-prefix"><a class="header" href="#input-group-prefix">Input Group Prefix</a></h2>
-<p>If you use the same <code>InputGroup</code> multiple times, you need to provide a prefix. Otherwise, inputs with duplicate names will be created on your tree.</p>
-<p>To do this, use square brackets next to the annotation with a string for the prefix.</p>
-<pre><code class="language-python">def mountain_or_canyon(
-    mountain_inputs: TerrainInputs[&quot;Mountain&quot;], # Prefixed with 'Mountain'
-    canyon_inputs: TerrainInputs[&quot;Canyon&quot;], # Prefixed with 'Canyon'
-    is_mountain: Bool
-):
-    return terrain_generator(
-        inputs=switch(switch=is_mountain, true=mountain_inputs, false=canyon_inputs)
+                        <h1 id="boolean-math"><a class="header" href="#boolean-math">Boolean Math</a></h1>
+<p>The <em>Boolean Math</em> node gives access to common boolean operations, such as <code>AND</code>, <code>NOT</code>, <code>XOR</code>, etc.</p>
+<p>However, it can be cumbersome to use the <code>boolean_math</code> function in complex boolean expressions.</p>
+<pre><code class="language-python"># Check if the two values equal, or if the first is true.
+x = False
+y = True
+return boolean_math(
+    operation=BooleanMath.Operation.OR
+    boolean=(
+        boolean_math(
+            operation=BooleanMath.Operation.XNOR # Equal
+            boolean=(x, y)
+        ),
+        x
     )
+)
 </code></pre>
+<p>A few operators are available to make boolean math easier and more readable.</p>
+<pre><code class="language-python"># Check if the two values equal, or if the first is true.
+x = False
+y = True
+return (x == y) | x
+</code></pre>
+<p>The operators available are:</p>
+<ul>
+<li><code>==</code> - <code>XNOR</code></li>
+<li><code>!=</code> - <code>XOR</code></li>
+<li><code>|</code> - <code>OR</code></li>
+<li><code>&amp;</code> - <code>AND</code></li>
+<li><code>~</code> - <code>NOT</code></li>
+</ul>
+<blockquote>
+<p>You <em>cannot</em> use the built-in Python keywords <code>and</code>, <code>or</code>, and <code>not</code>. You must use the custom operators above to create <em>Boolean Math</em> nodes.</p>
+</blockquote>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../api/advanced-scripting/generators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../api/advanced-scripting/attributes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../../api/advanced-scripting/attributes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../tutorials/voxelize.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -218,10 +186,10 @@ def terrain_generator(
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../api/advanced-scripting/generators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../api/advanced-scripting/attributes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../../api/advanced-scripting/attributes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../tutorials/voxelize.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
