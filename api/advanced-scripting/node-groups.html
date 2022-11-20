@@ -152,6 +152,20 @@ def cube_grid():
 <p>The <em>Instance Grid</em> node group uses the passed in <code>instance</code> argument to create a grid of instances:</p>
 <p><img src="./instance_grid.png" alt="" /></p>
 <p>This concept can scale to complex interconnected node trees, while keeping everything neatly organized in separate functions.</p>
+<h2 id="functions-vs-node-groups"><a class="header" href="#functions-vs-node-groups">Functions vs Node Groups</a></h2>
+<p>You do not have to mark a function with <code>@tree(...)</code>. If you don't, function calls are treated as normal in Python. No checks are made against the arguments. Any nodes created in the callee will be placed in the caller's tree.</p>
+<pre><code class="language-python">def instance_grid(instance: Geometry): # Not marked with `@tree(...)`
+    return grid().mesh_to_points().instance_on_points(instance=instance)
+
+@tree(&quot;Cube Grid&quot;)
+def cube_grid(): # Marked with `@tree(...)`
+    return instance_grid(instance=cube(size=0.2))
+</code></pre>
+<p>The above example would place the <em>Grid</em>, <em>Mesh to Points</em>, and <em>Instance on Points</em> nodes in the main &quot;Cube Grid&quot; tree. It could be rewritten as:</p>
+<pre><code class="language-python">@tree(&quot;Cube Grid&quot;)
+def cube_grid():
+    return grid().mesh_to_points().instance_on_points(instance=cube(size=0.2))
+</code></pre>
 
                     </main>
 
