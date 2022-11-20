@@ -169,8 +169,11 @@ class Type(metaclass=_TypeMeta):
     
     def capture(self, value, **kwargs):
         data_type = socket_type_to_data_type(value._socket.type)
-        captured = self.capture_attribute(data_type=data_type, value=value, **kwargs)
-        return lambda **kwargs: captured.geometry.transfer_attribute(data_type=data_type, attribute=captured.attribute, **kwargs)
+        geometry, attribute = self.capture_attribute(data_type=data_type, value=value, **kwargs)
+        return geometry, attribute
+    def transfer(self, attribute, **kwargs):
+        data_type = socket_type_to_data_type(attribute._socket.type)
+        return self.transfer_attribute(data_type=data_type, attribute=attribute, **kwargs)
 
 for standard_socket in list(filter(lambda x: 'NodeSocket' in x, dir(bpy.types))):
     name = standard_socket.replace('NodeSocket', '')
