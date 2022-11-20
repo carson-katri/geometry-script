@@ -20,6 +20,7 @@
     - [Generators](./api/advanced-scripting/generators.md)
     - [Input Groups](./api/advanced-scripting/input-groups.md)
     - [Attributes](./api/advanced-scripting/attributes.md)
+    - [Boolean Math](./api/advanced-scripting/boolean-math.md)
 
 # Tutorials
 
