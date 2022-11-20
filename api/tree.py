@@ -48,9 +48,11 @@ def tree(name):
                 raise Exception(f"Type of tree input '{param.name}' is not a valid 'Type' subclass.")
         for param in signature.parameters.values():
             if issubclass(param.annotation, InputGroup):
+                instance = param.annotation()
                 prefix = (param.annotation.prefix + "_") if hasattr(param.annotation, "prefix") else ""
                 for group_param, annotation in param.annotation.__annotations__.items():
-                    inputs[prefix + group_param] = (annotation, inspect.Parameter.empty, param.name, prefix)
+                    default = getattr(instance, group_param, None)
+                    inputs[prefix + group_param] = (annotation, inspect.Parameter.empty if default is None else default, param.name, prefix)
             else:
                 validate_param(param)
                 inputs[param.name] = (param.annotation, param.default, None, None)
