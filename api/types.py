@@ -151,7 +151,7 @@ class Type(metaclass=_TypeMeta):
         if self._socket.type == 'BOOLEAN':
             return self._boolean_math(None, 'NOT')
         else:
-            return self._math(-1, 'MULTIPLY')
+            return self._math((-1, -1, -1) if self._socket.type == 'VECTOR' else -1, 'MULTIPLY')
     
     def _get_xyz_component(self, component):
         if self._socket.type != 'VECTOR':

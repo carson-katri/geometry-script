@@ -42,11 +42,16 @@ def build_node(node_type):
                     if issubclass(type(x), Type):
                         State.current_node_tree.links.new(x._socket, node_input)
                     else:
-                        try:
-                            node_input.default_value = x
-                        except:
+                        def link_constant():
                             constant = Type(value=x)
                             State.current_node_tree.links.new(constant._socket, node_input)
+                        if node_input.hide_value:
+                            link_constant()
+                        else:
+                            try:
+                                node_input.default_value = x
+                            except:
+                                link_constant()
                 value = kwargs[argname]
                 if isinstance(value, enum.Enum):
                     value = value.value
@@ -331,7 +336,8 @@ class Type:
   x = Type()
   y = Type()
   z = Type()
-  def capture(self, attribute: Type, **kwargs) -> Callable[[], Type]: return transfer_attribute
+  def capture(self, attribute: Type, **kwargs) -> (Geometry, Type): return Geometry(), Type()
+  def transfer(self, attribute: Type, **kwargs) -> Type: return Type()
   {(newline + '  ').join(map(add_self_arg, filter(lambda x: x.startswith('def'), symbols)))}
   
 {newline.join(map(type_symbol, Type.__subclasses__()))}
