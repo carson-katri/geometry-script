@@ -729,6 +729,21 @@ def skin():
 <p>Any additional keyword arguments can be passed as normal.</p>
 <pre><code class="language-python">c.transfer(position(), mapping=TransferAttribute.Mapping.INDEX)
 </code></pre>
+<h2 id="named-attributes"><a class="header" href="#named-attributes">Named Attributes</a></h2>
+<p>Custom attributes can be created by name.
+The safest way to use named attributes is with the <code>Attribute</code> class.</p>
+<p>Create a named attribute with a data type and optional domain, then use the <code>store(...)</code>, <code>exists()</code>, and <code>__call__(...)</code> methods to use it.</p>
+<pre><code class="language-python"># Create the attribute
+my_custom_attribute = Attribute(
+    &quot;my_custom_attribute&quot;,
+    NamedAttribute.DataType.FLOAT, # declare the data type once
+    StoreNamedAttribute.Domain.INSTANCE # optional
+)
+# Store a value
+geometry = my_custom_attribute.store(geometry, 0.5)
+# Use the value by calling the attribute
+geometry = geometry.set_position(offset=my_custom_attribute())
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="boolean-math"><a class="header" href="#boolean-math">Boolean Math</a></h1>
 <p>The <em>Boolean Math</em> node gives access to common boolean operations, such as <code>AND</code>, <code>NOT</code>, <code>XOR</code>, etc.</p>
 <p>However, it can be cumbersome to use the <code>boolean_math</code> function in complex boolean expressions.</p>
