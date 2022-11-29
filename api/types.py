@@ -9,6 +9,8 @@ def map_case_name(i):
 
 def socket_type_to_data_type(socket_type):
     match socket_type:
+        case 'VALUE':
+            return 'FLOAT'
         case 'VECTOR':
             return 'FLOAT_VECTOR'
         case 'COLOR':

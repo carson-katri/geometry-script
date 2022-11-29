@@ -46,3 +46,23 @@ Any additional keyword arguments can be passed as normal.
 ```python
 c.transfer(position(), mapping=TransferAttribute.Mapping.INDEX)
 ```
+
+## Named Attributes
+
+Custom attributes can be created by name.
+The safest way to use named attributes is with the `Attribute` class.
+
+Create a named attribute with a data type and optional domain, then use the `store(...)`, `exists()`, and `__call__(...)` methods to use it.
+
+```python
+# Create the attribute
+my_custom_attribute = Attribute(
+    "my_custom_attribute",
+    NamedAttribute.DataType.FLOAT, # declare the data type once
+    StoreNamedAttribute.Domain.INSTANCE # optional
+)
+# Store a value
+geometry = my_custom_attribute.store(geometry, 0.5)
+# Use the value by calling the attribute
+geometry = geometry.set_position(offset=my_custom_attribute())
+```
