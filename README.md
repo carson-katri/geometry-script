@@ -35,6 +35,8 @@ def repeat_grid(geometry: Geometry, width: Int, height: Int):
 2. Open *Blender* > *Preferences* > *Add-ons*
 3. Choose *Install...* and select the downloaded ZIP file
 
+Or you can get it from the [Blender Market](https://www.blendermarket.com/products/geometry-script).
+
 ## What is Geometry Script?
 *Geometry Script* is a robust yet easy to use Python API for creating Geometry Nodes with code.
 
