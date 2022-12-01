@@ -22,6 +22,7 @@
     - [Attributes](./api/advanced-scripting/attributes.md)
     - [Boolean Math](./api/advanced-scripting/boolean-math.md)
     - [Drivers](./api/advanced-scripting/drivers.md)
+    - [Simulation](./api/advanced-scripting/simulation.md)
 
 # Tutorials
 
