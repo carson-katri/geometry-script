@@ -135,7 +135,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
-<p>An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one geometry to another.</p>
+<p>An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one domain to another.</p>
 <p>When using these methods, the <code>data_type</code> argument must be correctly specified for the transfer to work as intended.</p>
 <pre><code class="language-python">@tree(&quot;Skin&quot;)
 def skin():
@@ -185,6 +185,18 @@ geometry = my_custom_attribute.store(geometry, 0.5)
 # Use the value by calling the attribute
 geometry = geometry.set_position(offset=my_custom_attribute())
 </code></pre>
+<h2 id="attribute-sampling"><a class="header" href="#attribute-sampling">Attribute Sampling</a></h2>
+<p>In Blender 3.4+, transfer attribute was replaced with a few separate nodes: <em>Sample Index</em>, <em>Sample Nearest</em>, and <em>Sample Nearest Surface</em>.</p>
+<p>To avoid inputting data types and geometry manually, you can use the custom <code>Geometry</code> subscript.</p>
+<p>The structure for these subscripts is:</p>
+<pre><code class="language-python">geometry[value : index or sample position : domain, mode, domain]
+</code></pre>
+<p>Only the value argument is required. Other arguments can be supplied as needed.</p>
+<pre><code class="language-python">geometry[value]
+geometry[value : sample_position, SampleMode.NEAREST]
+geometry[value : index() + 1 : SampleIndex.Domain.EDGE]
+</code></pre>
+<p>Try passing different arguments and see how the resulting nodes are created.</p>
 
                     </main>
 
