@@ -1,6 +1,6 @@
 # Attributes
 
-An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one geometry to another.
+An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one domain to another.
 
 When using these methods, the `data_type` argument must be correctly specified for the transfer to work as intended.
 
@@ -66,3 +66,24 @@ geometry = my_custom_attribute.store(geometry, 0.5)
 # Use the value by calling the attribute
 geometry = geometry.set_position(offset=my_custom_attribute())
 ```
+
+## Attribute Sampling
+In Blender 3.4+, transfer attribute was replaced with a few separate nodes: *Sample Index*, *Sample Nearest*, and *Sample Nearest Surface*.
+
+To avoid inputting data types and geometry manually, you can use the custom `Geometry` subscript.
+
+The structure for these subscripts is:
+
+```python
+geometry[value : index or sample position : domain, mode, domain]
+```
+
+Only the value argument is required. Other arguments can be supplied as needed.
+
+```python
+geometry[value]
+geometry[value : sample_position, SampleMode.NEAREST]
+geometry[value : index() + 1 : SampleIndex.Domain.EDGE]
+```
+
+Try passing different arguments and see how the resulting nodes are created.

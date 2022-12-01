@@ -1,7 +1,9 @@
 import bpy
 from bpy.types import NodeSocketStandard
 import nodeitems_utils
+import enum
 from .state import State
+from .static.sample_mode import SampleMode
 import geometry_script
 
 def map_case_name(i):
@@ -178,6 +180,53 @@ class Type(metaclass=_TypeMeta):
     def transfer(self, attribute, **kwargs):
         data_type = socket_type_to_data_type(attribute._socket.type)
         return self.transfer_attribute(data_type=data_type, attribute=attribute, **kwargs)
+    
+    def __getitem__(self, subscript):
+        if isinstance(subscript, tuple):
+            accessor = subscript[0]
+            args = subscript[1:]
+        else:
+            accessor = subscript
+            args = []
+        sample_mode = SampleMode.INDEX if len(args) < 1 else args[0]
+        domain = 'POINT' if len(args) < 2 else (args[1].value if isinstance(args[1], enum.Enum) else args[1])
+        sample_position = None
+        sampling_index = None
+        if isinstance(accessor, slice):
+            data_type = socket_type_to_data_type(accessor.start._socket.type)
+            value = accessor.start
+            match sample_mode:
+                case SampleMode.INDEX:
+                    sampling_index = accessor.stop
+                case SampleMode.NEAREST_SURFACE:
+                    sample_position = accessor.stop
+                case SampleMode.NEAREST:
+                    sample_position = accessor.stop
+            if accessor.step is not None:
+                domain = accessor.step.value if isinstance(accessor.step, enum.Enum) else accessor.step
+        else:
+            data_type = socket_type_to_data_type(accessor._socket.type)
+            value = accessor
+        match sample_mode:
+            case SampleMode.INDEX:
+                return self.sample_index(
+                    data_type=data_type,
+                    domain=domain,
+                    value=value,
+                    index=sampling_index or geometry_script.index()
+                )
+            case SampleMode.NEAREST_SURFACE:
+                return self.sample_nearest_surface(
+                    data_type=data_type,
+                    value=value,
+                    sample_position=sample_position or geometry_script.position()
+                )
+            case SampleMode.NEAREST:
+                return self.sample_index(
+                    data_type=data_type,
+                    value=value,
+                    index=self.sample_nearest(domain=domain, sample_position=sample_position or geometry_script.position())
+                )
 
 for standard_socket in list(filter(lambda x: 'NodeSocket' in x, dir(bpy.types))):
     name = standard_socket.replace('NodeSocket', '')

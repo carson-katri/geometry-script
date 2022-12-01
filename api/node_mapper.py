@@ -15,9 +15,11 @@ class OutputsList(dict):
 
 def build_node(node_type):
     def build(_primary_arg=None, **kwargs):
-        for k, v in kwargs.items():
+        for k, v in kwargs.copy().items():
             if isinstance(v, InputGroup):
                 kwargs = { **kwargs, **v.__dict__ }
+                del kwargs[k]
+            if v is None:
                 del kwargs[k]
         node = State.current_node_tree.nodes.new(node_type.__name__)
         if _primary_arg is not None:
@@ -316,6 +318,7 @@ def tree(builder):
   Marks a function as a node tree.
   \"\"\"
   pass
+_SomeType = TypeVar('_SomeType', bound='Type')
 class Type:
   def __add__(self, other) -> Type: return self
   def __radd__(self, other) -> Type: return self
@@ -333,6 +336,11 @@ class Type:
   def __le__(self, other) -> Type: return self
   def __gt__(self, other) -> Type: return self
   def __ge__(self, other) -> Type: return self
+  def __invert__(self) -> Type: return self
+  def __getitem__(
+    self,
+    subscript: _SomeType | slice | Tuple[_SomeType | slice, SampleMode]
+  ) -> Type: return self
   x = Type()
   y = Type()
   z = Type()

@@ -10,8 +10,12 @@ from .node_mapper import *
 from .static.attribute import *
 from .static.expression import *
 from .static.input_group import *
+from .static.sample_mode import *
+from .arrange import _arrange
 
 def _as_iterable(x):
+    if isinstance(x, Type):
+        return [x,]
     try:
         return iter(x)
     except TypeError:
@@ -100,35 +104,7 @@ def tree(name):
             node_group.outputs.new(result.socket_type, 'Result')
             link = node_group.links.new(result._socket, group_output_node.inputs[i])
         
-        # Attempt to run the "Node Arrange" add-on on the tree.
-        try:
-            for area in bpy.context.screen.areas:
-                for space in area.spaces:
-                    if space.type == 'NODE_EDITOR':
-                        space.node_tree = node_group
-                        with bpy.context.temp_override(area=area, space=space, space_data=space):
-                            ntree = node_group
-                            ntree.nodes[0].select = True
-                            ntree.nodes.active = ntree.nodes[0]
-                            n_groups = []
-                            for i in ntree.nodes:
-                                if i.type == 'GROUP':
-                                    n_groups.append(i)
-
-                            while n_groups:
-                                j = n_groups.pop(0)
-                                node_arrange.nodes_iterate(j.node_tree)
-                                for i in j.node_tree.nodes:
-                                    if i.type == 'GROUP':
-                                        n_groups.append(i)
-
-                            node_arrange.nodes_iterate(ntree)
-
-                            # arrange nodes + this center nodes together
-                            if bpy.context.scene.node_center:
-                                node_arrange.nodes_center(ntree)
-        except:
-            pass
+        _arrange(node_group)
 
         # Return a function that creates a NodeGroup node in the tree.
         # This lets @trees be used in other @trees via simple function calls.
