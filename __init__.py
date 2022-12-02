@@ -11,6 +11,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+# Set the `geometry_script` module to the current module in case the folder is named differently.
+import sys
+sys.modules['geometry_script'] = sys.modules[__name__]
+
 import bpy
 import os
 import webbrowser
@@ -18,10 +22,6 @@ import webbrowser
 from .api.tree import *
 from .preferences import GeometryScriptPreferences
 from .absolute_path import absolute_path
-
-# Set the `geometry_script` module to the current module in case the folder is named differently.
-import sys
-sys.modules['geometry_script'] = sys.modules[__name__]
 
 bl_info = {
     "name" : "Geometry Script",
