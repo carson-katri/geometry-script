@@ -28,7 +28,7 @@ bl_info = {
     "author" : "Carson Katri",
     "description" : "Python scripting for geometry nodes",
     "blender" : (3, 0, 0),
-    "version" : (0, 1, 1),
+    "version" : (0, 1, 2),
     "location" : "",
     "warning" : "",
     "category" : "Node"
