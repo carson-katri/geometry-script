@@ -1,6 +1,4 @@
 .DS_Store
-docs/
-typeshed/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
