@@ -41,6 +41,19 @@ def cube_tree():
 
 ![](./cube_tree_int.png)
 
+By default, each output is named 'Result'. To customize the name, return a dictionary.
+
+```python
+@tree("Cube Tree")
+def cube_tree():
+    return {
+        "My Cube": cube(),
+        "Scale Constant": 5
+    }
+```
+
+![](./cube_tree_named_outputs.png)
+
 ## Group Input
 All arguments in a tree function must be annotated with a valid socket type. These types are provided by Geometry Script, and are not equivalent to Python's built-in types. Let's add a size argument to our Cube Tree.
 
