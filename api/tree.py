@@ -98,12 +98,20 @@ def tree(name):
             outputs = builder(**builder_inputs)
 
         # Create the output sockets
-        for i, result in enumerate(_as_iterable(outputs)):
-            if not issubclass(type(result), Type):
-                result = Type(value=result)
-                # raise Exception(f"Return value '{result}' is not a valid 'Type' subclass.")
-            node_group.outputs.new(result.socket_type, 'Result')
-            link = node_group.links.new(result._socket, group_output_node.inputs[i])
+        if isinstance(outputs, dict):
+            # Use a dict to name each return value
+            for i, (k, v) in enumerate(outputs.items()):
+                if not issubclass(type(v), Type):
+                    v = Type(value=v)
+                node_group.outputs.new(v.socket_type, k)
+                node_group.links.new(v._socket, group_output_node.inputs[i])
+        else: 
+            for i, result in enumerate(_as_iterable(outputs)):
+                if not issubclass(type(result), Type):
+                    result = Type(value=result)
+                    # raise Exception(f"Return value '{result}' is not a valid 'Type' subclass.")
+                node_group.outputs.new(result.socket_type, 'Result')
+                node_group.links.new(result._socket, group_output_node.inputs[i])
         
         _arrange(node_group)
 
