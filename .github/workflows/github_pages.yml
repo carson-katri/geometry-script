@@ -5,6 +5,12 @@ on:
     branches:
       - main
   pull_request:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+concurrency: preview-${{ github.ref }}
 
 jobs:
   deploy:
@@ -28,3 +34,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./book/book
+      
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        if: ${{ github.ref != 'refs/heads/main' }}
+        with:
+          source-dir: ./book/book
