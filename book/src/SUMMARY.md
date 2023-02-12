@@ -21,6 +21,7 @@
     - [Input Groups](./api/advanced-scripting/input-groups.md)
     - [Attributes](./api/advanced-scripting/attributes.md)
     - [Boolean Math](./api/advanced-scripting/boolean-math.md)
+    - [Curves](./api/advanced-scripting/curves.md)
     - [Drivers](./api/advanced-scripting/drivers.md)
     - [Simulation](./api/advanced-scripting/simulation.md)
 
