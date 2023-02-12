@@ -175,8 +175,8 @@ class Type(metaclass=_TypeMeta):
     
     def capture(self, value, **kwargs):
         data_type = socket_type_to_data_type(value._socket.type)
-        geometry, attribute = self.capture_attribute(data_type=data_type, value=value, **kwargs)
-        return geometry, attribute
+        res = self.capture_attribute(data_type=data_type, value=value, **kwargs)
+        return res.geometry, res.attribute
     def transfer(self, attribute, **kwargs):
         data_type = socket_type_to_data_type(attribute._socket.type)
         return self.transfer_attribute(data_type=data_type, attribute=attribute, **kwargs)
