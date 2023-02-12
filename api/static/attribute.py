@@ -44,12 +44,19 @@ class Attribute:
         """
         Creates a "Named Attribute" node with the correct arguments passed, and returns the "Attribute" socket.
         """
-        from geometry_script import named_attribute
-        return named_attribute(data_type=self.data_type, name=self.name, *args, **kwargs).attribute
+        from geometry_script import named_attribute, Type
+        result = named_attribute(data_type=self.data_type, name=self.name, *args, **kwargs)
+        # Handle Blender 3.5+, which includes an `exists` result.
+        if isinstance(result, Type):
+            return result
+        else:
+            return result.attribute
     
     def exists(self, *args, **kwargs):
         """
         Creates a "Named Attribute" node with the correct arguments passed, and returns the "Exists" socket.
+
+        > Only available in Blender 3.5+
         """
         from geometry_script import named_attribute
         return named_attribute(data_type=self.data_type, name=self.name, *args, **kwargs).exists
