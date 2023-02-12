@@ -6,6 +6,7 @@ import os
 from .state import State
 from .types import *
 from .static.input_group import InputGroup
+from .static.curve import Curve
 from ..absolute_path import absolute_path
 
 class OutputsList(dict):
@@ -28,6 +29,13 @@ def build_node(node_type):
             argname = prop.identifier.lower().replace(' ', '_')
             if argname in kwargs:
                 value = kwargs[argname]
+                if isinstance(value, list) and len(value) > 0 and isinstance(value[0], Curve):
+                    for i, curve in enumerate(value):
+                        curve.apply(getattr(node, prop.identifier).curves[i])
+                    continue
+                if isinstance(value, Curve):
+                    value.apply(getattr(node, prop.identifier).curves[0])
+                    continue
                 if isinstance(value, enum.Enum):
                     value = value.value
                 setattr(node, prop.identifier, value)

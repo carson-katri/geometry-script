@@ -8,6 +8,7 @@ from .state import State
 from .types import *
 from .node_mapper import *
 from .static.attribute import *
+from .static.curve import *
 from .static.expression import *
 from .static.input_group import *
 from .static.sample_mode import *
