@@ -1,5 +1,6 @@
 import bpy
 import mathutils
+import collections.abc
 
 class _Assignment:
     name: str
@@ -17,7 +18,11 @@ class _Assignment:
 
     def convert_argument(self, k, v, delimiter='='):
         if not isinstance(v, _Assignment):
-            return f"{k}{delimiter}{str(v)}"
+            if isinstance(v, str):
+                v = f'"{v}"'
+            else:
+                v = str(v)
+            return f"{k}{delimiter}{v}"
         if v.node.type == 'GROUP_INPUT':
             return f"{k}{delimiter}{self.argument_dot_access[k]}"
         else:
@@ -25,7 +30,7 @@ class _Assignment:
 
     def to_script(self):
         snake_case_name = self.node.bl_rna.name.lower().replace(' ', '_')
-        args = ', '.join( [
+        args = ', '.join([
             self.convert_argument(k, v)
             for k, v in (list(self.props.items()) + list(self.arguments.items()))
         ])
@@ -37,7 +42,6 @@ class ConvertTree(bpy.types.Operator):
 
     def execute(self, context):
         tree = context.space_data.node_tree
-        print(dir(tree))
 
         assignments = []
 
@@ -46,14 +50,16 @@ class ConvertTree(bpy.types.Operator):
                 return (v[0], v[1], v[2])
             elif isinstance(v, mathutils.Euler):
                 return (v[0], v[1], v[2])
+            elif isinstance(v, collections.abc.Iterable):
+                return tuple(v)
             else:
                 return v
 
         node_type_counter = {}
         for node in tree.nodes:
             count = node_type_counter.get(node.type[0], 0)
-            props = {i.name.lower().replace(' ', '_'): convert_default_value(i.default_value) for i in node.inputs if hasattr(i, 'default_value')}
-            print({k: getattr(node, k) for k in set(p.identifier for p in node.bl_rna.properties) - set(p.identifier for p in node.bl_rna.base.bl_rna.properties)})
+            props = {i.name.lower().replace(' ', '_'): convert_default_value(i.default_value) for i in node.inputs if i.enabled and hasattr(i, 'default_value') and not i.hide_value}
+            props.update({k: getattr(node, k) for k in set(p.identifier for p in node.bl_rna.properties) - set(p.identifier for p in node.bl_rna.base.bl_rna.properties)})
             assignments.append(_Assignment(f"{node.type[0].lower()}{count + 1}", node, props))
             node_type_counter[node.type[0]] = count + 1
 
@@ -64,7 +70,7 @@ class ConvertTree(bpy.types.Operator):
             argument_name = link.to_socket.name.lower().replace(' ', '_')
             output_name = link.from_socket.name.lower().replace(' ', '_')
             if argument_name in to_node.props:
-                to_node.props[argument_name]
+                del to_node.props[argument_name]
             to_node.arguments[argument_name] = from_node
             to_node.argument_dot_access[argument_name] = output_name
 
