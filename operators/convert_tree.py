@@ -15,8 +15,20 @@ class _Assignment:
         self.props = props
         self.arguments = {}
         self.argument_dot_access = {}
+    
+    def _flattened_arguments(self):
+        for a in self.arguments.values():
+            if isinstance(a, _Assignment):
+                yield a
+            elif isinstance(a, list):
+                yield from a
+    def flattened_arguments(self):
+        return [*self._flattened_arguments()]
 
-    def convert_argument(self, k, v, delimiter='='):
+    def convert_argument(self, k, v, delimiter='=', index=None):
+        if isinstance(v, list):
+            v = ', '.join([self.convert_argument("", sv, delimiter="", index=i) for i, sv in enumerate(v)])
+            return f"{k}{delimiter}[{v}]"
         if not isinstance(v, _Assignment):
             if isinstance(v, str):
                 v = f'"{v}"'
@@ -24,7 +36,7 @@ class _Assignment:
                 v = str(v)
             return f"{k}{delimiter}{v}"
         if v.node.type == 'GROUP_INPUT':
-            return f"{k}{delimiter}{self.argument_dot_access[k]}"
+            return f"{k}{delimiter}{self.argument_dot_access[k] if index is None else self.argument_dot_access[k][index]}"
         else:
             return f"{k}{delimiter}{v.name}{'.' + self.argument_dot_access[k] if len(list(o for o in v.node.outputs if o.enabled)) > 1 else ''}"
 
@@ -32,6 +44,7 @@ class _Assignment:
         snake_case_name = self.node.bl_rna.name.lower().replace(' ', '_')
         args = ', '.join([
             self.convert_argument(k, v)
+
             for k, v in (list(self.props.items()) + list(self.arguments.items()))
         ])
         return f"{self.name} = {snake_case_name}({args})"
@@ -71,8 +84,20 @@ class ConvertTree(bpy.types.Operator):
             output_name = link.from_socket.name.lower().replace(' ', '_')
             if argument_name in to_node.props:
                 del to_node.props[argument_name]
-            to_node.arguments[argument_name] = from_node
-            to_node.argument_dot_access[argument_name] = output_name
+            if argument_name in to_node.arguments:
+                if isinstance(to_node.arguments[argument_name], list):
+                    index = len(to_node.arguments[argument_name])
+                    to_node.arguments[argument_name].append(from_node)
+                    to_node.argument_dot_access[argument_name][index] = output_name
+                else:
+                    to_node.arguments[argument_name] = [to_node.arguments[argument_name], from_node]
+                    to_node.argument_dot_access[argument_name] = {
+                        0: to_node.argument_dot_access[argument_name],
+                        1: output_name
+                    }
+            else:
+                to_node.arguments[argument_name] = from_node
+                to_node.argument_dot_access[argument_name] = output_name
 
         def topological_sort(root):
             seen = set()
@@ -83,9 +108,9 @@ class ConvertTree(bpy.types.Operator):
                 v = q.pop()
                 if v not in seen:
                     seen.add(v)
-                    q.extend([a for a in v.arguments.values() if isinstance(a, _Assignment)])
+                    q.extend(v.flattened_arguments())
 
-                    while stack and v not in stack[-1].arguments.values():
+                    while stack and v not in stack[-1].flattened_arguments():
                         order.append(stack.pop())
                     stack.append(v)
 
@@ -96,14 +121,15 @@ class ConvertTree(bpy.types.Operator):
         
         body = '\n    '.join([a.to_script() for a in sorted_assignments])
 
-        group_input = next(n for n in tree.nodes if n.type == 'GROUP_INPUT')
+        group_input = next((n for n in tree.nodes if n.type == 'GROUP_INPUT'), None)
         tree_arguments = []
-        for output in group_input.outputs:
-            if output.type == 'CUSTOM':
-                continue
-            output_name = output.name.lower().replace(' ', '_')
-            output_type = output.bl_rna.identifier.replace('NodeSocket', '')
-            tree_arguments.append(f"{output_name}: {output_type}")
+        if group_input is not None:
+            for output in group_input.outputs:
+                if output.type == 'CUSTOM':
+                    continue
+                output_name = output.name.lower().replace(' ', '_')
+                output_type = output.bl_rna.identifier.replace('NodeSocket', '')
+                tree_arguments.append(f"{output_name}: {output_type}")
         tree_arguments = ', '.join(tree_arguments)
 
         tree_returns = []
