@@ -27,7 +27,7 @@ class _Assignment:
 
     def convert_argument(self, k, v, delimiter='=', index=None):
         if isinstance(v, list):
-            v = ', '.join([self.convert_argument("", sv, delimiter="", index=i) for i, sv in enumerate(v)])
+            v = ', '.join([self.convert_argument(k, sv, delimiter="", index=i).removeprefix(k) for i, sv in enumerate(v)])
             return f"{k}{delimiter}[{v}]"
         if not isinstance(v, _Assignment):
             if isinstance(v, str):
@@ -38,7 +38,7 @@ class _Assignment:
         if v.node.type == 'GROUP_INPUT':
             return f"{k}{delimiter}{self.argument_dot_access[k] if index is None else self.argument_dot_access[k][index]}"
         else:
-            return f"{k}{delimiter}{v.name}{'.' + self.argument_dot_access[k] if len(list(o for o in v.node.outputs if o.enabled)) > 1 else ''}"
+            return f"{k}{delimiter}{v.name}{'.' + (self.argument_dot_access[k] if index is None else self.argument_dot_access[k][index]) if len(list(o for o in v.node.outputs if o.enabled)) > 1 else ''}"
 
     def to_script(self):
         snake_case_name = self.node.bl_rna.name.lower().replace(' ', '_')
