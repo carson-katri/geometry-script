@@ -1,8 +1,8 @@
 import bpy
-import bl_ui
 import itertools
 import enum
 import re
+import os
 from .state import State
 from .types import *
 from .static.input_group import InputGroup
@@ -105,35 +105,13 @@ def register_node(node_type, category_path=None):
             enum_type = enum.Enum(enum_type_name, { map_case_name(i): i.identifier for i in prop.enum_items })
             setattr(globals()[node_namespace_name], enum_type_name, enum_type)
     registered_nodes.add(node_type)
-for category_name in list(filter(lambda x: x.startswith('NODE_MT_category_GEO_'), dir(bpy.types))):
-    category = getattr(bpy.types, category_name)
-    if not hasattr(category, 'category'):
-        category_path = category.bl_label.lower().replace(' ', '_')
-        add_node_type = bl_ui.node_add_menu.add_node_type
-        draw_node_group_add_menu = bl_ui.node_add_menu.draw_node_group_add_menu
-        draw_assets_for_catalog = bl_ui.node_add_menu.draw_assets_for_catalog
-        bl_ui.node_add_menu.add_node_type = lambda _layout, node_type_name: register_node(getattr(bpy.types, node_type_name), category_path)
-        bl_ui.node_add_menu.draw_node_group_add_menu = lambda _context, _layout: None
-        bl_ui.node_add_menu.draw_assets_for_catalog = lambda _context, _layout: None
-        class CategoryStub:
-            bl_label = ""
-            def __init__(self):
-                self.layout = Layout()
-        class Layout:
-            def separator(self): pass
-        category.draw(CategoryStub(), None)
-        bl_ui.node_add_menu.add_node_type = add_node_type
-        bl_ui.node_add_menu.draw_node_group_add_menu = draw_node_group_add_menu
-        bl_ui.node_add_menu.draw_assets_for_catalog = draw_assets_for_catalog
-    else:
-        category_path = category.category.name.lower().replace(' ', '_')
-        for node in category.category.items(None):
-            node_type = getattr(bpy.types, node.nodetype)
-            register_node(node_type, category_path)
-for node_type_name in list(filter(lambda x: 'GeometryNode' in x, dir(bpy.types))):
+
+denylist = {'filter'} # some nodes should be excluded.
+for node_type_name in dir(bpy.types):
     node_type = getattr(bpy.types, node_type_name)
-    if issubclass(node_type, bpy.types.GeometryNode):
-        register_node(node_type)
+    if isinstance(node_type, type) and issubclass(node_type, bpy.types.Node):
+        if node_type.is_registered_node_type() and node_type.bl_rna.name.lower() not in denylist:
+            register_node(node_type)
 
 def create_documentation():
     temp_node_group = bpy.data.node_groups.new('temp_node_group', 'GeometryNodeTree')
@@ -155,6 +133,7 @@ def create_documentation():
     docstrings = []
     symbols = []
     enums = {}
+    skipped_nodes = []
     for func in sorted(documentation.keys()):
         try:
             method = documentation[func]
@@ -261,12 +240,8 @@ def create_documentation():
     {output_symbol_separator.join(output_symbols)}""")
             return_type_hint = list(symbol_outputs.values())[0] if len(output_symbols) == 1 else f"{node_namespace_name}.Result"
             symbols.append(f"""def {func}({', '.join(symbol_args)}) -> {return_type_hint}: \"\"\"![]({image}.webp)\"\"\"""")
-        except Exception as e:
-            import os, sys
-            print(e)
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
+        except:
+            skipped_nodes.append(documentation[func].bl_node_type.__name__)
             continue
     bpy.data.node_groups.remove(temp_node_group)
     html = f"""
@@ -361,6 +336,9 @@ class Type:
 
         fpyi.write(contents)
         fpy.write(contents)
+
+    if len(skipped_nodes) > 0:
+        pass # This could be reported later.
 
 def create_docs():
     create_documentation()
