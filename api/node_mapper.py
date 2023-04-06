@@ -107,11 +107,16 @@ def register_node(node_type, category_path=None):
     registered_nodes.add(node_type)
 
 denylist = {'filter'} # some nodes should be excluded.
+class_denylist = {'CompositorNodeMath', 'TextureNodeMath'}
+node_types_to_register = []
 for node_type_name in dir(bpy.types):
     node_type = getattr(bpy.types, node_type_name)
     if isinstance(node_type, type) and issubclass(node_type, bpy.types.Node):
-        if node_type.is_registered_node_type() and node_type.bl_rna.name.lower() not in denylist:
-            register_node(node_type)
+        if node_type.is_registered_node_type() and node_type.bl_rna.name.lower() not in denylist and node_type.__name__ not in class_denylist:
+            node_types_to_register.append(node_type)
+node_types_to_register.sort(key=lambda node_type: node_type.__name__.startswith("GeometryNode"))
+for node_type in node_types_to_register:
+    register_node(node_type)
 
 def create_documentation():
     temp_node_group = bpy.data.node_groups.new('temp_node_group', 'GeometryNodeTree')
