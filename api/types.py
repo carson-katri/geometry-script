@@ -57,10 +57,15 @@ class Type(metaclass=_TypeMeta):
         self.socket_type = type(socket).__name__
     
     def _math(self, other, operation, reverse=False):
-        if self._socket.type == 'VECTOR':
-            return geometry_script.vector_math(operation=operation, vector=(other, self) if reverse else (self, other))
+        if other is None:
+            vector_or_value = self
         else:
-            return geometry_script.math(operation=operation, value=(other, self) if reverse else (self, other))
+            vector_or_value =  (other, self) if reverse else (self, other)
+
+        if self._socket.type == 'VECTOR':
+            return geometry_script.vector_math(operation=operation, vector=vector_or_value)
+        else:
+            return geometry_script.math(operation=operation, value=vector_or_value)
 
     def __add__(self, other):
         return self._math(other, 'ADD')
@@ -91,6 +96,36 @@ class Type(metaclass=_TypeMeta):
     
     def __rmod__(self, other):
         return self._math(other, 'MODULO', True)
+    
+    def __floordiv__(self, other):
+        return self._math(other, 'DIVIDE')._math(None,'FLOOR')
+    
+    def __rfloordiv__(self, other):
+        return self._math(other, 'DIVIDE',True)._math(None,'FLOOR')
+    
+    def __pow__(self, other):
+        return self._math(other, 'POWER')
+    
+    def __rpow__(self, other):
+        return self._math(other, 'POWER', True)
+    
+    def __matmul__(self, other):
+        return self._math(other, 'DOT_PRODUCT')
+    
+    def __rmatmul__(self, other):
+        return self._math(other, 'DOT_PRODUCT', True)
+    
+    def __abs__(self):
+        return self._math(None,'ABSOLUTE')
+    
+    def __neg__(self):
+        return self._math(-1, 'MULTIPLY')
+
+    def __pos__(self):
+        return self
+    
+    def __round__(self):
+        return self._math(None,'ROUND')
     
     def _compare(self, other, operation):
         return geometry_script.compare(operation=operation, a=self, b=other)
