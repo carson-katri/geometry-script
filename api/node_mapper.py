@@ -13,6 +13,21 @@ class OutputsList(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
+def set_or_create_link(x, node_input):
+    if issubclass(type(x), Type):
+        State.current_node_tree.links.new(x._socket, node_input)
+    else:
+        def link_constant():
+            constant = Type(value=x)
+            State.current_node_tree.links.new(constant._socket, node_input)
+        if node_input.hide_value:
+            link_constant()
+        else:
+            try:
+                node_input.default_value = x
+            except:
+                link_constant()
+
 def build_node(node_type):
     def build(_primary_arg=None, **kwargs):
         for k, v in kwargs.copy().items():
@@ -40,20 +55,6 @@ def build_node(node_type):
                 if node_input2.name.lower().replace(' ', '_') == argname and node_input2.type == node_input.type:
                     all_with_name.append(node_input2)
             if argname in kwargs:
-                def set_or_create_link(x, node_input):
-                    if issubclass(type(x), Type):
-                        State.current_node_tree.links.new(x._socket, node_input)
-                    else:
-                        def link_constant():
-                            constant = Type(value=x)
-                            State.current_node_tree.links.new(constant._socket, node_input)
-                        if node_input.hide_value:
-                            link_constant()
-                        else:
-                            try:
-                                node_input.default_value = x
-                            except:
-                                link_constant()
                 value = kwargs[argname]
                 if isinstance(value, enum.Enum):
                     value = value.value

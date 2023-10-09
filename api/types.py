@@ -20,6 +20,15 @@ def socket_type_to_data_type(socket_type):
         case _:
             return socket_type
 
+def socket_class_to_data_type(socket_class_name):
+    match socket_class_name:
+        case 'NodeSocketGeometry':
+            return 'GEOMETRY'
+        case 'NodeSocketFloat':
+            return 'FLOAT'
+        case _:
+            return socket_class_name
+
 # The base class all exposed socket types conform to.
 class _TypeMeta(type):
     def __getitem__(self, args):
@@ -217,6 +226,8 @@ class Type(metaclass=_TypeMeta):
         return self.transfer_attribute(data_type=data_type, attribute=attribute, **kwargs)
     
     def __getitem__(self, subscript):
+        if self._socket.type == 'VECTOR' and isinstance(subscript, int):
+            return self._get_xyz_component(subscript)
         if isinstance(subscript, tuple):
             accessor = subscript[0]
             args = subscript[1:]
