@@ -23,6 +23,9 @@ def _as_iterable(x):
     except TypeError:
         return [x,]
 
+get_node_inputs = lambda x: [i for i in x.interface.items_tree if i.item_type == 'SOCKET' and i.in_out == 'INPUT']
+get_node_outputs = lambda x: [i for i in x.interface.items_tree if i.item_type == 'SOCKET' and i.in_out == 'OUTPUT']
+
 def tree(name):
     tree_name = name
     def build_tree(builder):
@@ -34,13 +37,20 @@ def tree(name):
             node_group = bpy.data.node_groups[tree_name]
         else:
             node_group = bpy.data.node_groups.new(tree_name, 'GeometryNodeTree')
+
+        node_group.is_modifier = True
+
         # Clear the node group before building
         for node in node_group.nodes:
             node_group.nodes.remove(node)
-        while len(node_group.inputs) > sum(map(lambda p: len(p.annotation.__annotations__) if issubclass(p.annotation, InputGroup) else 1, list(signature.parameters.values()))):
-            node_group.inputs.remove(node_group.inputs[-1])
-        for group_output in node_group.outputs:
-            node_group.outputs.remove(group_output)
+
+        node_inputs = get_node_inputs(node_group)
+        input_count = sum(map(lambda p: len(p.annotation.__annotations__) if issubclass(p.annotation, InputGroup) else 1, list(signature.parameters.values())))
+        for node_input in node_inputs[input_count:]:
+            node_group.interface.remove(node_input)
+
+        for group_output in get_node_outputs(node_group):
+            node_group.interface.remove(group_output)
         
         # Setup the group inputs
         group_input_node = node_group.nodes.new('NodeGroupInput')
@@ -65,19 +75,22 @@ def tree(name):
                 inputs[param.name] = (param.annotation, param.default, None, None)
 
         # Create the input sockets and collect input values.
-        for i, node_input in enumerate(node_group.inputs):
+        node_inputs = get_node_inputs(node_group)
+        for i, node_input in enumerate(node_inputs):
             if node_input.bl_socket_idname != list(inputs.values())[i][0].socket_type:
-                for ni in node_group.inputs:
-                    node_group.inputs.remove(ni)
+                for ni in node_inputs:
+                    node_group.interface.remove(ni)
                 break
         builder_inputs = {}
+
+        node_inputs = get_node_inputs(node_group)
         for i, arg in enumerate(inputs.items()):
             input_name = arg[0].replace('_', ' ').title()
-            if len(node_group.inputs) > i:
-                node_group.inputs[i].name = input_name
-                node_input = node_group.inputs[i]
+            if len(node_inputs) > i:
+                node_inputs[i].name = input_name
+                node_input = node_inputs[i]
             else:
-                node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
+                node_input = node_group.interface.new_socket(socket_type=arg[1][0].socket_type, name=input_name, in_out='INPUT')
             if arg[1][1] != inspect.Parameter.empty:
                 node_input.default_value = arg[1][1]
             if arg[1][2] is not None:
@@ -104,14 +117,14 @@ def tree(name):
             for i, (k, v) in enumerate(outputs.items()):
                 if not issubclass(type(v), Type):
                     v = Type(value=v)
-                node_group.outputs.new(v.socket_type, k)
+                node_group.interface.new_socket(socket_type=v.socket_type, name=k, in_out='OUTPUT')
                 node_group.links.new(v._socket, group_output_node.inputs[i])
         else: 
             for i, result in enumerate(_as_iterable(outputs)):
                 if not issubclass(type(result), Type):
                     result = Type(value=result)
                     # raise Exception(f"Return value '{result}' is not a valid 'Type' subclass.")
-                node_group.outputs.new(result.socket_type, 'Result')
+                node_group.interface.new_socket(socket_type=result.socket_type, name='Result', in_out='OUTPUT')
                 node_group.links.new(result._socket, group_output_node.inputs[i])
         
         _arrange(node_group)
@@ -119,7 +132,7 @@ def tree(name):
         # Return a function that creates a NodeGroup node in the tree.
         # This lets @trees be used in other @trees via simple function calls.
         def group_reference(*args, **kwargs):
-            result = group(node_tree=node_group, *args, **kwargs)
+            result = geometrynodegroup(node_tree=node_group, *args, **kwargs)
             group_outputs = []
             for group_output in result._socket.node.outputs:
                 group_outputs.append(Type(group_output))
