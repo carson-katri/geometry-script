@@ -866,25 +866,21 @@ float_curve(
 frame_number_doubled = scripted_expression(&quot;frame * 2&quot;)
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="simulation"><a class="header" href="#simulation">Simulation</a></h1>
-<blockquote>
-<p>This API is subject to change as future builds of Blender with simulation nodes are released.</p>
-</blockquote>
-<p>The <code>geometry-nodes-simulation</code> branch of Blender 3.5 includes support for &quot;simulation nodes&quot;.</p>
+<p>Blender 3.6 includes simulation nodes.</p>
 <p>Using a <em>Simulation Input</em> and <em>Simulation Output</em> node, you can create effects that change over time.</p>
-<p>As a convenience, the <code>@simulation</code> decorator is provided to make simulation node blocks easier to create.</p>
-<pre><code class="language-python">@simulation
-def move_over_time(
-    geometry: Geometry, # the first input must be `Geometry`
-    speed: Float,
-    dt: SimulationInput.DeltaTime, # Automatically passes the delta time on any argument annotated with `SimulationInput.DeltaTime`.
-    elapsed: SimulationInput.ElapsedTime, # Automatically passes the elapsed time
-) -&gt; Geometry:
-    return geometry.set_position(
-        offset=combine_xyz(x=speed)
-    )
+<p>As a convenience, the <code>@simulation_zone</code> decorator is provided to make simulation node blocks easier to create.</p>
+<pre><code class="language-python">from geometry_script import *
+
+@tree
+def test_sim(geometry: Geometry):
+    @simulation_zone
+    def my_sim(delta_time, geometry: Geometry, value: Float):
+        return (geometry, value)
+    return my_sim(geometry, 0.26).value
 </code></pre>
-<p>Every frame the argument <code>geometry</code> will be set to the geometry from the previous frame. This allows the offset to accumulate over time.</p>
-<p>The <code>SimulationInput.DeltaTime</code>/<code>SimulationInput.ElapsedTime</code> types mark arguments that should be given the outputs from the <em>Simulation Input</em> node.</p>
+<p>The first argument should always be <code>delta_time</code>. Any other arguments must also be returned as a tuple with their modified values.
+Each frame, the result from the previous frame is passed into the zone's inputs.
+The initial call to <code>my_sim</code> in <code>test_sim</code> provides the initial values for the simulation.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="voxelize"><a class="header" href="#voxelize">Voxelize</a></h1>
 <p>This tutorial walks you through creating a script that turns any mesh into voxels.</p>
 <blockquote>
