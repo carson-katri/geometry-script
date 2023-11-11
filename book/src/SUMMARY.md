@@ -23,7 +23,8 @@
     - [Boolean Math](./api/advanced-scripting/boolean-math.md)
     - [Curves](./api/advanced-scripting/curves.md)
     - [Drivers](./api/advanced-scripting/drivers.md)
-    - [Simulation](./api/advanced-scripting/simulation.md)
+    - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
+    - [Repeat Zones](./api/advanced-scripting/repeat-zones.md)
 
 # Tutorials
 

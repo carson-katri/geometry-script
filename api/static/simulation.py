@@ -6,6 +6,8 @@ def simulation_zone(block: typing.Callable):
     """
     Create a simulation input/output block.
 
+    In Blender 4.0+, you must return a boolean value for the "Skip" argument as the first element in the return tuple.
+
     > Only available in Blender 3.6+.
     """
     def wrapped(*args, **kwargs):
@@ -37,7 +39,7 @@ def simulation_zone(block: typing.Callable):
         if isinstance(step, Type):
             step = (step,)
         for i, result in enumerate(step):
-            State.current_node_tree.links.new(result._socket, simulation_out.inputs[i])
+            set_or_create_link(result, simulation_out.inputs[i])
 
         if len(simulation_out.outputs[:-1]) == 1:
             return Type(simulation_out.outputs[0])
