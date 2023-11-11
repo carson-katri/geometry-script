@@ -11,6 +11,7 @@ from .static.attribute import *
 from .static.curve import *
 from .static.expression import *
 from .static.input_group import *
+from .static.repeat import *
 from .static.sample_mode import *
 from .static.simulation import *
 from .arrange import _arrange
