@@ -66,9 +66,10 @@ class Attribute:
         Creates a "Store Named Attribute" node with the correct arguments passed, and returns the modified `Geometry`.
         """
         from geometry_script import store_named_attribute
+        if 'domain' not in kwargs:
+            kwargs['domain'] = self.domain
         return store_named_attribute(
             data_type=self.data_type,
-            domain=self.domain,
             geometry=geometry,
             name=self.name,
             value=value,
