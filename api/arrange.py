@@ -29,7 +29,7 @@ def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
 
     column_index = {}
     for node in reversed(sorted_nodes):
-        column_index[node] = max([ column_index[node] for node in graph[node] ], default=-1) + 1
+        column_index[node] = max([ column_index[adj_node] for adj_node in graph[node] ], default=-1) + 1
         if column_index[node] == len(columns):
             columns.append([node])
         else:
