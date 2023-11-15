@@ -1,34 +1,40 @@
 import bpy
 import typing
+from collections import deque
 
 def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
     # Organize the nodes into columns based on their links.
     columns: typing.List[typing.List[typing.Any]] = []
-    def contains_link(node, column):
-        return any(
-            any(
-                any(link.from_node == node for link in input.links)
-                for input in n.inputs
-            )
-            for n in column
-        )
-    for node in reversed(node_tree.nodes):
-        if (x := next(
-            filter(
-                lambda x: contains_link(node, x[1]),
-                enumerate(columns)
-            ),
-            None
-        )) is not None:
-            if x[0] > 0:
-                columns[x[0] - 1].append(node)
-            else:
-                columns.insert(x[0], [node])
+    
+    def topo_sort(graph):
+        in_degree = {u: 0 for u in graph}
+        for u in graph:
+            for v in graph[u]:
+                in_degree[v] += 1
+        queue = deque([u for u in in_degree if in_degree[u] == 0])
+        topo_order = []
+        while queue:
+            u = queue.popleft()
+            topo_order.append(u)
+            for v in graph[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    queue.append(v)
+        return topo_order
+    
+    graph = { node:set() for node in node_tree.nodes }
+    for link in node_tree.links:
+        graph[link.from_node].add(link.to_node)
+    sorted_nodes = topo_sort(graph)
+
+    column_index = {}
+    for node in reversed(sorted_nodes):
+        column_index[node] = max([ column_index[node] for node in graph[node] ], default=-1) + 1
+        if column_index[node] == len(columns):
+            columns.append([node])
         else:
-            if len(columns) == 0:
-                columns.append([node])
-            else:
-                columns[len(columns) - 1].append(node)
+            columns[column_index[node]].append(node)
+    columns = reversed(columns)
     
     # Arrange the columns, computing the size of the node manually so arrangement can be done without UI being visible.
     UI_SCALE = bpy.context.preferences.view.ui_scale
