@@ -162,7 +162,10 @@ def tree(name):
         # Return a function that creates a NodeGroup node in the tree.
         # This lets @trees be used in other @trees via simple function calls.
         def group_reference(*args, **kwargs):
-            result = geometrynodegroup(node_tree=node_group, *args, **kwargs)
+            if IS_BLENDER_4:
+                result = geometrynodegroup(node_tree=node_group, *args, **kwargs)
+            else:
+                result = group(node_tree=node_group, *args, **kwargs)
             group_outputs = []
             for group_output in result._socket.node.outputs:
                 group_outputs.append(Type(group_output))
