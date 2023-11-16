@@ -23,8 +23,10 @@ def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
         return topo_order
     
     graph = { node:set() for node in node_tree.nodes }
+    node_input_link_count = { i:0  for node in node_tree.nodes for i in node.inputs }
     for link in node_tree.links:
         graph[link.from_node].add(link.to_node)
+        node_input_link_count[link.to_socket] += 1
     sorted_nodes = topo_sort(graph)
 
     column_index = {}
@@ -52,7 +54,7 @@ def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
             output_count = len(list(filter(lambda i: i.enabled, node.outputs)))
             parent_props = [prop.identifier for base in type(node).__bases__ for prop in base.bl_rna.properties]
             properties_count = len([prop for prop in node.bl_rna.properties if prop.identifier not in parent_props])
-            unset_vector_count = len(list(filter(lambda i: i.enabled and i.type == 'VECTOR' and len(i.links) == 0, node.inputs)))
+            unset_vector_count = len(list(filter(lambda i: i.enabled and i.type == 'VECTOR' and node_input_link_count[i] == 0, node.inputs)))
             node_height = (
                 NODE_HEADER_HEIGHT \
                 + (output_count * NODE_LINK_HEIGHT) \
