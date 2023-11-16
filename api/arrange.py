@@ -1,6 +1,6 @@
 import bpy
 import typing
-from collections import deque
+from collections import deque, Counter
 
 def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
     # Organize the nodes into columns based on their links.
@@ -23,7 +23,7 @@ def _arrange(node_tree, padding: typing.Tuple[float, float] = (50, 25)):
         return topo_order
     
     graph = { node:set() for node in node_tree.nodes }
-    node_input_link_count = { i:0  for node in node_tree.nodes for i in node.inputs }
+    node_input_link_count = Counter()
     for link in node_tree.links:
         graph[link.from_node].add(link.to_node)
         node_input_link_count[link.to_socket] += 1
