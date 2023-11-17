@@ -22,6 +22,7 @@ import webbrowser
 from .api.tree import *
 from .preferences import GeometryScriptPreferences
 from .absolute_path import absolute_path
+from .operators.convert_tree import ConvertTree
 
 bl_info = {
     "name" : "Geometry Script",
@@ -74,6 +75,10 @@ def templates_menu_draw(self, context):
 def editor_header_draw(self, context):
     self.layout.menu(GeometryScriptMenu.bl_idname)
 
+def node_header_draw(self, context):
+    if context.space_data.tree_type == 'GeometryNodeTree':
+        self.layout.operator(ConvertTree.bl_idname)
+
 def auto_resolve():
     if bpy.context.scene.geometry_script_settings.auto_resolve:
         try:
@@ -98,7 +103,10 @@ def register():
     bpy.utils.register_class(OpenDocumentation)
     bpy.utils.register_class(GeometryScriptMenu)
 
+    bpy.utils.register_class(ConvertTree)
+
     bpy.types.TEXT_HT_header.append(editor_header_draw)
+    bpy.types.NODE_HT_header.append(node_header_draw)
 
     bpy.types.Scene.geometry_script_settings = bpy.props.PointerProperty(type=GeometryScriptSettings)
 
@@ -111,7 +119,11 @@ def unregister():
     bpy.utils.unregister_class(GeometryScriptPreferences)
     bpy.utils.unregister_class(OpenDocumentation)
     bpy.utils.unregister_class(GeometryScriptMenu)
+    bpy.utils.unregister_class(ConvertTree)
+
     bpy.types.TEXT_HT_header.remove(editor_header_draw)
+    bpy.types.NODE_HT_header.remove(node_header_draw)
+
     try:
         bpy.app.timers.unregister(auto_resolve)
     except:
