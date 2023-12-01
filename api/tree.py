@@ -117,6 +117,10 @@ def tree(name):
                     node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
             if arg[1][1] != inspect.Parameter.empty:
                 node_input.default_value = arg[1][1]
+            if hasattr(arg[1][0], 'min_value'):
+                node_input.min_value = arg[1][0].min_value
+            if hasattr(arg[1][0], 'max_value'):
+                node_input.max_value = arg[1][0].max_value
             if arg[1][2] is not None:
                 if arg[1][2] not in builder_inputs:
                     builder_inputs[arg[1][2]] = signature.parameters[arg[1][2]].annotation()

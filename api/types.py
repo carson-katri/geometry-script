@@ -6,6 +6,9 @@ from .state import State
 from .static.sample_mode import SampleMode
 import geometry_script
 
+INT_MIN = -2147483648
+INT_MAX = 2147483647
+
 def map_case_name(i):
     return ('_' if not i.identifier[0].isalpha() else '') + i.identifier.replace(' ', '_').upper()
 
@@ -32,11 +35,23 @@ def socket_class_to_data_type(socket_class_name):
 # The base class all exposed socket types conform to.
 class _TypeMeta(type):
     def __getitem__(self, args):
-        for s in filter(lambda x: isinstance(x, slice), args):
-            if (isinstance(s.start, float) or isinstance(s.start, int)) and (isinstance(s.stop, float) or isinstance(s.stop, int)):
-                print(f"minmax: ({s.start}, {s.stop})")
-            elif isinstance(s.start, str):
-                print(f"{s.start} = {s.stop}")
+        if isinstance(args, int):
+            setattr(self, 'min_value', args)
+            setattr(self, 'max_value', INT_MAX)
+        elif isinstance(args, float):
+            setattr(self, 'min_value', args)
+            setattr(self, 'max_value', float('inf'))
+        elif isinstance(args, tuple):
+            if isinstance(args[0], int) or isinstance(args[0], float):
+                setattr(self, 'min_value', args[0])
+            if len(args) > 1 and (isinstance(args[1], int) or isinstance(args[1], float)):
+                setattr(self, 'max_value', args[1])
+        elif isinstance(args, slice):
+            if isinstance(args.start, int) or isinstance(args.start, float):
+                setattr(self, 'min_value', args.start)
+            if isinstance(args.stop, int) or isinstance(args.stop, float):
+                setattr(self, 'max_value', args.stop)
+
         return self
 
 class Type(metaclass=_TypeMeta):
