@@ -6,8 +6,70 @@ from .state import State
 from .static.sample_mode import SampleMode
 import geometry_script
 
-INT_MIN = -2147483648
 INT_MAX = 2147483647
+INT_MIN = -INT_MAX -1 
+
+class SubtypeInt(enum.Enum):
+    NONE = 'None'
+    PERCENTAGE = 'Percentage'
+    FACTOR = 'Factor'
+
+class SubtypeFloat(enum.Enum):
+    NONE = 'None'
+    PERCENTAGE = 'Percentage'
+    FACTOR = 'Factor'
+    ANGLE = 'Angle'
+    TIME = 'Time (Scene Relative)'
+    TIME_ABSOLUTE = 'Time (Absolute)'
+    DISTANCE = 'Distance'
+
+class InputOptions:
+    min_value: int | float
+    max_value: int | float
+    bl_subtype_label: str
+    name: str
+    description: str
+    hide_in_modifier: bool
+
+    def __init__(
+        self,
+        min: int | float | None = None,
+        max: int | float | None = None,
+        subtype: SubtypeInt | SubtypeFloat | None = None,
+        name: str | None = None,
+        tooltip: str = '',
+        hide_in_modifier: bool = False
+    ):
+        self.min_value = min   
+        self.max_value = max
+        self.bl_subtype_label = subtype.value if subtype != None else None
+        self.name = name
+        self.description = tooltip
+        self.hide_in_modifier = hide_in_modifier
+
+    def process(self, node_input_type: str):
+        if node_input_type == 'INT':
+            if self.min_value != None and self.max_value == None:
+                self.max_value = INT_MAX
+            if self.max_value != None and self.min_value == None:
+                self.min_value = INT_MIN
+            if isinstance(self.min_value, float):
+                self.min_value = int(self.min_value)
+            if isinstance(self.max_value, float):
+                self.max_value = int(self.max_value)
+            if self.bl_subtype_label == None:
+                self.bl_subtype_label = SubtypeInt.NONE
+        elif node_input_type == 'VALUE':
+            if self.min_value != None and self.max_value == None:
+                self.max_value = float('inf')
+            if self.max_value != None and self.min_value == None:
+                self.min_value = float('-inf')
+            if isinstance(self.min_value, int):
+                self.min_value = float(self.min_value)
+            if isinstance(self.max_value, int):
+                self.max_value = float(self.max_value)
+            if self.bl_subtype_label == None:
+                self.bl_subtype_label = SubtypeFloat.NONE
 
 def map_case_name(i):
     return ('_' if not i.identifier[0].isalpha() else '') + i.identifier.replace(' ', '_').upper()
@@ -35,22 +97,30 @@ def socket_class_to_data_type(socket_class_name):
 # The base class all exposed socket types conform to.
 class _TypeMeta(type):
     def __getitem__(self, args):
-        if isinstance(args, int):
-            setattr(self, 'min_value', args)
-            setattr(self, 'max_value', INT_MAX)
-        elif isinstance(args, float):
-            setattr(self, 'min_value', args)
-            setattr(self, 'max_value', float('inf'))
+        input_options = None
+        if isinstance(args, int) or isinstance(args, float):
+            input_options = InputOptions(min=args)
         elif isinstance(args, tuple):
+            tuple_args = {}
             if isinstance(args[0], int) or isinstance(args[0], float):
-                setattr(self, 'min_value', args[0])
+                tuple_args['min'] = args[0]
             if len(args) > 1 and (isinstance(args[1], int) or isinstance(args[1], float)):
-                setattr(self, 'max_value', args[1])
+                tuple_args['max'] = args[1]
+            if len(tuple_args) > 0:
+                input_options = InputOptions(**tuple_args)
         elif isinstance(args, slice):
+            slice_args = {}
             if isinstance(args.start, int) or isinstance(args.start, float):
-                setattr(self, 'min_value', args.start)
+                slice_args['min'] = args.start
             if isinstance(args.stop, int) or isinstance(args.stop, float):
-                setattr(self, 'max_value', args.stop)
+                slice_args['max'] = args.stop
+            if len(slice_args) > 0:
+                input_options = InputOptions(**slice_args)
+        elif isinstance(args, InputOptions):
+            input_options = args
+
+        if input_options != None:
+            setattr(self, 'input_options', input_options)
 
         return self
 

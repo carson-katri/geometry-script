@@ -106,7 +106,10 @@ def tree(name):
 
         node_inputs = get_node_inputs(node_group)
         for i, arg in enumerate(inputs.items()):
-            input_name = arg[0].replace('_', ' ').title()
+            if hasattr(arg[1][0], 'input_options') and arg[1][0].input_options.name != None:
+                input_name = arg[1][0].input_options.name
+            else:
+                input_name = arg[0].replace('_', ' ').title()
             if len(node_inputs) > i:
                 node_inputs[i].name = input_name
                 node_input = node_inputs[i]
@@ -117,10 +120,25 @@ def tree(name):
                     node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
             if arg[1][1] != inspect.Parameter.empty:
                 node_input.default_value = arg[1][1]
-            if hasattr(arg[1][0], 'min_value'):
-                node_input.min_value = arg[1][0].min_value
-            if hasattr(arg[1][0], 'max_value'):
-                node_input.max_value = arg[1][0].max_value
+            if hasattr(arg[1][0], 'input_options'):
+                input_options = arg[1][0].input_options
+                input_options.process(node_input.type)
+                node_input.min_value = input_options.min_value
+                node_input.max_value = input_options.max_value
+                node_input.bl_subtype_label = input_options.bl_subtype_label # DOES NOT WORK. Do e nee to change a UI property like this: ui_property(object, "property-name", expand=False, text="New Label")
+                node_input.description = input_options.description
+                node_input.hide_in_modifier = input_options.hide_in_modifier
+            else:
+                # reset all options to defaults ???????
+                pass
+                # input_options = InputOptions() 
+                # input_options.process(node_input.type) 
+                # node_input.min_value = input_options.min_value
+                # node_input.max_value = input_options.max_value
+                # node_input.bl_subtype_label = input_options.bl_subtype_label
+                # node_input.description = input_options.description
+                # node_input.hide_in_modifier = input_options.hide_in_modifier
+
             if arg[1][2] is not None:
                 if arg[1][2] not in builder_inputs:
                     builder_inputs[arg[1][2]] = signature.parameters[arg[1][2]].annotation()
