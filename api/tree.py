@@ -125,7 +125,7 @@ def tree(name):
                 input_options.process(node_input.type)
                 node_input.min_value = input_options.min_value
                 node_input.max_value = input_options.max_value
-                node_input.bl_subtype_label = input_options.bl_subtype_label # DOES NOT WORK. Do e nee to change a UI property like this: ui_property(object, "property-name", expand=False, text="New Label")
+                # node_input.bl_subtype_label = input_options.bl_subtype_label # DOES NOT WORK. Do e nee to change a UI property like this: ui_property(object, "property-name", expand=False, text="New Label")
                 node_input.description = input_options.description
                 node_input.hide_in_modifier = input_options.hide_in_modifier
             else:
