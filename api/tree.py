@@ -11,6 +11,7 @@ from .static.attribute import *
 from .static.curve import *
 from .static.expression import *
 from .static.input_group import *
+from .static.input_options import *
 from .static.repeat import *
 from .static.sample_mode import *
 from .static.simulation import *
@@ -106,10 +107,13 @@ def tree(name):
 
         node_inputs = get_node_inputs(node_group)
         for i, arg in enumerate(inputs.items()):
-            if hasattr(arg[1][0], 'input_options') and arg[1][0].input_options.name != None:
-                input_name = arg[1][0].input_options.name
+            if (arg[1][1] != inspect.Parameter.empty 
+                and (isinstance(arg[1][1], IntOptions) or isinstance(arg[1][1], FloatOptions)) 
+                and arg[1][1].name != None):
+                input_name = arg[1][1].name
             else:
                 input_name = arg[0].replace('_', ' ').title()
+            
             if len(node_inputs) > i:
                 node_inputs[i].name = input_name
                 node_input = node_inputs[i]
@@ -118,26 +122,39 @@ def tree(name):
                     node_input = node_group.interface.new_socket(socket_type=arg[1][0].socket_type, name=input_name, in_out='INPUT')
                 else:
                     node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
+               
             if arg[1][1] != inspect.Parameter.empty:
-                node_input.default_value = arg[1][1]
-            if hasattr(arg[1][0], 'input_options'):
-                input_options = arg[1][0].input_options
-                input_options.process(node_input.type)
-                node_input.min_value = input_options.min_value
-                node_input.max_value = input_options.max_value
-                # node_input.bl_subtype_label = input_options.bl_subtype_label # DOES NOT WORK. Do e nee to change a UI property like this: ui_property(object, "property-name", expand=False, text="New Label")
-                node_input.description = input_options.description
-                node_input.hide_in_modifier = input_options.hide_in_modifier
-            else:
-                # reset all options to defaults ???????
-                pass
-                # input_options = InputOptions() 
-                # input_options.process(node_input.type) 
-                # node_input.min_value = input_options.min_value
-                # node_input.max_value = input_options.max_value
-                # node_input.bl_subtype_label = input_options.bl_subtype_label
-                # node_input.description = input_options.description
-                # node_input.hide_in_modifier = input_options.hide_in_modifier
+                if (isinstance(arg[1][1], IntOptions) or isinstance(arg[1][1], FloatOptions)) :
+                    if arg[1][1].default_value != None:
+                        node_input.default_value = arg[1][1].default_value
+                    if arg[1][1].min_value != None:
+                        node_input.min_value = arg[1][1].min_value
+                    elif isinstance(arg[1][1], IntOptions):
+                        node_input.min_value = IntOptions.MIN
+                    elif isinstance(arg[1][1], FloatOptions):
+                        node_input.min_value = FloatOptions.MIN
+                    if arg[1][1].max_value != None:
+                        node_input.max_value = arg[1][1].max_value
+                    elif isinstance(arg[1][1], IntOptions):
+                        node_input.max_value = IntOptions.MAX
+                    elif isinstance(arg[1][1], FloatOptions):
+                        node_input.max_value = FloatOptions.MAX
+                    if arg[1][1].bl_subtype_label != None:
+                        # node_input.bl_subtype_label = arg[1][1].bl_subtype_label  # broken
+                        # TODO: run operator to change this
+                        pass
+                    if arg[1][1].description != None:
+                        node_input.description = arg[1][1].description
+                    if arg[1][1].hide_in_modifier != None:
+                        node_input.hide_in_modifier = arg[1][1].hide_in_modifier
+                else:
+                    node_input.default_value = arg[1][1]
+                    if isinstance(arg[1][1], int):
+                        node_input.min_value = IntOptions.MIN
+                        node_input.max_value = IntOptions.MAX
+                    elif isinstance(arg[1][1], float):
+                        node_input.min_value = FloatOptions.MIN
+                        node_input.max_value = FloatOptions.MAX
 
             if arg[1][2] is not None:
                 if arg[1][2] not in builder_inputs:
