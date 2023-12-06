@@ -18,6 +18,18 @@ class InputOptions:
     """Input options parent class"""
 
 class IntOptions(InputOptions):
+    """
+    Title.
+    
+    Example descriptions:
+    ```python
+    my_int: Float = IntOptions(
+        default=3,
+        min=1,
+        max=5
+    ),
+    ```
+    """
     MAX = 2147483647
     MIN = -MAX -1
     
@@ -40,6 +52,18 @@ class IntOptions(InputOptions):
         self.hide_in_modifier = hide_in_modifier
 
 class FloatOptions(InputOptions):
+    """
+    Title.
+    
+    Example descriptions:
+    ```python
+    my_float: Float = FloatOptions(
+        default=1.5,
+        min=-0.5,
+        max=2.5
+    ),
+    ```
+    """
     MAX = float('inf')
     MIN = float('-inf')
     
