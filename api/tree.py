@@ -157,7 +157,7 @@ def tree(name):
                         node_input.hide_in_modifier = arg[1][1].hide_in_modifier
                 else:
                     node_input.default_value = arg[1][1]
-                    if isinstance(arg[1][1], int):
+                    if type(arg[1][1]) == type(0):  # because: isinstance(True, int) == True
                         node_input.min_value = IntOptions.MIN
                         node_input.max_value = IntOptions.MAX
                     elif isinstance(arg[1][1], float):
