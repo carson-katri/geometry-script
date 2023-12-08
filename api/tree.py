@@ -11,6 +11,7 @@ from .static.attribute import *
 from .static.curve import *
 from .static.expression import *
 from .static.input_group import *
+from .static.input_options import *
 from .static.repeat import *
 from .static.sample_mode import *
 from .static.simulation import *
@@ -106,7 +107,13 @@ def tree(name):
 
         node_inputs = get_node_inputs(node_group)
         for i, arg in enumerate(inputs.items()):
-            input_name = arg[0].replace('_', ' ').title()
+            if (arg[1][1] != inspect.Parameter.empty 
+                and (isinstance(arg[1][1], IntOptions) or isinstance(arg[1][1], FloatOptions) or isinstance(arg[1][1], VectorOptions)) 
+                and arg[1][1].name != None):
+                input_name = arg[1][1].name
+            else:
+                input_name = arg[0].replace('_', ' ').title()
+            
             if len(node_inputs) > i:
                 node_inputs[i].name = input_name
                 node_input = node_inputs[i]
@@ -115,8 +122,48 @@ def tree(name):
                     node_input = node_group.interface.new_socket(socket_type=arg[1][0].socket_type, name=input_name, in_out='INPUT')
                 else:
                     node_input = node_group.inputs.new(arg[1][0].socket_type, input_name)
+               
             if arg[1][1] != inspect.Parameter.empty:
-                node_input.default_value = arg[1][1]
+                if (isinstance(arg[1][1], IntOptions) or isinstance(arg[1][1], FloatOptions) or isinstance(arg[1][1], VectorOptions)) :
+                    if arg[1][1].default_value != None:
+                        node_input.default_value = arg[1][1].default_value
+                    if arg[1][1].min_value != None:
+                        node_input.min_value = arg[1][1].min_value
+                    elif isinstance(arg[1][1], IntOptions):
+                        node_input.min_value = IntOptions.MIN
+                    elif (isinstance(arg[1][1], FloatOptions) or isinstance(arg[1][1], VectorOptions)):
+                        node_input.min_value = FloatOptions.MIN
+                    if arg[1][1].max_value != None:
+                        node_input.max_value = arg[1][1].max_value
+                    elif isinstance(arg[1][1], IntOptions):
+                        node_input.max_value = IntOptions.MAX
+                    elif (isinstance(arg[1][1], FloatOptions) or isinstance(arg[1][1], VectorOptions)):
+                        node_input.max_value = FloatOptions.MAX
+                    if arg[1][1].bl_subtype_label != None:
+                        subtype = arg[1][1].bl_subtype_label
+                        try:
+                            for area in bpy.context.screen.areas:
+                                for space in area.spaces:
+                                    if space.type == 'NODE_EDITOR':
+                                        with bpy.context.temp_override(area=area, space=space, interface_socket=node_input):
+                                            bpy.ops.node.tree_socket_change_subtype('INVOKE_DEFAULT', socket_subtype=subtype)
+                                            break
+                        except:
+                            # TODO: log the exception as operation failure ?
+                            pass
+                    if arg[1][1].description != None:
+                        node_input.description = arg[1][1].description
+                    if arg[1][1].hide_in_modifier != None:
+                        node_input.hide_in_modifier = arg[1][1].hide_in_modifier
+                else:
+                    node_input.default_value = arg[1][1]
+                    if type(arg[1][1]) == type(0):  # because: isinstance(True, int) == True
+                        node_input.min_value = IntOptions.MIN
+                        node_input.max_value = IntOptions.MAX
+                    elif isinstance(arg[1][1], float):
+                        node_input.min_value = FloatOptions.MIN
+                        node_input.max_value = FloatOptions.MAX
+
             if arg[1][2] is not None:
                 if arg[1][2] not in builder_inputs:
                     builder_inputs[arg[1][2]] = signature.parameters[arg[1][2]].annotation()

@@ -29,17 +29,7 @@ def socket_class_to_data_type(socket_class_name):
         case _:
             return socket_class_name
 
-# The base class all exposed socket types conform to.
-class _TypeMeta(type):
-    def __getitem__(self, args):
-        for s in filter(lambda x: isinstance(x, slice), args):
-            if (isinstance(s.start, float) or isinstance(s.start, int)) and (isinstance(s.stop, float) or isinstance(s.stop, int)):
-                print(f"minmax: ({s.start}, {s.stop})")
-            elif isinstance(s.start, str):
-                print(f"{s.start} = {s.stop}")
-        return self
-
-class Type(metaclass=_TypeMeta):
+class Type:
     socket_type: str
 
     def __init__(self, socket: bpy.types.NodeSocket = None, value = None):
