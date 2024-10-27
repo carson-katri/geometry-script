@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html" class="active"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/boolean-math.html"><strong aria-hidden="true">5.5.</strong> Boolean Math</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/curves.html"><strong aria-hidden="true">5.6.</strong> Curves</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/drivers.html"><strong aria-hidden="true">5.7.</strong> Drivers</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/simulation-zones.html"><strong aria-hidden="true">5.8.</strong> Simulation Zones</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/repeat-zones.html"><strong aria-hidden="true">5.9.</strong> Repeat Zones</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -195,7 +197,7 @@
 </ul>
 <p>A socket does not represent a value itself. For example, the <code>Size</code> socket does not necessarily represent the value <code>(1, 1, 1)</code>. Instead, it can be connected to another node as an input, giving it a dynamic value.</p>
 <p>When we write scripts, we typically deal with socket types, not concrete values like <code>(1, 1, 1)</code>. Take this script for example:</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     return cube(size=size)
 </code></pre>
@@ -207,11 +209,11 @@ def cube_tree(size: Vector):
 <h2 id="what-sockets-cannot-do"><a class="header" href="#what-sockets-cannot-do">What sockets <em>cannot</em> do</a></h2>
 <p>Sockets cannot be read for their concrete value. A <code>Float</code> socket type does not equal <code>5</code> or <code>10</code> or <code>3.14</code> to our script. It only represents the socket of a node. If you try to <code>print(...)</code> a socket, you will receive a generic reference type with no underlying value.</p>
 <h2 id="why-use-sockets"><a class="header" href="#why-use-sockets">Why use sockets?</a></h2>
-<p>You might be wondering, &quot;if you can't access the value of a socket, what can you do with it?&quot;</p>
+<p>You might be wondering, "if you can't access the value of a socket, what can you do with it?"</p>
 <p>Geometry Script provides many helpful additions that make working with sockets about as easy as working with a concrete value.</p>
 <h2 id="socket-math"><a class="header" href="#socket-math">Socket Math</a></h2>
 <p>Socket types can be used to perform math operations. The proper <em>Math</em> node will be created automatically for you, so you can focus on writing a script and not thinking about sockets. If you use <code>Float</code> or <code>Int</code> it will create a <em>Math</em> node, and if you use a <code>Vector</code> it will create a <em>Vector Math</em> node.</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     doubled = size * (2, 2, 2) # Multiply each component by 2
     return cube(size=doubled)
@@ -227,7 +229,7 @@ def cube_tree(size: Vector):
 </ul>
 <h2 id="socket-comparison"><a class="header" href="#socket-comparison">Socket Comparison</a></h2>
 <p>Socket types can be compared with Python comparison operators. A <em>Compare</em> node will be created with the correct inputs and options specified.</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     show_cube = size &gt; (2, 2, 2) # Check if each component is greater than 2
     return cube(size=show_cube)
@@ -244,7 +246,7 @@ def cube_tree(size: Vector):
 </ul>
 <h2 id="vector-component-properties"><a class="header" href="#vector-component-properties">Vector Component Properties</a></h2>
 <p>While the <code>Vector</code> type does not equate to three concrete components, such as <code>(1, 2, 3)</code>, you can still access the <code>x</code>, <code>y</code>, and <code>z</code> components as sockets. A <em>Separate XYZ</em> node will be created with the correct inputs and outputs specified.</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     height = size.z # Access the Z component
     # Multiply the height by 2 but leave the other components unchanged.
@@ -254,14 +256,14 @@ def cube_tree(size: Vector):
 <p><img src="./cube_tree_size_components.png" alt="" /></p>
 <h2 id="chained-calls"><a class="header" href="#chained-calls">Chained Calls</a></h2>
 <p>Any node function can be called on a socket type. This will automatically connect the socket to the first input of the node.</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     return cube(size=size).mesh_to_volume()
 </code></pre>
 <p>The output of the <em>Cube</em> node (a <code>Geometry</code> socket type) is connected to the first input of the <em>Mesh to Volume</em> node.</p>
 <p><img src="./cube_tree_mesh_to_volume.png" alt="" /></p>
 <p>The same script without chaining calls is written more verbosely as:</p>
-<pre><code class="language-python">@tree(&quot;Cube Tree&quot;)
+<pre><code class="language-python">@tree("Cube Tree")
 def cube_tree(size: Vector):
     return mesh_to_volume(mesh=cube(size=size))
 </code></pre>

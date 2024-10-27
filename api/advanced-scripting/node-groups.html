@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="../../setup/installation.html"><strong aria-hidden="true">1.</strong> Installation</a></li><li class="chapter-item expanded "><a href="../../setup/internal-editing-basics.html"><strong aria-hidden="true">2.</strong> Internal Editing Basics</a></li><li class="chapter-item expanded "><a href="../../setup/external-editing.html"><strong aria-hidden="true">3.</strong> External Editing</a></li><li class="chapter-item expanded affix "><li class="part-title">API</li><li class="chapter-item expanded "><a href="../../api/basics.html"><strong aria-hidden="true">4.</strong> Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/basics/modules.html"><strong aria-hidden="true">4.1.</strong> Modules</a></li><li class="chapter-item expanded "><a href="../../api/basics/tree-functions.html"><strong aria-hidden="true">4.2.</strong> Tree Functions</a></li><li class="chapter-item expanded "><a href="../../api/basics/sockets.html"><strong aria-hidden="true">4.3.</strong> Sockets</a></li><li class="chapter-item expanded "><a href="../../api/basics/using-nodes.html"><strong aria-hidden="true">4.4.</strong> Using Nodes</a></li></ol></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting.html"><strong aria-hidden="true">5.</strong> Advanced Scripting</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../api/advanced-scripting/node-groups.html" class="active"><strong aria-hidden="true">5.1.</strong> Node Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/generators.html"><strong aria-hidden="true">5.2.</strong> Generators</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/input-groups.html"><strong aria-hidden="true">5.3.</strong> Input Groups</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/attributes.html"><strong aria-hidden="true">5.4.</strong> Attributes</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/boolean-math.html"><strong aria-hidden="true">5.5.</strong> Boolean Math</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/curves.html"><strong aria-hidden="true">5.6.</strong> Curves</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/drivers.html"><strong aria-hidden="true">5.7.</strong> Drivers</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/simulation-zones.html"><strong aria-hidden="true">5.8.</strong> Simulation Zones</a></li><li class="chapter-item expanded "><a href="../../api/advanced-scripting/repeat-zones.html"><strong aria-hidden="true">5.9.</strong> Repeat Zones</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Tutorials</li><li class="chapter-item expanded "><a href="../../tutorials/voxelize.html"><strong aria-hidden="true">6.</strong> Voxelize</a></li><li class="chapter-item expanded "><a href="../../tutorials/city-builder.html"><strong aria-hidden="true">7.</strong> City Builder</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -174,14 +176,14 @@
                     <main>
                         <h1 id="node-groups"><a class="header" href="#node-groups">Node Groups</a></h1>
 <p>A Geometry Script can have more than one tree function. Each tree function is a node group, and tree functions can be used in other tree functions to create <em>Node Group</em> nodes.</p>
-<pre><code class="language-python">@tree(&quot;Instance Grid&quot;)
+<pre><code class="language-python">@tree("Instance Grid")
 def instance_grid(instance: Geometry):
-    &quot;&quot;&quot; Instance the input geometry on a grid &quot;&quot;&quot;
+    """ Instance the input geometry on a grid """
     return grid().mesh_to_points().instance_on_points(instance=instance)
 
-@tree(&quot;Cube Grid&quot;)
+@tree("Cube Grid")
 def cube_grid():
-    &quot;&quot;&quot; Create a grid of cubes &quot;&quot;&quot;
+    """ Create a grid of cubes """
     return instance_grid(instance=cube(size=0.2))
 </code></pre>
 <p>The <em>Cube Grid</em> tree uses the <em>Instance Grid</em> node group by calling the <code>instance_grid</code> function:</p>
@@ -194,12 +196,12 @@ def cube_grid():
 <pre><code class="language-python">def instance_grid(instance: Geometry): # Not marked with `@tree(...)`
     return grid().mesh_to_points().instance_on_points(instance=instance)
 
-@tree(&quot;Cube Grid&quot;)
+@tree("Cube Grid")
 def cube_grid(): # Marked with `@tree(...)`
     return instance_grid(instance=cube(size=0.2))
 </code></pre>
-<p>The above example would place the <em>Grid</em>, <em>Mesh to Points</em>, and <em>Instance on Points</em> nodes in the main &quot;Cube Grid&quot; tree. It could be rewritten as:</p>
-<pre><code class="language-python">@tree(&quot;Cube Grid&quot;)
+<p>The above example would place the <em>Grid</em>, <em>Mesh to Points</em>, and <em>Instance on Points</em> nodes in the main "Cube Grid" tree. It could be rewritten as:</p>
+<pre><code class="language-python">@tree("Cube Grid")
 def cube_grid():
     return grid().mesh_to_points().instance_on_points(instance=cube(size=0.2))
 </code></pre>
