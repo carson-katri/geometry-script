@@ -25,4 +25,4 @@ class GeometryScriptPreferences(bpy.types.AddonPreferences):
         vscode.label(text=f"2. Search for 'Preferences: Open Settings (UI)'")
         vscode.label(text=f"3. Search for 'Python > Analysis: Extra Paths")
         vscode.label(text=f"4. Click 'Add Item'")
-        vscode.label(text=f"5. Pase the typeshed path from above")
+        vscode.label(text=f"5. Paste the typeshed path from above")
