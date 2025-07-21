@@ -17,6 +17,7 @@ from .static.simulation import *
 from .arrange import _arrange
 
 IS_BLENDER_4 = bpy.app.version[0] >= 4
+IS_BLENDER_4_5 = IS_BLENDER_4 and bpy.app.version[1] >= 5
 
 def _as_iterable(x):
     if isinstance(x, Type):
@@ -162,7 +163,7 @@ def tree(name):
         # Return a function that creates a NodeGroup node in the tree.
         # This lets @trees be used in other @trees via simple function calls.
         def group_reference(*args, **kwargs):
-            if IS_BLENDER_4:
+            if IS_BLENDER_4 and not IS_BLENDER_4_5:
                 result = geometrynodegroup(node_tree=node_group, *args, **kwargs)
             else:
                 result = group(node_tree=node_group, *args, **kwargs)
