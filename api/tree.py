@@ -163,12 +163,21 @@ def tree(name):
         # This lets @trees be used in other @trees via simple function calls.
         def group_reference(*args, **kwargs):
             if IS_BLENDER_4:
-                result = geometrynodegroup(node_tree=node_group, *args, **kwargs)
+                result = State.current_node_tree.nodes.new('GeometryNodeGroup')
+                result.node_tree = node_group
+                enabled_inputs = [node_input for node_input in result.inputs if node_input.enabled]
+                for value, node_input in zip(args, enabled_inputs):
+                    set_or_create_link(value, node_input)
+                for node_input in enabled_inputs[len(args):]:
+                    argname = node_input.name.lower().replace(' ', '_')
+                    if argname in kwargs:
+                        set_or_create_link(kwargs[argname], node_input)
             else:
                 result = group(node_tree=node_group, *args, **kwargs)
             group_outputs = []
-            for group_output in result._socket.node.outputs:
-                group_outputs.append(Type(group_output))
+            for group_output in result.outputs:
+                if group_output.enabled:
+                    group_outputs.append(Type(group_output))
             if len(group_outputs) == 1:
                 return group_outputs[0]
             else:
