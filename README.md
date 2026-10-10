@@ -52,4 +52,10 @@ Use [`uv`](https://docs.astral.sh/uv/) to get `fake-bpy-module` and some pyright
 uv sync
 ```
 
+To build an installable package for a specific Blender version, which regenerates `api/nodes.py` with that Blender and runs the smoke test:
+
+```sh
+python tools/build.py --blender /path/to/blender  # writes dist/geometry_script-<version>-blender-<major>.<minor>.zip
+```
+
 Then you can [follow Blender's steps](https://developer.blender.org/docs/handbook/extensions/addon_dev_setup/#setting-up-project) to setup a symlink for a local repository.

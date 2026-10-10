@@ -15,11 +15,20 @@ license = [
     "SPDX:GPL-3.0-or-later"
 ]
 
+[build]
 paths_exclude_pattern = [
     "__pycache__/",
     "/.git/",
     "/*.zip",
     "/.github/",
     "/.venv/",
-    "uv.lock"
+    "/book/",
+    "/code_generator/",
+    "/tests/",
+    "/tools/",
+    "/dist/",
+    "/pyproject.toml",
+    "/uv.lock",
+    "/.python-version",
+    ".gitignore",
 ]
