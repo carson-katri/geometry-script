@@ -18,10 +18,25 @@ sys.modules['geometry_script'] = sys.modules[__name__]
 import bpy
 import os
 import webbrowser
+from pathlib import Path
 
-from .api.tree import *
 from .preferences import GeometryScriptPreferences
-from .absolute_path import absolute_path
+from .api.tree import tree
+from .api.runtime import Socket
+from .api.types import *
+from .api.zones import (
+    ForEachResult,
+    closure_zone,
+    for_each_element,
+    repeat_zone,
+    simulation_zone,
+)
+from .api.nodes import *
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import bpy.stub_internal.rna_enums as rna_enums
 
 bl_info = {
     "name" : "Geometry Script",
@@ -37,20 +52,21 @@ bl_info = {
 class TEXT_MT_templates_geometryscript(bpy.types.Menu):
     bl_label = "Geometry Script"
 
-    def draw(self, _context):
+    def draw(self, context):
         self.path_menu(
             [os.path.join(os.path.dirname(os.path.realpath(__file__)), "examples")],
             "text.open",
             props_default={"internal": True},
-            filter_ext=lambda ext: (ext.lower() == ".py")
+            filter_ext=lambda ext: (ext.lower() == ".py") # type: ignore
         )
 
 class OpenDocumentation(bpy.types.Operator):
     bl_idname = "geometry_script.open_documentation"
     bl_label = "Open Documentation"
 
-    def execute(self, context):
-        webbrowser.open('file://' + absolute_path('docs/documentation.html'))
+    def execute(self, context) -> set["rna_enums.OperatorReturnItems"]:
+        documentation_path = Path(__file__).with_name("docs") / "documentation.html"
+        webbrowser.open(documentation_path.as_uri())
         return {'FINISHED'}
 
 class GeometryScriptSettings(bpy.types.PropertyGroup):
@@ -61,7 +77,10 @@ class GeometryScriptMenu(bpy.types.Menu):
     bl_label = "Geometry Script"
 
     def draw(self, context):
+        assert context is not None
+
         layout = self.layout
+        assert layout is not None
 
         text = context.space_data.text
         if text and len(text.filepath) > 0:
@@ -92,26 +111,26 @@ def auto_resolve():
 
 def register():
     bpy.utils.register_class(TEXT_MT_templates_geometryscript)
-    bpy.types.TEXT_MT_templates.append(templates_menu_draw)
+    bpy.types.TEXT_MT_templates.append(templates_menu_draw) # type: ignore
     bpy.utils.register_class(GeometryScriptSettings)
     bpy.utils.register_class(GeometryScriptPreferences)
     bpy.utils.register_class(OpenDocumentation)
     bpy.utils.register_class(GeometryScriptMenu)
 
-    bpy.types.TEXT_HT_header.append(editor_header_draw)
+    bpy.types.TEXT_HT_header.append(editor_header_draw) # type: ignore
 
-    bpy.types.Scene.geometry_script_settings = bpy.props.PointerProperty(type=GeometryScriptSettings)
+    bpy.types.Scene.geometry_script_settings = bpy.props.PointerProperty(type=GeometryScriptSettings) # type: ignore
 
     bpy.app.timers.register(auto_resolve, persistent=True)
 
 def unregister():
     bpy.utils.unregister_class(TEXT_MT_templates_geometryscript)
-    bpy.types.TEXT_MT_templates.remove(templates_menu_draw)
+    bpy.types.TEXT_MT_templates.remove(templates_menu_draw) # type: ignore
     bpy.utils.unregister_class(GeometryScriptSettings)
     bpy.utils.unregister_class(GeometryScriptPreferences)
     bpy.utils.unregister_class(OpenDocumentation)
     bpy.utils.unregister_class(GeometryScriptMenu)
-    bpy.types.TEXT_HT_header.remove(editor_header_draw)
+    bpy.types.TEXT_HT_header.remove(editor_header_draw) # type: ignore
     try:
         bpy.app.timers.unregister(auto_resolve)
     except:

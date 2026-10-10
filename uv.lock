@@ -1,0 +1,23 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[[package]]
+name = "fake-bpy-module"
+version = "20260925"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/bb/aa10ce77eab1cc0ff39a6bd3217027d65c90c8067f20e548fe1f1165fae7/fake_bpy_module-20260925.tar.gz", hash = "sha256:2b004f0365073905570a78a82c3ba194b917d48b0ef8f908f72cf137f97953d4", size = 967755, upload-time = "2026-09-25T10:46:40.231Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/53/b0/7392ed3edb93d645e811a30296da8a8075b4a316e1d416cce41eb9316f15/fake_bpy_module-20260925-py3-none-any.whl", hash = "sha256:cda6111c20a196e932ac87965700a65d1e548ea68ee925e3e39af7aee8169046", size = 1116185, upload-time = "2026-09-25T10:46:37.56Z" },
+]
+
+[[package]]
+name = "geometry-script"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "fake-bpy-module" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "fake-bpy-module", specifier = ">=20260925" }]

@@ -35,8 +35,6 @@ def repeat_grid(geometry: Geometry, width: Int, height: Int):
 2. Open *Blender* > *Preferences* > *Add-ons*
 3. Choose *Install...* and select the downloaded ZIP file
 
-Or you can get it from the [Blender Market](https://www.blendermarket.com/products/geometry-script).
-
 ## What is Geometry Script?
 *Geometry Script* is a robust yet easy to use Python API for creating Geometry Nodes with code.
 
@@ -46,3 +44,12 @@ At a certain point, Geometry Node trees become unmanagably large. Creating node 
 
 ## [Documentation](https://carson-katri.github.io/geometry-script/)
 Read the documentation for more information on installation, syntax, and tutorials.
+
+## Contributing
+Use [`uv`](https://docs.astral.sh/uv/) to get `fake-bpy-module` and some pyright settings.
+
+```sh
+uv sync
+```
+
+Then you can [follow Blender's steps](https://developer.blender.org/docs/handbook/extensions/addon_dev_setup/#setting-up-project) to setup a symlink for a local repository.
