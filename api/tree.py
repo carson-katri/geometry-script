@@ -90,6 +90,16 @@ def _create_or_reuse_tree(name: str, kind: TreeKind) -> bpy.types.NodeTree:
 _MODIFIER_INPUT_FIELDS = ("value", "type", "attribute_name")
 
 
+def _detached(value: Any) -> Any:
+    """Copy array values (vectors, colors), which are views into the modifier's memory.
+
+    The rebuild frees that memory, so a view read afterwards gives garbage or crashes.
+    """
+    if isinstance(value, bpy.types.bpy_prop_array):
+        return tuple(value)
+    return value
+
+
 def _modifier_input_values(node_tree: bpy.types.NodeTree) -> list[tuple[Any, dict[str, dict[str, Any]]]]:
     """The input values of each modifier using ``node_tree``, by input name.
 
@@ -110,7 +120,7 @@ def _modifier_input_values(node_tree: bpy.types.NodeTree) -> list[tuple[Any, dic
                 stored = getattr(modifier.properties.inputs, item.identifier, None)
                 if stored is not None:
                     values[item.name] = {
-                        field: getattr(stored, field)
+                        field: _detached(getattr(stored, field))
                         for field in _MODIFIER_INPUT_FIELDS
                         if hasattr(stored, field)
                     }

@@ -287,6 +287,30 @@ def socket_tuple(geometry: Geometry, height: float = 2.0):
 
 assert height_value() == 5.0, height_value()
 
+# Array inputs (colors, vectors) keep their values across rebuilds too.
+@tree("Tint Inputs")
+def tint(geometry: Geometry, tint: Color = (0.9, 0.2, 0.4, 1.0), shift: Vector = (0.0, 0.0, 1.0)):
+    return store_named_attribute(geometry=geometry, name="tint", value=tint).geometry
+
+tint_modifier = cube.modifiers.new("Tint Inputs", "NODES")
+tint_modifier.node_group = bpy.data.node_groups["Tint Inputs"]
+
+
+def tint_inputs():
+    items = tint_modifier.node_group.interface.items_tree
+    return [getattr(tint_modifier.properties.inputs, items[name].identifier) for name in ("Tint", "Shift")]
+
+
+tint_inputs()[0].value = (0.1, 0.6, 0.3, 1.0)
+tint_inputs()[1].value = (1.0, 2.0, 3.0)
+for _ in range(3):
+    @tree("Tint Inputs")
+    def tint(geometry: Geometry, tint: Color = (0.9, 0.2, 0.4, 1.0), shift: Vector = (0.0, 0.0, 1.0)):
+        return store_named_attribute(geometry=geometry, name="tint", value=tint).geometry
+
+restored = [tuple(round(x, 4) for x in item.value) for item in tint_inputs()]
+assert restored == [(0.1, 0.6, 0.3, 1.0), (1.0, 2.0, 3.0)], restored
+
 @tree("Math Alias")
 def math_alias(value: float):
     return math(value=value, value_2=math.pi, operation="MULTIPLY").value
