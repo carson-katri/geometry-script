@@ -12,6 +12,7 @@ from typing import Any
 
 import bpy
 
+from .arrange import arrange
 from .naming import attribute_names, class_name, humanize
 from .runtime import (
     BuildContext,
@@ -355,6 +356,7 @@ def _fill_tree(
         interface_socket, _ = interface_inputs[parameter.name]
         if interface_socket.bl_socket_idname == "NodeSocketMenu":
             _set_interface_default(interface_socket, parameter)
+    arrange(node_tree)
     return interface_inputs
 
 

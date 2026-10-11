@@ -11,6 +11,7 @@ from typing import Any
 
 import bpy
 
+from .arrange import arrange
 from .runtime import (
     BuildContext,
     MissingOutput,
@@ -107,6 +108,7 @@ def _build(builder: Callable[..., Any], name: str, kind: _OutputKind) -> Any:
         finally:
             reset_build_context(token)
         context.validate_links()
+        arrange(block.node_tree)
     built_trees.append((kind.collection, block.name))
     return block
 
