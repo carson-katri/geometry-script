@@ -291,4 +291,128 @@ assert height_value() == 5.0, height_value()
 def math_alias(value: float):
     return math(value=value, value_2=math.pi, operation="MULTIPLY").value
 
+# Shader trees: node groups, materials and worlds.
+import geometry_script.shader as sh
+import geometry_script.compositor as comp
+
+assert sh.Socket is Socket, "geometry_script.shader loaded a second copy of the runtime."
+
+
+@sh.shader("Stripes")
+def stripes(scale: float = 5.0, color: Color = (1.0, 0.0, 0.0, 1.0)):
+    wave = sh.wave_texture(scale=scale * 2.0)
+    return sh.mix(data_type="RGBA", factor=wave.factor, a=color, b=(0.0, 0.0, 1.0, 1.0)).result
+
+
+@sh.material("Striped")
+def striped():
+    height = sh.noise_texture(scale=4.0).factor
+    return {
+        "surface": sh.principled_bsdf(base_color=stripes(scale=8.0), roughness=height).bsdf,
+        "displacement": sh.displacement(height=height).displacement,
+    }
+
+
+material_nodes = {node.bl_idname: node for node in striped().node_tree.nodes}
+assert {"ShaderNodeGroup", "ShaderNodeDisplacement", "ShaderNodeOutputMaterial"} <= set(material_nodes)
+material_output = material_nodes["ShaderNodeOutputMaterial"]
+assert [s.name for s in material_output.inputs if s.is_linked] == ["Surface", "Displacement"]
+assert striped.material is bpy.data.materials["Striped"]
+assert "ShaderNodeMath" in {n.bl_idname for n in bpy.data.node_groups["Stripes"].nodes}
+
+
+@sh.material("Tinted")
+def tinted():
+    # A color with a socket component goes through Combine Color.
+    return sh.emission(color=(sh.noise_texture().factor, 0.5, 0.2)).emission
+
+
+assert "ShaderNodeCombineColor" in {n.bl_idname for n in tinted().node_tree.nodes}
+
+# A failed material rebuild keeps the previous material and its users.
+bpy.ops.mesh.primitive_cube_add()
+painted = bpy.context.active_object
+painted.data.materials.append(striped())
+try:
+    @sh.material("Striped")
+    def striped():
+        return {"surfaces": sh.emission().emission}
+except TypeError as error:
+    assert "'surfaces'" in str(error) and "'surface'" in str(error), error
+else:
+    raise AssertionError("Unknown material outputs should fail.")
+assert painted.data.materials[0] is bpy.data.materials["Striped"]
+assert "ShaderNodeGroup" in {n.bl_idname for n in painted.data.materials[0].node_tree.nodes}
+assert "Striped.001" not in bpy.data.materials
+
+try:
+    @sh.material("Bad Material")
+    def bad_material(roughness: float):
+        return sh.principled_bsdf(roughness=roughness).bsdf
+except TypeError as error:
+    assert "take no parameters" in str(error), error
+else:
+    raise AssertionError("Material parameters should be rejected.")
+assert "Bad Material" not in bpy.data.materials
+
+
+@sh.world("Sky", scene=True)
+def sky():
+    return sh.background(color=(0.1, 0.2, 0.4, 1.0), strength=0.5).background
+
+
+assert bpy.context.scene.world is bpy.data.worlds["Sky"]
+
+# Geometry trees take materials built by @material.
+@tree("Painted")
+def painted_tree(geometry: Geometry):
+    return set_material(geometry=geometry, material=bpy.data.materials["Striped"]).geometry
+
+
+# Nodes and groups only work in their own tree type.
+for build, expected in [
+    (lambda: tree(lambda: sh.principled_bsdf().bsdf), "It works in shader trees (geometry_script.shader)."),
+    (lambda: sh.shader(lambda: mesh_line().mesh), "cannot be added to a shader tree"),
+    (lambda: tree(lambda: stripes()), "can only be used while building @shader"),
+]:
+    try:
+        build()
+    except TypeError as error:
+        assert expected in str(error), error
+    else:
+        raise AssertionError(f"Expected an error mentioning {expected!r}.")
+
+try:
+    @sh.shader("Painted")
+    def painted_shader():
+        return sh.emission().emission
+except TypeError as error:
+    assert "already has that name" in str(error), error
+else:
+    raise AssertionError("A shader group should not replace a geometry group.")
+assert bpy.data.node_groups["Painted"].bl_idname == "GeometryNodeTree"
+
+
+# Compositor node groups.
+@comp.compositor("Tint", scene=True)
+def tint(strength: float = 0.5):
+    image = comp.render_layers().image
+    return comp.mix(data_type="RGBA", factor=strength, a=image, b=(1.0, 0.0, 0.0, 1.0)).result
+
+
+assert bpy.context.scene.compositing_node_group is bpy.data.node_groups["Tint"]
+
+
+@comp.compositor("Flat Red")
+def flat_red():
+    return {"Image": (1.0, 0.0, 0.0, 1.0)}
+
+
+assert "CompositorNodeRGB" in {n.bl_idname for n in bpy.data.node_groups["Flat Red"].nodes}
+
+from geometry_script import agent
+
+described = agent._describe_tree_text(bpy.data.materials["Tinted"].node_tree)
+assert "emission(" in described and "material_output(" in described, described
+
 print("Smoke test passed.")

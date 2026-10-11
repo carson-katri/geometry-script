@@ -6,6 +6,7 @@ Everything here prints a few lines instead of tracebacks or screenshots:
     agent.run("/path/to/script.py", object="Scatter")  # build, attach, evaluate
     agent.describe("set_position")                     # a node's signature
     agent.search("points on faces")                    # find a node
+    agent.describe("principled_bsdf", tree="shader")   # shader and compositor nodes too
     agent.describe_tree("Scatter")                     # read an existing tree back
 """
 
@@ -41,10 +42,10 @@ def run(
 ) -> dict[str, Any]:
     """Run a Geometry Script file or code string and print a short report.
 
-    Reports each tree built, then the evaluated geometry and node warnings of
-    every object using one of them. ``object`` names an object to evaluate,
-    created if needed, that gets a modifier for ``tree`` (default: the last
-    tree built). Errors print as one line plus the failing line of the script;
+    Reports each tree, material and world built, then the evaluated geometry
+    and node warnings of every object using one of the geometry trees.
+    ``object`` names an object to evaluate, created if needed, that gets a
+    modifier for the geometry tree ``tree`` (default: the last one built). Errors print as one line plus the failing line of the script;
     pass ``traceback=True`` for the full traceback. ``filename`` names a code
     string in reports.
 
@@ -61,7 +62,7 @@ def run(
         filename, code = filename or "<geometry script>", source
         linecache.cache[filename] = (len(code), None, code.splitlines(True), filename)
 
-    tree_module.built_tree_names.clear()
+    tree_module.built_trees.clear()
     namespace = {"__name__": "__main__", "__file__": filename}
     lines: list[str] = []
     ok = True
@@ -71,22 +72,29 @@ def run(
         ok = False
         lines.append(_error_report(error, filename, traceback))
 
-    built = list(dict.fromkeys(tree_module.built_tree_names))
-    for name in built:
-        node_tree = bpy.data.node_groups.get(name)
-        if node_tree is not None:
-            lines.append(f"built {_tree_summary(node_tree)}")
+    built = list(dict.fromkeys(tree_module.built_trees))
+    geometry_trees = []
+    for collection, name in built:
+        block = getattr(bpy.data, collection).get(name)
+        if block is None:
+            continue
+        if collection == "node_groups":
+            lines.append(f"built {_tree_summary(block)}")
+            if block.bl_idname == "GeometryNodeTree":
+                geometry_trees.append(name)
+        else:
+            lines.append(f"built {_output_tree_summary(block, collection)}")
     if not built and ok:
         lines.append("no trees built")
 
     objects: list[bpy.types.Object] = []
     if object is not None and ok:
-        target_name = tree or (built[-1] if built else None)
+        target_name = tree or (geometry_trees[-1] if geometry_trees else None)
         if target_name is None:
-            lines.append("no tree to attach: pass tree= or build one")
+            lines.append("no geometry tree to attach: pass tree= or build one")
         else:
             objects.append(_attach(object, target_name))
-    for name in built:
+    for name in geometry_trees:
         objects.extend(
             candidate for candidate in _objects_using(name) if candidate not in objects
         )
@@ -142,11 +150,34 @@ def _socket_summary(item: Any) -> str:
     return text
 
 
+_TREE_KINDS = {"ShaderNodeTree": "shader", "CompositorNodeTree": "compositor"}
+
+
 def _tree_summary(node_tree: bpy.types.NodeTree) -> str:
     sockets = [item for item in node_tree.interface.items_tree if item.item_type == "SOCKET"]
     inputs = ", ".join(_socket_summary(s) for s in sockets if s.in_out == "INPUT")
     outputs = ", ".join(_socket_summary(s) for s in sockets if s.in_out == "OUTPUT")
-    return f"{node_tree.name!r}: {len(node_tree.nodes)} nodes; in ({inputs}) -> out ({outputs})"
+    kind = _TREE_KINDS.get(node_tree.bl_idname)
+    name = f"{node_tree.name!r}" + (f" ({kind})" if kind else "")
+    return f"{name}: {len(node_tree.nodes)} nodes; in ({inputs}) -> out ({outputs})"
+
+
+def _output_tree_summary(block: Any, collection: str) -> str:
+    """Summarize a material or world by its active output's linked inputs."""
+    node_tree = block.node_tree
+    output = next(
+        (
+            node for node in node_tree.nodes
+            if node.bl_idname in {"ShaderNodeOutputMaterial", "ShaderNodeOutputWorld"}
+            and node.is_active_output
+        ),
+        None,
+    )
+    linked = [socket.name for socket in output.inputs if socket.is_linked] if output else []
+    return (
+        f"{collection[:-1]} {block.name!r}: {len(node_tree.nodes)} nodes; "
+        f"out ({', '.join(linked) or 'nothing linked'})"
+    )
 
 
 def _objects_using(tree_name: str) -> Iterable[bpy.types.Object]:
@@ -244,10 +275,16 @@ def _short(value: Any) -> str:
 
 
 def describe_tree(name: str) -> None:
-    """Print a node tree as Geometry Script-like calls, leaving out default values."""
+    """Print a node group, material or world as Geometry Script-like calls.
+
+    Inputs left at their default values are left out.
+    """
     node_tree = bpy.data.node_groups.get(name)
     if node_tree is None:
-        print(f"No node tree {name!r}.")
+        block = bpy.data.materials.get(name) or bpy.data.worlds.get(name)
+        node_tree = block.node_tree if block is not None else None
+    if node_tree is None:
+        print(f"No node tree, material or world {name!r}.")
         return
     print(_describe_tree_text(node_tree))
 
@@ -256,8 +293,20 @@ def _python_name(text: str) -> str:
     return re.sub(r"\W+", "_", text.strip().lower()).strip("_") or "value"
 
 
+_GROUP_NODES = {"GeometryNodeGroup", "ShaderNodeGroup", "CompositorNodeGroup"}
+
+
 def _describe_tree_text(node_tree: bpy.types.NodeTree) -> str:
-    lines = [f"# {_tree_summary(node_tree)}"]
+    if node_tree.is_embedded_data:
+        block = next(
+            (b for b in (*bpy.data.materials, *bpy.data.worlds) if b.node_tree == node_tree),
+            None,
+        )
+        collection = "materials" if isinstance(block, bpy.types.Material) else "worlds"
+        header = _output_tree_summary(block, collection) if block else node_tree.name
+    else:
+        header = _tree_summary(node_tree)
+    lines = [f"# {header}"]
     variables: dict[str, str] = {}
     counts: dict[str, int] = {}
     defaults_tree = bpy.data.node_groups.new("__describe_defaults__", node_tree.bl_idname)
@@ -269,9 +318,9 @@ def _describe_tree_text(node_tree: bpy.types.NodeTree) -> str:
             if node.bl_idname == "NodeGroupOutput":
                 lines.append("return " + _group_output_text(node, variables))
                 continue
-            info = node_for_bl_idname(node.bl_idname)
+            info = node_for_bl_idname(node.bl_idname, node_tree.bl_idname)
             function = info.function_name if info else (
-                node.node_tree.name if node.bl_idname == "GeometryNodeGroup" and node.node_tree
+                node.node_tree.name if node.bl_idname in _GROUP_NODES and node.node_tree
                 else node.bl_idname
             )
             if node.bl_idname not in defaults:
@@ -342,7 +391,7 @@ def _source_text(link: Any, variables: dict[str, str]) -> str:
     variable = variables.get(source_node.name, _python_name(source_node.name))
     if source_node.bl_idname == "NodeGroupInput":
         return _python_name(socket.name)
-    info = node_for_bl_idname(source_node.bl_idname)
+    info = node_for_bl_idname(source_node.bl_idname, link.id_data.bl_idname)
     output = (
         info.output_names.get(socket.identifier) or info.output_names.get(socket.name)
         if info else None

@@ -21,7 +21,7 @@ import webbrowser
 from pathlib import Path
 
 from .preferences import GeometryScriptPreferences
-from .api.tree import tree
+from .api.tree import geometry, tree
 from .api.runtime import Socket
 from .api.types import *
 from .api.zones import (
@@ -34,6 +34,12 @@ from .api.zones import (
 from .api.nodes import *
 from .api.aliases import math
 from .api import agent
+from . import compositor, shader
+
+# Scripts import these as `geometry_script.shader`; register them under that
+# name so the import reuses this package instead of loading a second copy.
+for _module in (compositor, shader):
+    sys.modules[f"geometry_script.{_module.__name__.rpartition('.')[2]}"] = _module
 
 from typing import TYPE_CHECKING
 

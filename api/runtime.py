@@ -13,6 +13,32 @@ import bpy
 T = TypeVar("T")
 
 
+# How errors name each tree type, and the module whose node functions it accepts.
+TREE_LABELS = {
+    "GeometryNodeTree": ("Geometry Nodes tree", "geometry_script"),
+    "ShaderNodeTree": ("shader tree", "geometry_script.shader"),
+    "CompositorNodeTree": ("compositor tree", "geometry_script.compositor"),
+}
+
+# Nodes the builder adds itself whose type differs between tree types:
+# a color constant (node, property set to the color, or None for its output's
+# default value) and a node combining color channels.
+_COLOR_INPUT_NODES = {
+    "GeometryNodeTree": ("FunctionNodeInputColor", "value"),
+    "ShaderNodeTree": ("ShaderNodeRGB", None),
+    "CompositorNodeTree": ("CompositorNodeRGB", None),
+}
+_COMBINE_COLOR_NODES = {
+    "GeometryNodeTree": "FunctionNodeCombineColor",
+    "ShaderNodeTree": "ShaderNodeCombineColor",
+    "CompositorNodeTree": "CompositorNodeCombineColor",
+}
+
+
+def tree_label(node_tree: bpy.types.NodeTree) -> str:
+    return TREE_LABELS.get(node_tree.bl_idname, (node_tree.bl_idname, ""))[0]
+
+
 class Socket(Generic[T]):
     """A node-tree socket that can be linked or used to build an expression."""
 
@@ -38,7 +64,7 @@ class Socket(Generic[T]):
 
     def _binary(self, other: Any, operation: str, *, reverse: bool = False) -> Socket[Any]:
         if self.context is not current_build_context():
-            raise RuntimeError("Socket expressions can only be built in their active @tree.")
+            raise RuntimeError("Socket expressions can only be built while building their tree.")
 
         left, right = (other, self) if reverse else (self, other)
         socket_kind = self.node_socket.type
@@ -237,7 +263,7 @@ class BuildContext:
     ) -> Any:
         from .items import add_items
 
-        node = self.node_tree.nodes.new(node_type_id)
+        node = self.new_node(node_type_id)
 
         # Inputs left at their generated default keep Blender's own default,
         # which also holds after a type property changes the socket's type.
@@ -263,6 +289,26 @@ class BuildContext:
                 outputs[socket.name] = self.wrap(socket)
             return output_type(outputs)
         return with_output_hints(output_type)(*outputs.values())
+
+    def new_node(self, node_type_id: str) -> bpy.types.Node:
+        """Add a ``node_type_id`` node, explaining when this tree type has no such node."""
+        try:
+            return self.node_tree.nodes.new(node_type_id)
+        except RuntimeError:
+            from .describe import node_for_bl_idname
+
+            message = (
+                f"{node_type_id} nodes cannot be added to a "
+                f"{tree_label(self.node_tree)} ({self.node_tree.name!r})."
+            )
+            accepting = [
+                f"{label}s ({module})"
+                for tree_type, (label, module) in TREE_LABELS.items()
+                if node_for_bl_idname(node_type_id, tree_type) is not None
+            ]
+            if accepting:
+                message += f" It works in {' and '.join(accepting)}."
+            raise TypeError(message) from None
 
     def _set_properties(self, node: bpy.types.Node, properties: Mapping[str, Any]) -> None:
         for identifier, value in properties.items():
@@ -401,14 +447,14 @@ class BuildContext:
         if node_input.type == "VECTOR" and "Vector4" not in socket_id and len(components) in (2, 3):
             node_type_id = "ShaderNodeCombineXYZ"
         elif node_input.type == "RGBA" and len(components) in (3, 4):
-            node_type_id = "FunctionNodeCombineColor"
+            node_type_id = _COMBINE_COLOR_NODES[self.node_tree.bl_idname]
         else:
             raise TypeError(
                 f"{node_input.node.name!r} input {node_input.name!r} ({socket_id}) cannot "
                 f"take a sequence of {len(components)} values that contains sockets; "
                 "combine them with a node first, e.g. combine_xyz(x=..., y=..., z=...).vector."
             )
-        combine = self.node_tree.nodes.new(node_type_id)
+        combine = self.new_node(node_type_id)
         for component_input, component in zip(combine.inputs, components):
             self.set_input(component_input, component)
         self.link(combine.outputs[0], node_input)
@@ -435,7 +481,8 @@ class BuildContext:
             node_type_id, property_name = "FunctionNodeInputString", "string"
         elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
             if "Color" in socket_id:
-                node_type_id, property_name = "FunctionNodeInputColor", "value"
+                node_type_id, property_name = _COLOR_INPUT_NODES[self.node_tree.bl_idname]
+                property_name = property_name or "default_value"
             elif "IntVector" in socket_id:
                 node_type_id, property_name = "FunctionNodeInputIntVector", "vector"
                 vector_dimensions = len(value)
@@ -449,7 +496,7 @@ class BuildContext:
                 f"A literal of type {type(value).__name__} cannot be linked to {socket_id}."
             )
 
-        node = self.node_tree.nodes.new(node_type_id)
+        node = self.new_node(node_type_id)
         if property_name == "default_value":
             node.outputs[0].default_value = value
         else:
@@ -604,7 +651,7 @@ _BUILD_CONTEXT: ContextVar[BuildContext | None] = ContextVar(
 
 
 def current_build_context() -> BuildContext | None:
-    """Return the tree currently being built, if a @tree decorator is active."""
+    """Return the tree currently being built, if a tree decorator is active."""
     return _BUILD_CONTEXT.get()
 
 
@@ -627,10 +674,13 @@ def node_function(
     type_properties: Mapping[str, Mapping[str, Mapping[str, str]]] | None = None,
     item_collections: Sequence[tuple[str, str, Any]] = (),
 ) -> Any:
-    """Add a node to the active @tree. Called by the generated node functions."""
+    """Add a node to the tree being built. Called by the generated node functions."""
     context = current_build_context()
     if context is None:
-        raise RuntimeError("Node functions must be called while building a @tree.")
+        raise RuntimeError(
+            "Node functions must be called while building a tree "
+            "(@tree, @shader, @material, @world or @compositor)."
+        )
     return context.create_node(
         node_type_id,
         inputs=inputs,

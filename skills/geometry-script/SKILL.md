@@ -1,6 +1,6 @@
 ---
 name: geometry-script
-description: Build and edit Blender Geometry Nodes trees in Python with the Geometry Script add-on (`from geometry_script import *`, `@tree`). Use when asked to create, change, debug or inspect a geometry node tree or node group, procedurally generate geometry in Blender, or when a script uses geometry_script — whether through Blender's official MCP server (execute_blender_code) or headless Blender.
+description: Build and edit Blender node trees in Python with the Geometry Script add-on (`from geometry_script import *`, `@tree`; `geometry_script.shader` for `@shader`/`@material`/`@world`; `geometry_script.compositor` for `@compositor`). Use when asked to create, change, debug or inspect a geometry node tree, shader node group, material, world or compositor node group, procedurally generate geometry in Blender, or when a script uses geometry_script — whether through Blender's official MCP server (execute_blender_code) or headless Blender.
 ---
 
 # Geometry Script
@@ -48,8 +48,9 @@ failing line of your script. Pass `traceback=True` only when that isn't enough.
 |---|---|---|
 | Find a node | `python3 tools/describe.py --search "points on faces"` or `agent.search(...)` | grepping `api/nodes.py` (9k+ lines) |
 | A node's sockets | `python3 tools/describe.py set_position mesh_to_points` or `agent.describe(...)` | reading the generated function source |
+| Shader / compositor nodes | `tools/describe.py --tree shader ...`, `agent.describe(..., tree="compositor")` | grepping `api/shader_nodes.py` / `api/compositor_nodes.py` |
 | Check a build | `agent.run(...)` / `tools/run.py` report, or `agent.status()` after a live-edit save | raw `exec` with full tracebacks; screenshots |
-| Understand an existing tree | `agent.describe_tree("Tree Name")`: prints it as Geometry Script calls, without default values | dumping `node_tree.nodes` / links |
+| Understand an existing tree | `agent.describe_tree("Name")` (node group, material or world): prints it as Geometry Script calls, without default values | dumping `node_tree.nodes` / links |
 | Know the API | this file | the book in `book/` (longer) |
 | See the result | report stats first; then MCP `get_screenshot_of_area_as_image(area_ui_type="VIEW_3D", size_limit_in_bytes=200000)` | `get_screenshot_of_window_as_image` (the whole window) |
 | A `bpy` (not node) question | MCP `search_api_docs` / `get_python_api_docs` | guessing, or long `dir()` dumps |
@@ -118,6 +119,44 @@ def zones(geometry: Geometry):
     value = scale.evaluate(scale(), 1.0, 3.0)
     return {"Geometry": fall(out.generated.geometry), "Value": value}
 ```
+
+### Shaders, materials, worlds and the compositor
+
+Each tree type has its own module of node functions; names like `normal`, `mix`
+or `object_info` mean different nodes in each. A node used in the wrong tree
+raises an error naming the module it belongs to.
+
+```python
+from geometry_script import *            # geometry nodes, @tree / @geometry
+from geometry_script import shader as sh # @sh.shader, @sh.material, @sh.world
+from geometry_script import compositor as comp
+
+@sh.shader("Stripes")                    # shader node group: works like @tree
+def stripes(color: Color = (0.9, 0.3, 0.1, 1.0), scale: float = 6.0):
+    wave = sh.wave_texture(scale=scale)
+    return sh.mix(data_type="RGBA", factor=wave.factor, a=color, b=(0, 0, 0, 1)).result
+
+@sh.material("Striped")                  # no parameters; return the surface shader,
+def striped():                           # or {"surface": ..., "displacement": ...}
+    return sh.principled_bsdf(base_color=stripes(scale=10.0)).bsdf
+
+@sh.world("Studio", scene=True)          # scene=True makes it the scene's world
+def studio():
+    return sh.background(color=(0.05, 0.06, 0.08, 1.0)).background
+
+@comp.compositor("Glow", scene=True)     # scene=True makes it the scene's compositor
+def glow(strength: float = 0.3):
+    image = comp.render_layers().image
+    blurred = comp.blur(image=image, size=(20, 20)).image
+    return comp.mix(data_type="RGBA", blend_type="SCREEN", factor=strength, a=image, b=blurred).result
+
+@tree("Striped Cube")                    # calling a @material returns the Material
+def striped_cube():
+    return set_material(geometry=cube().mesh, material=striped()).geometry
+```
+
+`@repeat_zone` and `@closure_zone` also work in shader trees. `agent.run` reports
+shader groups, materials and worlds, but `object=` only attaches geometry trees.
 
 ### Item nodes
 

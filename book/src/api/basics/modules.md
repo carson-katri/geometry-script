@@ -35,4 +35,14 @@ gs.cube(...) # Prefix with the custom name
 my_geo: gs.Geometry
 ```
 
+## Shader and Compositor Modules
+Shader and compositor nodes live in their own modules, `geometry_script.shader` and `geometry_script.compositor`, since each kind of tree accepts different nodes. They work with any of the import styles above:
+```python
+from geometry_script import *
+from geometry_script import shader as sh
+
+sh.principled_bsdf(...)
+```
+See [Shaders and Compositing](../advanced-scripting/shaders-and-compositing.md) for more.
+
 Now that you have Geometry Script imported in some way, let's create a tree.

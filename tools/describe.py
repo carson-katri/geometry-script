@@ -2,6 +2,7 @@
 
     python3 tools/describe.py set_position mesh_to_points
     python3 tools/describe.py --search "points on faces"
+    python3 tools/describe.py --tree shader principled_bsdf
 """
 
 import importlib.util

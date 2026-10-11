@@ -26,6 +26,7 @@
     - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
     - [For Each Element Zones](./api/advanced-scripting/for-each-zones.md)
     - [Closure Zones](./api/advanced-scripting/closure-zones.md)
+    - [Shaders and Compositing](./api/advanced-scripting/shaders-and-compositing.md)
 
 # Tutorials
 

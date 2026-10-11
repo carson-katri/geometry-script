@@ -66,7 +66,7 @@ def _active_context(builder: Callable[..., Any]) -> BuildContext:
     context = current_build_context()
     if context is None:
         raise RuntimeError(
-            f"Zone {builder.__name__!r} must be called while building a @tree."
+            f"Zone {builder.__name__!r} must be called while building a tree."
         )
     return context
 
@@ -75,9 +75,8 @@ def _new_zone(
     context: BuildContext, input_node: str, output_node: str, *item_collections: str
 ) -> tuple[bpy.types.Node, bpy.types.Node]:
     """Add a paired zone input and output, with the output's item lists emptied."""
-    nodes = context.node_tree.nodes
-    zone_input = nodes.new(input_node)
-    zone_output = nodes.new(output_node)
+    zone_input = context.new_node(input_node)
+    zone_output = context.new_node(output_node)
     zone_input.pair_with_output(zone_output)
     for collection in item_collections:
         clear_items(getattr(zone_output, collection))
@@ -206,7 +205,7 @@ optionally ``skip=``. A body parameter named ``delta_time`` receives the frame s
 
 
 def closure_zone(builder: Callable[..., Any]) -> Callable[..., Any]:
-    """Build a Closure zone; calling it inside a @tree returns the Closure socket.
+    """Build a Closure zone; calling it while building a tree returns the Closure socket.
 
     The body's parameters become the closure's inputs and its return values
     become the closure's outputs. Use ``f.evaluate(closure, ...)`` to add an
@@ -261,7 +260,7 @@ def closure_zone(builder: Callable[..., Any]) -> Callable[..., Any]:
             )
         bound = signature.bind(*args, **kwargs)
         bound.apply_defaults()
-        node = context.node_tree.nodes.new("NodeEvaluateClosure")
+        node = context.new_node("NodeEvaluateClosure")
         clear_items(node.input_items)
         clear_items(node.output_items)
         for socket_type, name in item_types():

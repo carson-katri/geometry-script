@@ -3088,7 +3088,7 @@ class GeometryNodeInputFontOutputs(typing.NamedTuple):
     'Outputs from Font: Output a font'
     font: Socket[Font]
 
-def font(*, font: bpy.types.VectorFont | None) -> GeometryNodeInputFontOutputs:
+def font(*, font: bpy.types.VectorFont | None = None) -> GeometryNodeInputFontOutputs:
     'Output a font'
     return _node_function(
         'GeometryNodeInputFont',

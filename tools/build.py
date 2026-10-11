@@ -2,8 +2,9 @@
 
     python tools/build.py --blender /path/to/blender [--output-dir dist]
 
-The tracked sources are staged in a temporary directory, api/nodes.py is
-regenerated with the given Blender, the manifest is limited to that Blender
+The tracked sources are staged in a temporary directory, the node modules
+(api/nodes.py, api/shader_nodes.py, api/compositor_nodes.py) are regenerated
+with the given Blender, the manifest is limited to that Blender
 series, the smoke test runs against the staged copy, and Blender's extension
 builder writes ``geometry_script-<version>-blender-<major>.<minor>.zip``.
 """
@@ -87,7 +88,6 @@ def main() -> int:
         run_blender(
             args.blender,
             "--python", "code_generator/node_functions_generator.py",
-            "--", "--output", "api/nodes.py",
             cwd=staging,
         )
         version = limit_manifest(staging / "blender_manifest.toml", major, minor)

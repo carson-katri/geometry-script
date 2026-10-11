@@ -1,6 +1,6 @@
 ![Geometry Script wordmark](book/src/images/wordmark.png)
 
-A scripting API for Blender's Geometry Nodes:
+A scripting API for Blender's Geometry Nodes, shaders and compositor:
 
 <table>
 <tbody>
@@ -47,6 +47,16 @@ At a certain point, Geometry Node trees become unmanagably large. Creating node 
 
 Every node in your Blender version is available as a typed Python function, generated from Blender itself, so your editor can complete node names, inputs, outputs and enum values.
 
+Shader node groups, materials, worlds and compositor node groups can be scripted the same way, with `geometry_script.shader` and `geometry_script.compositor`:
+
+```python
+from geometry_script.shader import *
+
+@material("Gold")
+def gold():
+    return principled_bsdf(base_color=(1.0, 0.77, 0.34, 1.0), metallic=1.0, roughness=0.2).bsdf
+```
+
 ## [Documentation](https://carson-katri.github.io/geometry-script/)
 Read the documentation for more information on installation, syntax, and tutorials.
 
@@ -57,7 +67,7 @@ Use [`uv`](https://docs.astral.sh/uv/) to get `fake-bpy-module` and some pyright
 uv sync
 ```
 
-To build an installable package for a specific Blender version, which regenerates `api/nodes.py` with that Blender and runs the smoke test:
+To build an installable package for a specific Blender version, which regenerates the node modules (`api/nodes.py`, `api/shader_nodes.py` and `api/compositor_nodes.py`) with that Blender and runs the smoke test:
 
 ```sh
 python tools/build.py --blender /path/to/blender  # writes dist/geometry_script-<version>-blender-<major>.<minor>.zip

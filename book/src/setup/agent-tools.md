@@ -16,7 +16,14 @@ built 'Repeat Grid': 14 nodes; in (Geometry: Geometry, Columns: Int = 3, Rows: I
 object 'Cube': instances 9; instance positions (-2, -2, 0)..(2, 2, 0)
 ```
 
-`object=` names the object to add a *Geometry Nodes* modifier to, creating the object if it doesn't exist. `tree=` picks which tree to attach, instead of the last one built. If the script fails, the report shows the error and the line of your script that caused it. Pass `traceback=True` for the full traceback.
+Shader groups, materials, worlds and compositor groups are reported too:
+
+```
+built 'Stripes' (shader): 4 nodes; in (Color A: Color, Color B: Color, Scale: Float = 6) -> out (Result: Color)
+built material 'Striped': 3 nodes; out (Surface)
+```
+
+`object=` names the object to add a *Geometry Nodes* modifier to, creating the object if it doesn't exist. `tree=` picks which geometry tree to attach, instead of the last one built. If the script fails, the report shows the error and the line of your script that caused it. Pass `traceback=True` for the full traceback.
 
 `agent.status()` prints the report of the latest run, including runs triggered by [Live Edit](./external-editing.md#linking-with-blender).
 
@@ -32,13 +39,14 @@ python3 tools/run.py "examples/City Builder.py" --object Roads --blend city.blen
 ```sh
 python3 tools/describe.py --search "points on faces"   # find a node
 python3 tools/describe.py set_position mesh_to_points  # print their signatures
+python3 tools/describe.py --tree shader principled_bsdf  # shader or compositor nodes
 ```
 
-Inside Blender, the same is available as `agent.search(...)` and `agent.describe(...)`.
+Inside Blender, the same is available as `agent.search(...)` and `agent.describe(...)`, which also take `tree="shader"` or `tree="compositor"`.
 
 ## Reading an Existing Tree
 
-`agent.describe_tree("Tree Name")` prints any geometry node tree, including ones made by hand, as Geometry Script calls. Inputs left at their default values are omitted.
+`agent.describe_tree("Name")` prints any node group, material or world, including ones made by hand, as Geometry Script calls. Inputs left at their default values are omitted.
 
 ## Agent Skill
 

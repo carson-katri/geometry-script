@@ -79,10 +79,12 @@ _EXCLUDED_NODE_TYPES = {
     "NodeFrame",
     "NodeReroute",
     "NodeImplicitConversion",
-    # Group interfaces and group instances are built by @tree.
+    # Group interfaces and group instances are built by the tree decorators.
     "NodeGroupInput",
     "NodeGroupOutput",
     "GeometryNodeGroup",
+    "ShaderNodeGroup",
+    "CompositorNodeGroup",
     # Zone nodes only work as linked input/output pairs, so they are built
     # by the zone decorators in api/zones.py instead.
     "GeometryNodeRepeatInput",
@@ -279,7 +281,10 @@ def _socket_meta(
         default_value=default_value,
         description=_safe_str(socket, "description"),
         display_shape=display_shape,
-        structure_type=_safe_str(socket, "inferred_structure_type"),
+        # Only geometry trees have fields, grids and lists.
+        structure_type=(
+            _safe_str(socket, "inferred_structure_type") if supports_geometry_structures else ""
+        ),
         enum_values=_socket_menu_values(socket) if is_menu else (),
         is_menu=is_menu,
         # DIAMOND_DOT is retained in RNA for older node definitions.
@@ -410,8 +415,7 @@ def _property_type(prop: object) -> str:
         type_name = _safe_str(_safe_getattr(prop, "fixed_type"), "identifier")
         if not type_name.isidentifier():
             return "typing.Any"
-        if _safe_getattr(prop, "is_never_none", False):
-            return f"bpy.types.{type_name}"
+        # None keeps the node's own value, so every pointer is optional.
         return f"bpy.types.{type_name} | None"
 
     scalar_types = {
@@ -447,6 +451,10 @@ def _property_type(prop: object) -> str:
 
 def _property_default(prop: object, node: object | None) -> object:
     identifier = _safe_str(prop, "identifier")
+    if _safe_getattr(prop, "type", "") == "POINTER":
+        # A new node may already point at data (e.g. the active scene); None
+        # leaves that as it is.
+        return None
     if node is not None and identifier:
         try:
             return _literal_value(getattr(node, identifier))
@@ -508,11 +516,21 @@ def _node_properties(node_type: type, node: object | None) -> tuple[NodeProperty
         try:
             if not _is_node_argument(prop, inherited_identifiers):
                 continue
+            property_type = _property_type(prop)
+            default_value = _property_default(prop, node)
+            if (
+                property_type.startswith("typing.Literal[")
+                and isinstance(default_value, str)
+                and default_value not in _enum_values(prop)
+            ):
+                # The items depend on the file (e.g. a scene's view layers), so
+                # the static items are only a placeholder; None keeps the node's value.
+                property_type, default_value = "str | None", None
             properties.append(
                 NodeProperty(
                     identifier=_safe_str(prop, "identifier"),
-                    type=_property_type(prop),
-                    default_value=_property_default(prop, node),
+                    type=property_type,
+                    default_value=default_value,
                     description=_safe_str(prop, "description"),
                 )
             )

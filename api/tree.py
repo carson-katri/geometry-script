@@ -7,6 +7,7 @@ import functools
 import inspect
 from collections import namedtuple
 from collections.abc import Callable, Iterator, Mapping
+from dataclasses import dataclass
 from typing import Any
 
 import bpy
@@ -21,6 +22,7 @@ from .runtime import (
     current_build_context,
     reset_build_context,
     resolve_socket,
+    tree_label,
     with_output_hints,
 )
 from .socket_types import (
@@ -31,8 +33,25 @@ from .socket_types import (
 )
 
 
-# Names of the trees built since this list was last cleared, in build order.
-built_tree_names: list[str] = []
+@dataclass(frozen=True)
+class TreeKind:
+    """A type of node group that a decorator builds."""
+
+    tree_type: str
+    group_node: str
+    decorator: str
+    # The decorators whose trees can use one of these groups as a node.
+    used_by: str
+
+
+GEOMETRY = TreeKind("GeometryNodeTree", "GeometryNodeGroup", "@tree", "@tree")
+SHADER = TreeKind("ShaderNodeTree", "ShaderNodeGroup", "@shader", "@shader, @material or @world")
+COMPOSITOR = TreeKind("CompositorNodeTree", "CompositorNodeGroup", "@compositor", "@compositor")
+
+
+# The trees built since this list was last cleared, in build order, as the
+# ``bpy.data`` collection holding each one and its name.
+built_trees: list[tuple[str, str]] = []
 
 
 def tree_output_values(value: Any) -> list[tuple[str, Any]]:
@@ -55,18 +74,16 @@ def tree_output_values(value: Any) -> list[tuple[str, Any]]:
     return [("Result", value)]
 
 
-def _create_or_reuse_tree(name: str) -> bpy.types.GeometryNodeTree:
+def _create_or_reuse_tree(name: str, kind: TreeKind) -> bpy.types.NodeTree:
     node_tree = bpy.data.node_groups.get(name)
-    if node_tree is not None and node_tree.bl_idname != "GeometryNodeTree":
-        bpy.data.node_groups.remove(node_tree, do_unlink=True)
-        node_tree = None
     if node_tree is None:
-        node_tree = bpy.data.node_groups.new(name, "GeometryNodeTree")
+        node_tree = bpy.data.node_groups.new(name, kind.tree_type)
     else:
         for node in tuple(node_tree.nodes):
             node_tree.nodes.remove(node)
         node_tree.interface.clear()
-    node_tree.is_modifier = True
+    if kind is GEOMETRY:
+        node_tree.is_modifier = True
     return node_tree
 
 
@@ -129,15 +146,20 @@ def _restore_modifier_input_values(
 
 
 @contextlib.contextmanager
-def _rebuild_transaction(name: str) -> Iterator[bpy.types.GeometryNodeTree]:
+def _rebuild_transaction(name: str, kind: TreeKind) -> Iterator[bpy.types.NodeTree]:
     """Yield the cleared tree ``name``; if the build fails, restore what was there.
 
     Modifiers using the tree keep their input values either way.
     """
     existing = bpy.data.node_groups.get(name)
+    if existing is not None and existing.bl_idname != kind.tree_type:
+        raise TypeError(
+            f"{kind.decorator} cannot build {name!r}: a {tree_label(existing)} group "
+            "already has that name. Give the function a different name."
+        )
     backup = existing.copy() if existing is not None else None
     saved = _modifier_input_values(existing) if existing is not None else []
-    node_tree = _create_or_reuse_tree(name)
+    node_tree = _create_or_reuse_tree(name, kind)
     try:
         yield node_tree
     except BaseException:
@@ -164,18 +186,20 @@ def _socket_output_reference(interface_socket: Any, index: int) -> tuple[str, st
     return (*_socket_reference(interface_socket, index), structure_type)
 
 
-def _check_parameters(parameters: list[inspect.Parameter]) -> None:
+def _check_parameters(parameters: list[inspect.Parameter], kind: TreeKind) -> None:
     unsupported = {
         inspect.Parameter.VAR_POSITIONAL,
         inspect.Parameter.VAR_KEYWORD,
         inspect.Parameter.POSITIONAL_ONLY,
     }
     if any(parameter.kind in unsupported for parameter in parameters):
-        raise TypeError("@tree functions must use named positional or keyword-only parameters.")
+        raise TypeError(
+            f"{kind.decorator} functions must use named positional or keyword-only parameters."
+        )
 
 
 def _new_interface_socket(
-    node_tree: bpy.types.GeometryNodeTree, name: str, in_out: str, socket_type: str
+    node_tree: bpy.types.NodeTree, name: str, in_out: str, socket_type: str
 ) -> Any:
     dimensions = INTERFACE_VECTOR_DIMENSIONS.get(socket_type)
     try:
@@ -187,8 +211,8 @@ def _new_interface_socket(
     except TypeError:
         kind = "input" if in_out == "INPUT" else "output"
         raise TypeError(
-            f"Geometry node groups cannot have {socket_type.removeprefix('NodeSocket')} "
-            f"{kind}s ({name!r})."
+            f"A {tree_label(node_tree)} group cannot have "
+            f"{socket_type.removeprefix('NodeSocket')} {kind}s ({name!r})."
         ) from None
     if dimensions is not None:
         # Changing the dimensions replaces the item with a differently typed one.
@@ -203,7 +227,7 @@ def _new_interface_socket(
 
 
 def _add_interface_input(
-    node_tree: bpy.types.GeometryNodeTree,
+    node_tree: bpy.types.NodeTree,
     parameter: inspect.Parameter,
     annotation: Any,
 ) -> tuple[Any, str]:
@@ -282,7 +306,7 @@ def _add_interface_outputs(context: BuildContext, result: Any) -> None:
 
 
 def _fill_tree(
-    node_tree: bpy.types.GeometryNodeTree,
+    node_tree: bpy.types.NodeTree,
     builder: Callable[..., Any],
     parameters: list[inspect.Parameter],
 ) -> dict[str, tuple[Any, str]]:
@@ -324,16 +348,16 @@ def _fill_tree(
 
 
 def _build_tree(
-    name: str, builder: Callable[..., Any]
-) -> tuple[bpy.types.GeometryNodeTree, inspect.Signature, dict[str, Any]]:
+    name: str, builder: Callable[..., Any], kind: TreeKind
+) -> tuple[bpy.types.NodeTree, inspect.Signature, dict[str, Any]]:
     """Build the node group; returns it, the builder signature and its inputs by parameter."""
     signature = inspect.signature(builder)
     parameters = list(signature.parameters.values())
-    _check_parameters(parameters)
+    _check_parameters(parameters, kind)
 
-    with _rebuild_transaction(name) as node_tree:
+    with _rebuild_transaction(name, kind) as node_tree:
         interface_inputs = _fill_tree(node_tree, builder, parameters)
-    built_tree_names.append(node_tree.name)
+    built_trees.append(("node_groups", node_tree.name))
 
     interface_sockets = {
         parameter_name: interface_socket
@@ -342,8 +366,8 @@ def _build_tree(
     return node_tree, signature, interface_sockets
 
 
-def _tree_function(name: str, builder: Callable[..., Any]) -> Callable[..., Any]:
-    node_tree, signature, interface_inputs = _build_tree(name, builder)
+def _tree_function(name: str, builder: Callable[..., Any], kind: TreeKind) -> Callable[..., Any]:
+    node_tree, signature, interface_inputs = _build_tree(name, builder, kind)
     input_specs = {
         parameter_name: _socket_reference(interface_socket, index)
         for index, (parameter_name, interface_socket) in enumerate(interface_inputs.items())
@@ -368,11 +392,16 @@ def _tree_function(name: str, builder: Callable[..., Any]) -> Callable[..., Any]
         context = current_build_context()
         if context is None:
             return node_tree
+        if context.node_tree.bl_idname != kind.tree_type:
+            raise TypeError(
+                f"{node_tree.name!r} is a {tree_label(node_tree)} group; it can only be "
+                f"used while building {kind.used_by}, not a {tree_label(context.node_tree)}."
+            )
 
         bound = signature.bind(*args, **kwargs)
         bound.apply_defaults()
         outputs = context.create_node(
-            "GeometryNodeGroup",
+            kind.group_node,
             inputs={name: bound.arguments[name] for name in input_specs},
             input_sockets=input_specs,
             properties={"node_tree": node_tree},
@@ -391,6 +420,21 @@ def _tree_function(name: str, builder: Callable[..., Any]) -> Callable[..., Any]
     return group_reference
 
 
+def named_decorator(
+    decorator: str,
+    name_or_builder: str | Callable[..., Any] | None,
+    build: Callable[[Callable[..., Any], str], Any],
+) -> Any:
+    """Apply ``build(builder, name)`` for a bare ``@decorator`` or ``@decorator("Name")``."""
+    if isinstance(name_or_builder, str):
+        return lambda builder: build(builder, name_or_builder)
+    if callable(name_or_builder):
+        return build(name_or_builder, name_or_builder.__name__)
+    if name_or_builder is None:
+        return lambda builder: build(builder, builder.__name__)
+    raise TypeError(f"{decorator} expects a function, a tree name, or no argument.")
+
+
 def tree(
     name_or_builder: str | Callable[..., Any] | None = None,
 ) -> Callable[..., Any]:
@@ -400,14 +444,46 @@ def tree(
     group name. Calling the decorated function inside another active ``@tree``
     creates a node-group instance; calling it outside a build returns its tree.
     """
+    return named_decorator(
+        "@tree", name_or_builder, lambda builder, name: _tree_function(name, builder, GEOMETRY)
+    )
 
-    def decorate(builder: Callable[..., Any], name: str | None = None) -> Callable[..., Any]:
-        return _tree_function(name or builder.__name__, builder)
 
-    if isinstance(name_or_builder, str):
-        return lambda builder: decorate(builder, name_or_builder)
-    if callable(name_or_builder):
-        return decorate(name_or_builder)
-    if name_or_builder is None:
-        return lambda builder: decorate(builder)
-    raise TypeError("@tree expects a function, a tree name, or no argument.")
+# ``@geometry`` reads better next to ``@shader`` and ``@compositor``.
+geometry = tree
+
+
+def shader(
+    name_or_builder: str | Callable[..., Any] | None = None,
+) -> Callable[..., Any]:
+    """Build or rebuild a shader node group from a decorated function.
+
+    Works like ``@tree`` with shader nodes: calling the decorated function
+    while building a ``@shader``, ``@material`` or ``@world`` adds a group
+    node; calling it outside a build returns its tree.
+    """
+    return named_decorator(
+        "@shader", name_or_builder, lambda builder, name: _tree_function(name, builder, SHADER)
+    )
+
+
+def compositor(
+    name_or_builder: str | Callable[..., Any] | None = None,
+    *,
+    scene: bool | bpy.types.Scene = False,
+) -> Callable[..., Any]:
+    """Build or rebuild a compositor node group from a decorated function.
+
+    Works like ``@tree`` with compositor nodes. ``scene=True`` makes the group
+    the active scene's compositor (pass a Scene to choose another); its first
+    Color output is the composited image.
+    """
+
+    def build(builder: Callable[..., Any], name: str) -> Callable[..., Any]:
+        reference = _tree_function(name, builder, COMPOSITOR)
+        if scene is not False:
+            target = bpy.context.scene if scene is True else scene
+            target.compositing_node_group = reference.node_tree
+        return reference
+
+    return named_decorator("@compositor", name_or_builder, build)

@@ -1,6 +1,9 @@
-"""Generate typed Python functions for the nodes available in a Blender node tree.
+"""Generate typed Python functions for the nodes available in each kind of node tree.
 
-    blender -b --factory-startup --python code_generator/node_functions_generator.py -- --output api/nodes.py
+    blender -b --factory-startup --python code_generator/node_functions_generator.py
+
+writes api/nodes.py (Geometry Nodes), api/shader_nodes.py and
+api/compositor_nodes.py. Pass ``--tree-type`` and ``--output`` to generate one.
 """
 
 from __future__ import annotations
@@ -16,6 +19,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from code_generator.emit import emit_module
 from code_generator.introspect import read_signatures
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# The module generated for each tree type, relative to the add-on root.
+MODULES = {
+    "GeometryNodeTree": "api/nodes.py",
+    "ShaderNodeTree": "api/shader_nodes.py",
+    "CompositorNodeTree": "api/compositor_nodes.py",
+}
 
 
 def generate_code(tree_type: str = "GeometryNodeTree") -> str:
@@ -38,23 +50,29 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate typed node functions")
     parser.add_argument(
         "--tree-type",
-        default="GeometryNodeTree",
-        help="The node tree type whose nodes are generated",
+        choices=sorted(MODULES),
+        help="Generate only this tree type's nodes (default: every tree type)",
     )
     parser.add_argument(
         "--output",
-        required=True,
-        help="Path of the Python module to write (Blender also prints to stdout)",
+        help="Path of the module to write with --tree-type (default: its module in api/)",
     )
     args = parser.parse_args(argv)
+    if args.output and not args.tree_type:
+        parser.error("--output needs --tree-type")
 
-    try:
-        code = generate_code(args.tree_type)
-    except Exception as error:
-        print(f"Could not generate node functions: {error}", file=sys.stderr)
-        return 1
-    with open(args.output, "w", encoding="utf-8", newline="\n") as file:
-        file.write(code)
+    if args.tree_type:
+        targets = {args.tree_type: Path(args.output or ROOT / MODULES[args.tree_type])}
+    else:
+        targets = {tree_type: ROOT / path for tree_type, path in MODULES.items()}
+    for tree_type, output in targets.items():
+        try:
+            code = generate_code(tree_type)
+        except Exception as error:
+            print(f"Could not generate {tree_type} node functions: {error}", file=sys.stderr)
+            return 1
+        with open(output, "w", encoding="utf-8", newline="\n") as file:
+            file.write(code)
     return 0
 
 

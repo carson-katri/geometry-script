@@ -1,9 +1,10 @@
 """Compact, token-cheap descriptions of the generated node functions.
 
-Reads ``nodes.py`` with ``ast``, so it runs without Blender:
+Reads the generated node modules with ``ast``, so it runs without Blender:
 
     python3 tools/describe.py set_position mesh_to_points
     python3 tools/describe.py --search "points on faces"
+    python3 tools/describe.py --tree shader principled_bsdf
 
 Inside Blender, ``geometry_script.describe(...)`` and ``geometry_script.search(...)``
 print the same text.
@@ -15,12 +16,23 @@ import ast
 import re
 import sys
 import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
 from pathlib import Path
 
 
-NODES_PATH = Path(__file__).with_name("nodes.py")
+# The generated module for each tree type, by the name ``tree=`` takes.
+NODE_MODULES = {
+    "geometry": Path(__file__).with_name("nodes.py"),
+    "shader": Path(__file__).with_name("shader_nodes.py"),
+    "compositor": Path(__file__).with_name("compositor_nodes.py"),
+}
+TREES_BY_TYPE = {
+    "GeometryNodeTree": "geometry",
+    "ShaderNodeTree": "shader",
+    "CompositorNodeTree": "compositor",
+}
 _STRUCTURES = ("Field", "Grid", "List")
 
 
@@ -126,9 +138,15 @@ def _docstring_parts(docstring: str) -> tuple[str, dict[str, str]]:
     return description.strip(), helps
 
 
+def _check_tree(tree: str) -> None:
+    if tree not in NODE_MODULES:
+        raise ValueError(f"tree must be one of {list(NODE_MODULES)!r}, not {tree!r}.")
+
+
 @cache
-def _nodes() -> dict[str, _Node]:
-    module = ast.parse(NODES_PATH.read_text(encoding="utf-8"))
+def _nodes(tree: str = "geometry") -> dict[str, _Node]:
+    _check_tree(tree)
+    module = ast.parse(NODE_MODULES[tree].read_text(encoding="utf-8"))
     classes = {item.name: item for item in module.body if isinstance(item, ast.ClassDef)}
     nodes = {}
     for item in module.body:
@@ -180,20 +198,35 @@ def _nodes() -> dict[str, _Node]:
     return nodes
 
 
-def node_for_bl_idname(bl_idname: str) -> _Node | None:
-    """The generated function for a Blender node type, if there is one."""
-    return next((n for n in _nodes().values() if n.bl_idname == bl_idname), None)
+def node_for_bl_idname(bl_idname: str, tree_type: str = "GeometryNodeTree") -> _Node | None:
+    """The generated function for a Blender node type in a ``tree_type`` tree, if any."""
+    tree = TREES_BY_TYPE.get(tree_type)
+    if tree is None:
+        return None
+    return next((n for n in _nodes(tree).values() if n.bl_idname == bl_idname), None)
 
 
-def describe_text(*names: str) -> str:
-    """The compact signature of each named node function."""
-    nodes = _nodes()
+def _other_trees(tree: str, has: Callable[[str], bool]) -> str:
+    """A hint naming the other tree types for which ``has(tree)`` holds."""
+    others = [other for other in NODE_MODULES if other != tree and has(other)]
+    if not others:
+        return ""
+    return " Found for " + ", ".join(f"tree={other!r}" for other in others) + "."
+
+
+def describe_text(*names: str, tree: str = "geometry") -> str:
+    """The compact signature of each named node function of ``tree`` nodes."""
+    nodes = _nodes(tree)
     blocks = []
     for name in names:
         node = nodes.get(name)
         if node is None:
-            close = search_text(name, limit=5)
-            blocks.append(f"No node function {name!r}. Closest:\n{close}")
+            message = f"No {tree} node function {name!r}."
+            message += _other_trees(tree, lambda other: name in _nodes(other))
+            close = _search(name, tree)
+            if close:
+                message += " Closest:\n" + search_text(name, limit=5, tree=tree)
+            blocks.append(message)
             continue
         lines = [f"{node.function_name}  # {node.label}: {node.description}".rstrip(": ")]
         for parameter in node.parameters:
@@ -222,12 +255,12 @@ def _fold(text: str) -> str:
     return "".join(character for character in decomposed if not unicodedata.combining(character))
 
 
-def search_text(query: str, limit: int = 12) -> str:
-    """Node functions whose name, label or description match ``query``, best first."""
+def _search(query: str, tree: str) -> list[_Node]:
+    """``tree`` node functions whose name, label or description match ``query``, best first."""
     words = [word for word in re.split(r"[\s_]+", _fold(query)) if word]
     squashed_query = "".join(words)
     scored = []
-    for node in _nodes().values():
+    for node in _nodes(tree).values():
         name = _fold(f"{node.function_name} {node.label}")
         description = _fold(node.description)
         score = sum(3 if word in name else 1 if word in description else 0 for word in words)
@@ -236,31 +269,51 @@ def search_text(query: str, limit: int = 12) -> str:
         if score:
             scored.append((-score, node.function_name, node))
     scored.sort()
+    return [node for _, _, node in scored]
+
+
+def search_text(query: str, limit: int = 12, tree: str = "geometry") -> str:
+    """``tree`` node functions whose name, label or description match ``query``, best first."""
     lines = []
-    for _, _, node in scored[:limit]:
+    for node in _search(query, tree)[:limit]:
         description = node.description if len(node.description) <= 90 else node.description[:87] + "..."
         lines.append(f"{node.function_name}  # {node.label}: {description}".rstrip(": "))
-    return "\n".join(lines) or f"No node functions match {query!r}."
+    if lines:
+        return "\n".join(lines)
+    hint = _other_trees(tree, lambda other: bool(_search(query, other)))
+    return f"No {tree} node functions match {query!r}.{hint}"
 
 
-def describe(*names: str) -> None:
-    """Print the compact signature of each named node function."""
-    print(describe_text(*names))
+def describe(*names: str, tree: str = "geometry") -> None:
+    """Print the compact signature of each named node function.
+
+    ``tree`` picks the node set: "geometry", "shader" or "compositor".
+    """
+    print(describe_text(*names, tree=tree))
 
 
-def search(query: str, limit: int = 12) -> None:
-    """Print node functions matching ``query``, best first."""
-    print(search_text(query, limit))
+def search(query: str, limit: int = 12, tree: str = "geometry") -> None:
+    """Print node functions matching ``query``, best first.
+
+    ``tree`` picks the node set: "geometry", "shader" or "compositor".
+    """
+    print(search_text(query, limit, tree))
 
 
 def main(argv: list[str]) -> int:
     if not argv or argv[0] in {"-h", "--help"}:
         print((__doc__ or "").strip())
         return 0
-    if argv[0] == "--search":
-        search(" ".join(argv[1:]))
+    tree = "geometry"
+    if argv[0] == "--tree" and len(argv) > 1:
+        tree, argv = argv[1], argv[2:]
+        if tree not in NODE_MODULES:
+            print(f"--tree must be one of {', '.join(NODE_MODULES)}", file=sys.stderr)
+            return 2
+    if argv and argv[0] == "--search":
+        search(" ".join(argv[1:]), tree=tree)
         return 0
-    describe(*argv)
+    describe(*argv, tree=tree)
     return 0
 
 
