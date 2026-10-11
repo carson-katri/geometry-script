@@ -8,15 +8,15 @@ Each build of the extension is generated for one Blender version, so its node fu
 Drag the box for your Blender version into Blender:
 
 <div class="extension-drops">
-<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.2.zip?repository=./index.json&amp;blender_version_min=5.2.0&amp;blender_version_max=5.3.0">
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.2.zip?repository=./index.json&amp;blender_version_min=5.2.0&amp;blender_version_max=5.3.0#.zip">
 <span class="extension-drop-title">Blender 5.2</span>
 <span class="extension-drop-hint">Drag into Blender</span>
 </a>
-<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.3.zip?repository=./index.json&amp;blender_version_min=5.3.0&amp;blender_version_max=5.4.0">
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.3.zip?repository=./index.json&amp;blender_version_min=5.3.0&amp;blender_version_max=5.4.0#.zip">
 <span class="extension-drop-title">Blender 5.3</span>
 <span class="extension-drop-hint">Drag into Blender</span>
 </a>
-<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.4.zip?repository=./index.json&amp;blender_version_min=5.4.0&amp;blender_version_max=5.5.0">
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.4.zip?repository=./index.json&amp;blender_version_min=5.4.0&amp;blender_version_max=5.5.0#.zip">
 <span class="extension-drop-title">Blender 5.4</span>
 <span class="extension-drop-hint">Drag into Blender</span>
 </a>

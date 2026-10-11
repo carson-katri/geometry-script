@@ -21,7 +21,9 @@ def drop_url(base_url: str, package: dict[str, str]) -> str:
     if "blender_version_max" in package:
         query["blender_version_max"] = package["blender_version_max"]
     archive = package["archive_url"].removeprefix("./")
-    return f"{base_url.rstrip('/')}/{archive}?{urllib.parse.urlencode(query, safe='/')}"
+    # On Linux, Blender receives a dropped link as a path and checks it ends in `.zip` without
+    # stripping the query first. The fragment satisfies that check and Blender ignores it otherwise.
+    return f"{base_url.rstrip('/')}/{archive}?{urllib.parse.urlencode(query, safe='/')}#.zip"
 
 
 def main() -> int:
