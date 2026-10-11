@@ -1,0 +1,1365 @@
+<!DOCTYPE HTML>
+<html lang="en" class="coal sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Geometry Script</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="style-be43f986.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "coal";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "searchindex-3498ac31.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-81b5b8a3.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('coal')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Geometry Script</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p><strong>Geometry Script</strong> is a scripting API for Blender’s Geometry Nodes.
+It makes complicated node trees more managable and easy to share.</p>
+<ul>
+<li><a href="#using-nodes">Full coverage of nodes</a> available in your Blender version</li>
+<li>Clean, easy to use <a href="#basics">Python API</a></li>
+<li>Typed node functions generated from your Blender version, with <a href="#using-nodes">errors that say what to change</a></li>
+<li>External <a href="#external-editing">IDE integration</a> for better completions and hot reload</li>
+<li><a href="#repeat-zones">Repeat, simulation, for-each and closure zones</a></li>
+</ul>
+<p>Here’s a simple example of what’s possible with a short script:</p>
+<h3 id="geometry-script"><a class="header" href="#geometry-script">Geometry Script</a></h3>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("Repeat Grid")
+def repeat_grid(geometry: Geometry, width: int = 3, height: int = 3):
+    mesh = grid(
+        size_x=width, size_y=height,
+        vertices_x=width, vertices_y=height,
+    ).mesh
+    points = mesh_to_points(mesh=mesh).points
+    return instance_on_points(points=points, instance=geometry).instances
+</code></pre>
+<h3 id="generated-node-tree"><a class="header" href="#generated-node-tree">Generated Node Tree</a></h3>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/example_generated_tree.png" alt="Generated node tree"><span class="img-wrapper"><img src="images/example_generated_tree.png" alt="Generated node tree"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>Geometry Script is a Blender extension and requires <strong>Blender 5.2</strong> or newer.</p>
+<p>Each build of the extension is generated for one Blender version, so its node functions match the nodes in that version exactly. Download the build that matches the version of Blender you use.</p>
+<h2 id="drag-and-drop"><a class="header" href="#drag-and-drop">Drag and drop</a></h2>
+<p>Drag the box for your Blender version into Blender:</p>
+<div class="extension-drops">
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.2.zip?repository=./index.json&amp;blender_version_min=5.2.0&amp;blender_version_max=5.3.0">
+<span class="extension-drop-title">Blender 5.2</span>
+<span class="extension-drop-hint">Drag into Blender</span>
+</a>
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.3.zip?repository=./index.json&amp;blender_version_min=5.3.0&amp;blender_version_max=5.4.0">
+<span class="extension-drop-title">Blender 5.3</span>
+<span class="extension-drop-hint">Drag into Blender</span>
+</a>
+<a class="extension-drop" href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.4.zip?repository=./index.json&amp;blender_version_min=5.4.0&amp;blender_version_max=5.5.0">
+<span class="extension-drop-title">Blender 5.4</span>
+<span class="extension-drop-hint">Drag into Blender</span>
+</a>
+</div>
+
+<p>Blender asks to allow online access if it’s off, then offers to add the Geometry Script repository and install the extension. The <a href="https://github.com/carson-katri/geometry-script/releases/tag/nightly"><code>nightly</code> release</a> lists the links for every Blender version with a build.</p>
+<h2 id="from-github"><a class="header" href="#from-github">From GitHub</a></h2>
+<ol>
+<li>Download the ZIP matching your Blender version from the <a href="https://github.com/carson-katri/geometry-script/releases/tag/nightly"><code>nightly</code> release</a>, e.g. <code>geometry_script-1.0.0-blender-5.2.zip</code></li>
+<li>Open <em>Blender</em> &gt; <em>Preferences</em> &gt; <em>Get Extensions</em></li>
+<li>Open the dropdown at the top right, choose <em>Install from Disk…</em> and select the downloaded ZIP file</li>
+</ol>
+<h2 id="from-blender-market"><a class="header" href="#from-blender-market">From Blender Market</a></h2>
+<ol>
+<li>After <a href="https://www.blendermarket.com/">purchasing the add-on</a>, download the ZIP file</li>
+<li>Open <em>Blender</em> &gt; <em>Preferences</em> &gt; <em>Get Extensions</em></li>
+<li>Open the dropdown at the top right, choose <em>Install from Disk…</em> and select the downloaded ZIP file</li>
+</ol>
+<h2 id="building-it-yourself"><a class="header" href="#building-it-yourself">Building it yourself</a></h2>
+<p>To build the extension for a Blender version that has no published ZIP, clone the repository and run:</p>
+<pre><code class="language-sh">python tools/build.py --blender /path/to/blender
+</code></pre>
+<p>This regenerates the node functions with that Blender, runs a smoke test, and writes <code>dist/geometry_script-&lt;version&gt;-blender-&lt;major&gt;.&lt;minor&gt;.zip</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="internal-editing-basics"><a class="header" href="#internal-editing-basics">Internal Editing Basics</a></h1>
+<p>The fastest way to get up and running is with Blender’s built-in <em>Text Editor</em>.
+You can edit and execute your scripts right inside of Blender:</p>
+<ol>
+<li>Open a <em>Text Editor</em> space.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/text_editor_space.png" alt="A screenshot of the available spaces, with the Text Editor space highlighted"><span class="img-wrapper"><img src="images/text_editor_space.png" alt="A screenshot of the available spaces, with the Text Editor space highlighted"></span></label></p>
+<ol start="2">
+<li>Create a new text data-block with the <em>New</em> button.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/text_editor_new.png" alt="A screenshot of the Text Editor space with the new button"><span class="img-wrapper"><img src="images/text_editor_new.png" alt="A screenshot of the Text Editor space with the new button"></span></label></p>
+<ol start="3">
+<li>Start writing a Geometry Script. As an example, you can paste in the script below. More detailed instructions on writing scripts are in later chapters.</li>
+</ol>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("Repeat Grid")
+def repeat_grid(geometry: Geometry, width: int = 3, height: int = 3):
+    mesh = grid(
+        size_x=width, size_y=height,
+        vertices_x=width, vertices_y=height,
+    ).mesh
+    points = mesh_to_points(mesh=mesh).points
+    return instance_on_points(points=points, instance=geometry).instances
+</code></pre>
+<ol start="4">
+<li>Click the run button to execute the script. This will create a Geometry Nodes tree named <em>Repeat Grid</em>.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/text_editor_run_script.png" alt="A screenshot of the Text Editor space with the Run Script button"><span class="img-wrapper"><img src="images/text_editor_run_script.png" alt="A screenshot of the Text Editor space with the Run Script button"></span></label></p>
+<ol start="5">
+<li>Create a <em>Geometry Nodes</em> modifier on any object in your scene and select the <em>Repeat Grid</em> tree.</li>
+</ol>
+<p>If the script has a mistake, Blender reports the error (the full traceback is in the system console) and the previous version of the tree is left untouched. Errors name what to change, such as a misspelled input (<code>unexpected keyword argument 'vertice_x'. Did you mean 'vertices_x'?</code>) or an output that doesn’t exist (<code>GeometryNodeMeshGridOutputs has no output 'geometry'; available: ['mesh', 'uv_map']</code>).</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/geometry_nodes_modifier.png" alt="A screenshot of the Blender window with a 3x3 grid of cubes on the left and a Geometry Nodes modifier with the Repeat Grid tree selected on the right"><span class="img-wrapper"><img src="images/geometry_nodes_modifier.png" alt="A screenshot of the Blender window with a 3x3 grid of cubes on the left and a Geometry Nodes modifier with the Repeat Grid tree selected on the right"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="external-editing"><a class="header" href="#external-editing">External Editing</a></h1>
+<p>Blender’s <em>Text Editor</em> leaves a lot to be desired. Writing scripts without code completion can be tough.
+Using an external code editor is one way to improve the editing experience.</p>
+<p>This guide will show how to setup <a href="https://code.visualstudio.com/">Visual Studio Code</a> to edit Geometry Scripts. However, the same concepts apply to other IDEs.</p>
+<blockquote>
+<p>This guide assumes you have already installed Visual Studio Code and setup the <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.python">Python extension</a>. If not, please setup those tools before continuing.</p>
+</blockquote>
+<h2 id="code-completion"><a class="header" href="#code-completion">Code Completion</a></h2>
+<p>Every node function in Geometry Script is generated with full type hints: its keyword arguments, their socket types and defaults, the allowed enum values, and a named tuple of its outputs. An editor only needs to find the <code>geometry_script</code> package to complete all of them.</p>
+<ol>
+<li>
+<p>Find the folder Blender installed the extension into. For the default user repository this is the <code>extensions/user_default</code> folder inside Blender’s configuration directory:</p>
+<ul>
+<li>Linux: <code>~/.config/blender/5.2/extensions/user_default</code></li>
+<li>macOS: <code>~/Library/Application Support/Blender/5.2/extensions/user_default</code></li>
+<li>Windows: <code>%APPDATA%\Blender Foundation\Blender\5.2\extensions\user_default</code></li>
+</ul>
+<p>It contains a <code>geometry_script</code> folder.</p>
+</li>
+<li>
+<p>In VS Code, open the Settings UI (<code>Shift+CTRL+P</code> or <code>Shift+CMD+P</code> &gt; <code>Preferences &gt; Open Settings (UI)</code>)</p>
+</li>
+<li>
+<p>Find the setting <code>Python &gt; Analysis: Extra Paths</code></p>
+</li>
+<li>
+<p>Click <em>Add Item</em>, then paste in the <code>user_default</code> path and click <em>OK</em></p>
+</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/vscode_extra_paths.png" alt="A screenshot of the Python &gt; Analysis: Extra Paths setting with the path pasted in"><span class="img-wrapper"><img src="images/vscode_extra_paths.png" alt="A screenshot of the Python &gt; Analysis: Extra Paths setting with the path pasted in"></span></label></p>
+<ol start="5">
+<li>Create a new Python file, such as <code>Repeat Grid.py</code> and start writing a script. As you type, you should get helpful suggestions for every available node.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/vscode_code_completion.png" alt="A screenshot of a script with the documentation for instance_on_points appearing as the user types."><span class="img-wrapper"><img src="images/vscode_code_completion.png" alt="A screenshot of a script with the documentation for instance_on_points appearing as the user types."></span></label></p>
+<blockquote>
+<p>For completions of <code>bpy</code> itself, install <a href="https://github.com/nutti/fake-bpy-module"><code>fake-bpy-module</code></a> into the Python environment your editor uses.</p>
+</blockquote>
+<h2 id="linking-with-blender"><a class="header" href="#linking-with-blender">Linking with Blender</a></h2>
+<p>Writing a script is great, but we want to see it run in Blender. Thankfully, Blender’s Text Editor lets us link with an external file, and a simple tool from Geometry Script can make the process more seamless:</p>
+<ol>
+<li>Open a <em>Text Editor</em> space.</li>
+<li>Click the open button in the top of the editor, and navigate to your Python file.</li>
+<li>Click the gear icon or press <em>N</em>, and uncheck <em>Make Internal</em>. This will ensure that changes made outside of Blender can be easily brought in.</li>
+<li>Click <em>Open Text</em>.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/open_file.png" alt="A screenshot of Blender’s file picker, with the Make Internal checkbox unchecked."><span class="img-wrapper"><img src="images/open_file.png" alt="A screenshot of Blender’s file picker, with the Make Internal checkbox unchecked."></span></label></p>
+<ol start="5">
+<li>At the top right of the Text Editor, open the <em>Geometry Script</em> menu and enable <em>Auto Resolve</em>. Enabling this feature will make the text data-block in Blender update every time you save the file outside of Blender.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/auto_resolve.png" alt="A screenshot of the Geometry Script menu with Auto Resolve checked"><span class="img-wrapper"><img src="images/auto_resolve.png" alt="A screenshot of the Geometry Script menu with Auto Resolve checked"></span></label></p>
+<ol start="6">
+<li>To enable hot reload, open the <em>Text</em> menu and enable <em>Live Edit</em>. This will re-run your Geometry Script whenever it changes, updating the node tree live.</li>
+</ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/live_edit.png" alt="A screenshot of the Text menu with Live Edit checked"><span class="img-wrapper"><img src="images/live_edit.png" alt="A screenshot of the Text menu with Live Edit checked"></span></label></p>
+<p>Each live reload prints a short report to Blender’s system console: the trees that were built with their inputs and outputs, then the evaluated geometry (vertex, face, point and instance counts and bounds) and any node warnings for every object using them. If the script fails, the report shows the error and the line that caused it, and the previous tree is kept.</p>
+<p>And that’s it! You’re setup to start writing scripts. In the next section we’ll take a look at the API, and all of the things you can do with it.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="command-line-and-agent-tools"><a class="header" href="#command-line-and-agent-tools">Command-Line and Agent Tools</a></h1>
+<p>Geometry Script includes a few tools that report on a script in a few lines of plain text, instead of tracebacks or screenshots. They are useful when running scripts outside of Blender’s UI, and for AI coding agents that build node trees.</p>
+<h2 id="running-a-script"><a class="header" href="#running-a-script">Running a Script</a></h2>
+<p><code>agent.run</code> builds the trees in a script, optionally attaches the last one to an object, evaluates it, and prints a short report:</p>
+<pre><code class="language-python">from geometry_script import agent
+agent.run("/path/to/Repeat Grid.py", object="Cube")
+</code></pre>
+<pre><code>built 'Repeat Grid': 14 nodes; in (Geometry: Geometry, Columns: Int = 3, Rows: Int = 3, Spacing X: Float = 0, Spacing Y: Float = 0) -&gt; out (Result: Geometry)
+object 'Cube': instances 9; instance positions (-2, -2, 0)..(2, 2, 0)
+</code></pre>
+<p>Shader groups, materials, worlds and compositor groups are reported too:</p>
+<pre><code>built 'Stripes' (shader): 4 nodes; in (Color A: Color, Color B: Color, Scale: Float = 6) -&gt; out (Result: Color)
+built material 'Striped': 3 nodes; out (Surface)
+</code></pre>
+<p><code>object=</code> names the object to add a <em>Geometry Nodes</em> modifier to, creating the object if it doesn’t exist. <code>tree=</code> picks which geometry tree to attach, instead of the last one built. If the script fails, the report shows the error and the line of your script that caused it. Pass <code>traceback=True</code> for the full traceback.</p>
+<p><code>agent.status()</code> prints the report of the latest run, including runs triggered by <a href="#linking-with-blender">Live Edit</a>.</p>
+<p>To run a script in background Blender from a terminal, use <code>tools/run.py</code> from the repository. It loads Geometry Script from the checkout, so the extension doesn’t need to be installed:</p>
+<pre><code class="language-sh">python3 tools/run.py "examples/Repeat Grid.py" --object Cube
+python3 tools/run.py "examples/City Builder.py" --object Roads --blend city.blend
+</code></pre>
+<h2 id="looking-up-nodes"><a class="header" href="#looking-up-nodes">Looking Up Nodes</a></h2>
+<pre><code class="language-sh">python3 tools/describe.py --search "points on faces"   # find a node
+python3 tools/describe.py set_position mesh_to_points  # print their signatures
+python3 tools/describe.py --tree shader principled_bsdf  # shader or compositor nodes
+</code></pre>
+<p>Inside Blender, the same is available as <code>agent.search(...)</code> and <code>agent.describe(...)</code>, which also take <code>tree="shader"</code> or <code>tree="compositor"</code>.</p>
+<h2 id="reading-an-existing-tree"><a class="header" href="#reading-an-existing-tree">Reading an Existing Tree</a></h2>
+<p><code>agent.describe_tree("Name")</code> prints any node group, material or world, including ones made by hand, as Geometry Script calls. Inputs left at their default values are omitted.</p>
+<h2 id="agent-skill"><a class="header" href="#agent-skill">Agent Skill</a></h2>
+<p>The repository includes a skill for AI coding agents in <code>skills/geometry-script/SKILL.md</code>. It explains the API and the run-and-fix loop above, including how to use these tools through Blender’s MCP server.</p>
+<p>For Claude Code, install it as a plugin from this repository:</p>
+<pre><code>/plugin install geometry-script --marketplace carson-katri/geometry-script
+</code></pre>
+<p>Other agents can read the skill file directly from a checkout of the repository.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="basics"><a class="header" href="#basics">Basics</a></h1>
+<p>Creating Geometry Scripts can be as easy or complex as you want for your project.
+Throughout this guide, scripts will be displayed alongside the generated nodes to provide context on how a script relates to the underlying nodes.</p>
+<p>Setting up an editor for <a href="#external-editing">external editing</a> is recommended when writing scripts, but <a href="#internal-editing-basics">internal editing inside Blender</a> will suffice for the simple examples shown here.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="modules"><a class="header" href="#modules">Modules</a></h1>
+<p>The first step when writing is script is importing the <code>geometry_script</code> module. There a are a few ways of doing this:</p>
+<h2 id="import-all-names-recommended"><a class="header" href="#import-all-names-recommended">Import All Names (Recommended)</a></h2>
+<p>This will import every type and function available into your script. It can make it easy to discover what’s available with code completion, and makes the scripts more terse.</p>
+<pre><code class="language-python">from geometry_script import *
+
+cube(...) # Available globally
+my_geo: Geometry # All types available as well
+</code></pre>
+<h2 id="import-specific-names"><a class="header" href="#import-specific-names">Import Specific Names</a></h2>
+<p>This will import only the specified names from the module:</p>
+<pre><code class="language-python">from geometry_script import cube, Geometry
+
+cube(...) # Available from import
+my_geo: Geometry
+</code></pre>
+<h2 id="namespaced-import"><a class="header" href="#namespaced-import">Namespaced Import</a></h2>
+<p>This will import every type and function, and place them behind the namespace. You can use the module name, or provide your own.</p>
+<pre><code class="language-python">import geometry_script
+
+geometry_script.cube(...) # Prefix with the namespace
+my_geo: geometry_script.Geometry
+</code></pre>
+<pre><code class="language-python">import geometry_script as gs
+
+gs.cube(...) # Prefix with the custom name
+my_geo: gs.Geometry
+</code></pre>
+<h2 id="shader-and-compositor-modules"><a class="header" href="#shader-and-compositor-modules">Shader and Compositor Modules</a></h2>
+<p>Shader and compositor nodes live in their own modules, <code>geometry_script.shader</code> and <code>geometry_script.compositor</code>, since each kind of tree accepts different nodes. They work with any of the import styles above:</p>
+<pre><code class="language-python">from geometry_script import *
+from geometry_script import shader as sh
+
+sh.principled_bsdf(...)
+</code></pre>
+<p>See <a href="#shaders-and-compositing">Shaders and Compositing</a> for more.</p>
+<p>Now that you have Geometry Script imported in some way, let’s create a tree.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="tree-functions"><a class="header" href="#tree-functions">Tree Functions</a></h1>
+<p>Node trees are created by decorating a function with <code>@tree</code>. Let’s try creating a simple tree function.</p>
+<blockquote>
+<p>The code samples for the rest of the book assume you are importing all names with <code>from geometry_script import *</code>. However, if you are using a namespaced import, simply prefix the functions and types with <code>geometry_script</code> or your custom name.</p>
+</blockquote>
+<pre><code class="language-python">@tree
+def cube_tree():
+    ...
+</code></pre>
+<p>By default, the name of your function will be used as the name of the generated node tree. However, you can specify a custom name by passing a string to <code>@tree</code>:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree():
+    ...
+</code></pre>
+<p>Running the script again rebuilds the tree in place. Modifiers using the tree keep their input values, and if the script raises an error, the previous version of the tree is left untouched.</p>
+<h2 id="group-output"><a class="header" href="#group-output">Group Output</a></h2>
+<p>The values you return become the outputs of the tree. Let’s try returning a simple cube.</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree():
+    return cube().mesh
+</code></pre>
+<p>Here we call the <code>cube(...)</code> function, which creates a <em>Cube</em> node. Node functions return their outputs as a named tuple, so <code>.mesh</code> picks the <em>Mesh</em> output and connects it to the <em>Group Output</em>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree.png" alt=""></span></label></p>
+<p>The <em>Geometry Nodes</em> modifier displays the first output, so a tree used as a modifier should return <code>Geometry</code> first.</p>
+<p>You can also return multiple values as a tuple.</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree():
+    return cube().mesh, 5
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_int.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_int.png" alt=""></span></label></p>
+<p>By default, the outputs are named <em>Result</em>, <em>Result 2</em>, and so on. To customize the names, return a dictionary.</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree():
+    return {
+        "My Cube": cube().mesh,
+        "Scale Constant": 5
+    }
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_named_outputs.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_named_outputs.png" alt=""></span></label></p>
+<h2 id="group-input"><a class="header" href="#group-input">Group Input</a></h2>
+<p>Each argument of a tree function becomes an input socket. Its annotation chooses the socket type. Let’s add a size argument to our Cube Tree.</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector):
+    return cube(size=size).mesh
+</code></pre>
+<p>This creates a <em>Size</em> socket on the <em>Group Input</em> node and connects it to our cube.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_size.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_size.png" alt=""></span></label></p>
+<p>The option is available on the Geometry Nodes modifier.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_modifier.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_modifier.png" alt=""></span></label></p>
+<p>The available socket types match those in the UI. Python’s built-in types are used for the basic ones:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Annotation</th><th>Socket</th></tr>
+</thead>
+<tbody>
+<tr><td><code>float</code></td><td>Float</td></tr>
+<tr><td><code>int</code></td><td>Integer</td></tr>
+<tr><td><code>bool</code></td><td>Boolean</td></tr>
+<tr><td><code>str</code></td><td>String</td></tr>
+<tr><td><code>Vector</code>, <code>Vector2</code>, <code>Vector4</code></td><td>Vector (3, 2 or 4 dimensions)</td></tr>
+<tr><td><code>Color</code></td><td>Color</td></tr>
+<tr><td><code>Rotation</code></td><td>Rotation</td></tr>
+<tr><td><code>Matrix</code></td><td>Matrix</td></tr>
+<tr><td><code>Menu</code></td><td>Menu</td></tr>
+<tr><td><code>Geometry</code></td><td>Geometry</td></tr>
+<tr><td><code>Object</code>, <code>Collection</code>, <code>Material</code>, <code>Image</code></td><td>Data-block</td></tr>
+<tr><td><code>Bundle</code>, <code>Closure</code></td><td>Bundle, Closure</td></tr>
+</tbody>
+</table>
+</div>
+<p>Wrap a type in <code>Field[...]</code>, <code>Grid[...]</code> or <code>List[...]</code> to set the socket’s structure type, e.g. <code>offset: Field[float]</code> for an input that accepts a field.</p>
+<p>In the next chapter, we’ll take a closer look at how sockets work, and what you can and cannot do with them.</p>
+<h3 id="default-values"><a class="header" href="#default-values">Default Values</a></h3>
+<p>You can specify a default for any argument, and it will be set on the modifier when added:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector = (1.0, 1.0, 1.0)):
+    return cube(size=size).mesh
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_size_input.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_size_input.png" alt=""></span></label></p>
+<p>If an argument has a default but no annotation, its type is inferred from the default: <code>count=4</code> becomes an Integer input and <code>scale=0.5</code> a Float input.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="sockets"><a class="header" href="#sockets">Sockets</a></h1>
+<p>Because scripts are converted to Geometry Node trees, the values you work with in a script are not concrete numbers or meshes. They are sockets.</p>
+<h2 id="what-is-a-socket"><a class="header" href="#what-is-a-socket">What is a socket?</a></h2>
+<p>A socket is any input or output on a node. Take the <em>Cube</em> node for example:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_node.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_node.png" alt=""></span></label></p>
+<p>This node has 4 input sockets, and 2 output sockets.</p>
+<ul>
+<li>Input Sockets
+<ul>
+<li>Size: <code>Vector</code></li>
+<li>Vertices X: <code>int</code></li>
+<li>Vertices Y: <code>int</code></li>
+<li>Vertices Z: <code>int</code></li>
+</ul>
+</li>
+<li>Output Sockets
+<ul>
+<li>Mesh: <code>Geometry</code></li>
+<li>UV Map: <code>Field[Vector]</code></li>
+</ul>
+</li>
+</ul>
+<p>A socket does not represent a value itself. For example, the <code>Size</code> socket does not necessarily represent the value <code>(1, 1, 1)</code>. Instead, it can be connected to another node as an input, giving it a dynamic value.</p>
+<p>When we write scripts, we typically deal with sockets, not concrete values like <code>(1, 1, 1)</code>. Take this script for example:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector):
+    return cube(size=size).mesh
+</code></pre>
+<p>The <code>size</code> argument creates an input socket with the type <code>Vector</code>. This is then connected to the <code>size</code> socket of the <em>Cube</em> node.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_size.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_size.png" alt=""></span></label></p>
+<p>Our script does not run every time the node tree is evaluated. It only runs once to create the node tree. Therefore, we have no way of knowing what value <code>size</code> has when the script runs, because it is dynamic.</p>
+<h2 id="what-sockets-can-do"><a class="header" href="#what-sockets-can-do">What sockets <em>can</em> do</a></h2>
+<p>Sockets are great for passing values between nodes. A <code>Geometry</code> socket does not represent concrete vertices, edges, and faces. Instead, it represents the input or output socket of a node. This lets us use it to create connections between different nodes, by passing the output of one node to the input of another.</p>
+<h2 id="what-sockets-cannot-do"><a class="header" href="#what-sockets-cannot-do">What sockets <em>cannot</em> do</a></h2>
+<p>Sockets cannot be read for their concrete value. A <code>float</code> socket does not equal <code>5</code> or <code>10</code> or <code>3.14</code> to our script. If you try to <code>print(...)</code> a socket, you will see which node and socket it refers to, such as <code>Socket(Cube.Mesh)</code>, but no value.</p>
+<p>For the same reason, Python’s <code>if</code>, <code>and</code>, <code>or</code> and <code>not</code> cannot look at a socket’s value. Use comparisons with nodes such as <em>Switch</em> and <em>Boolean Math</em> instead.</p>
+<h2 id="literals"><a class="header" href="#literals">Literals</a></h2>
+<p>Anywhere a node input accepts a socket, you can also pass a Python value. It is stored as the input’s value:</p>
+<pre><code class="language-python">cube(size=(2.0, 2.0, 2.0), vertices_x=4)
+</code></pre>
+<p>A tuple that contains sockets is combined for you with a <em>Combine XYZ</em> (or <em>Combine Color</em>) node:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(height: float):
+    return cube(size=(1.0, 1.0, height)).mesh
+</code></pre>
+<h2 id="socket-math"><a class="header" href="#socket-math">Socket Math</a></h2>
+<p>Sockets can be used in math expressions. The proper <em>Math</em> node will be created automatically for you, so you can focus on writing a script and not thinking about sockets. If you use a <code>float</code> or <code>int</code> socket it will create a <em>Math</em> node, and if you use a <code>Vector</code> socket it will create a <em>Vector Math</em> node.</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector):
+    doubled = size * (2, 2, 2) # Multiply each component by 2
+    return cube(size=doubled).mesh
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_size_double.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_size_double.png" alt=""></span></label></p>
+<p>These operators are available:</p>
+<ul>
+<li>Add (<code>socket + 2</code>)</li>
+<li>Subtract (<code>socket - 2</code>)</li>
+<li>Multiply (<code>socket * 2</code>)</li>
+<li>Divide (<code>socket / 2</code>)</li>
+<li>Modulo (<code>socket % 2</code>)</li>
+<li>Power (<code>socket ** 2</code>)</li>
+<li>Negate (<code>-socket</code>)</li>
+</ul>
+<p>For any other operation, call the node function directly:</p>
+<pre><code class="language-python">math_(operation="SINE", value=angle).value
+vector_math(operation="NORMALIZE", vector=direction).vector
+</code></pre>
+<h2 id="comparisons"><a class="header" href="#comparisons">Comparisons</a></h2>
+<p>Comparison operators create a <em>Compare</em> node, which outputs a boolean socket:</p>
+<pre><code class="language-python">is_tall = height &gt; 2.0
+is_even = index().index % 2 == 0
+</code></pre>
+<p>These operators are available:</p>
+<ul>
+<li>Less than (<code>socket &lt; 2</code>)</li>
+<li>Less than or equal (<code>socket &lt;= 2</code>)</li>
+<li>Greater than (<code>socket &gt; 2</code>)</li>
+<li>Greater than or equal (<code>socket &gt;= 2</code>)</li>
+<li>Equal (<code>socket == 2</code>)</li>
+<li>Not equal (<code>socket != 2</code>)</li>
+</ul>
+<p>They work with float, integer, vector, color and string sockets, and pick the <em>Compare</em> node’s data type from both sides: an integer socket compared with a <code>float</code> compares as floats. Colors and strings only support <code>==</code> and <code>!=</code>. Equality on floats and vectors uses the node’s default epsilon of <code>0.001</code>. For other settings, such as a different epsilon or a vector comparison mode, call the node function directly:</p>
+<pre><code class="language-python">compare(a=direction, b=(0, 0, 1), operation="GREATER_THAN", data_type="VECTOR", mode="DOT_PRODUCT").result
+</code></pre>
+<p>Shader and compositor trees have no <em>Compare</em> node, so comparisons on float sockets there use <em>Math</em> nodes, which output <code>1.0</code> or <code>0.0</code>.</p>
+<p>The result is still a socket, so Python’s <code>if</code> cannot use it, and chained comparisons such as <code>0 &lt; x &lt; 1</code> do not work. Combine conditions with <em>Boolean Math</em> instead.</p>
+<p>See <a href="#boolean-math">Boolean Math</a> for combining the results.</p>
+<h2 id="vector-components"><a class="header" href="#vector-components">Vector Components</a></h2>
+<p>To read the <code>x</code>, <code>y</code>, and <code>z</code> components of a <code>Vector</code> socket, use a <em>Separate XYZ</em> node:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector):
+    components = separate_xyz(vector=size)
+    # Multiply the height by 2 but leave the other components unchanged.
+    return cube(size=(components.x, components.y, components.z * 2)).mesh
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_size_components.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_size_components.png" alt=""></span></label></p>
+<h2 id="connecting-nodes"><a class="header" href="#connecting-nodes">Connecting Nodes</a></h2>
+<p>To use the output of one node as the input of another, pass the output socket as a keyword argument:</p>
+<pre><code class="language-python">@tree("Cube Tree")
+def cube_tree(size: Vector):
+    mesh = cube(size=size).mesh
+    return mesh_to_volume(mesh=mesh).volume
+</code></pre>
+<p>The <em>Mesh</em> output of the <em>Cube</em> node is connected to the <em>Mesh</em> input of the <em>Mesh to Volume</em> node.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_tree_mesh_to_volume.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_tree_mesh_to_volume.png" alt=""></span></label></p>
+<p>Storing intermediate sockets in variables keeps longer trees readable, and lets you connect one output to several inputs.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="using-nodes"><a class="header" href="#using-nodes">Using Nodes</a></h1>
+<p>Node functions are generated from the Blender version the extension is built for. Every node in that version is available, with the exact inputs, outputs and options it has there.</p>
+<h2 id="how-nodes-are-mapped"><a class="header" href="#how-nodes-are-mapped">How nodes are mapped</a></h2>
+<p>All nodes are mapped to functions in the same way, so you can usually guess what a node is called. Using an <a href="#external-editing">IDE with code completion</a> makes this even easier.</p>
+<ol>
+<li>The function name is the node’s name in snake case: <em>Mesh to Points</em> is <code>mesh_to_points</code>.</li>
+<li>Each input and property is a <strong>keyword argument</strong>, also in snake case. Node functions do not take positional arguments.</li>
+<li>The function returns a named tuple with one field per output, again in snake case.</li>
+</ol>
+<pre><code class="language-python">result = mesh_to_points(mesh=grid().mesh, radius=0.1)
+result.points # The Points output
+</code></pre>
+<blockquote>
+<p>Properties and inputs are both keyword arguments. A property is a value that cannot be connected to a socket. These are typically enums (displayed in the UI as a dropdown), with specific string values expected.</p>
+</blockquote>
+<h3 id="names-that-clash-with-python"><a class="header" href="#names-that-clash-with-python">Names that clash with Python</a></h3>
+<p>Names that would hide a Python builtin get a trailing underscore: <code>math_</code>, <code>id_</code>, <code>object_</code> and <code>string_</code>. <code>math(...)</code> also works for the <em>Math</em> node, while <code>math.pi</code> and the other members of Python’s <code>math</code> module keep working too.</p>
+<h2 id="finding-nodes"><a class="header" href="#finding-nodes">Finding Nodes</a></h2>
+<p>To search the available nodes, or to print the signature of a node, use the <code>describe</code> tool from the repository. It doesn’t need Blender to run:</p>
+<pre><code class="language-sh">python3 tools/describe.py --search "points on faces"
+python3 tools/describe.py mesh_to_points
+</code></pre>
+<pre><code>mesh_to_points  # Mesh to Points: Generate a point cloud from a mesh's vertices
+  mesh: Geometry
+  selection: bool field = True
+  position: Vector field = (0, 0, 0)
+  radius: float field = 0.05
+  mode: VERTICES|EDGES|FACES|CORNERS = 'VERTICES'
+  -&gt; .points: Geometry
+</code></pre>
+<p>Inside Blender, <code>agent.search(...)</code> and <code>agent.describe(...)</code> print the same thing:</p>
+<pre><code class="language-python">from geometry_script import agent
+agent.describe("mesh_to_points", "set_position")
+</code></pre>
+<h2 id="enum-properties"><a class="header" href="#enum-properties">Enum Properties</a></h2>
+<p>Many nodes have enum properties. For example, the <em>Math</em> node lets you choose which operation to perform. Pass the enum value as a string:</p>
+<pre><code class="language-python">math_(operation="ADD", value=1.0, value_2=2.0)
+math_(operation="SUBTRACT", value=1.0, value_2=2.0)
+</code></pre>
+<p>The allowed values are part of the function’s type hints, so they appear in code completion and a type checker will flag a typo. If you pass an invalid value, the error lists the valid ones:</p>
+<pre><code>Cannot set ShaderNodeMath.operation to 'SUBSTRACT'. Expected one of ['ADD', 'SUBTRACT', ...]. Did you mean 'SUBTRACT'?
+</code></pre>
+<p>Some nodes use <em>Menu</em> inputs instead of enum properties. These are passed as strings as well, using the name shown in the UI:</p>
+<pre><code class="language-python">distribute_points_in_volume(volume=volume, mode="Grid")
+</code></pre>
+<h2 id="data-types"><a class="header" href="#data-types">Data Types</a></h2>
+<p>Nodes such as <em>Switch</em>, <em>Capture Attribute</em>, <em>Random Value</em> or <em>Store Named Attribute</em> can work with several data types. You usually don’t need to set <code>data_type</code> or <code>input_type</code>: it is inferred from what you connect.</p>
+<pre><code class="language-python"># input_type is inferred as 'GEOMETRY'
+switch(switch=use_sphere, false=cube().mesh, true=uv_sphere().mesh).output
+# data_type is inferred as 'FLOAT_VECTOR'
+random_value(min=(0.0, 0.0, 0.0), max=(1.0, 1.0, 1.0)).value
+</code></pre>
+<p>Set it explicitly to override the inferred type:</p>
+<pre><code class="language-python">named_attribute(name="height", data_type="FLOAT").attribute
+</code></pre>
+<h2 id="duplicate-names"><a class="header" href="#duplicate-names">Duplicate Names</a></h2>
+<p>Some nodes use the same input name multiple times. For example, the <em>Math</em> node has three inputs named <em>Value</em>. The second and third get a number: <code>value</code>, <code>value_2</code> and <code>value_3</code>.</p>
+<pre><code class="language-python">math_(operation="WRAP", value=0.5, value_2=1.0, value_3=0.0)
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/math_wrap.png" alt=""><span class="img-wrapper"><img src="api/basics/math_wrap.png" alt=""></span></label></p>
+<h2 id="outputs-that-depend-on-settings"><a class="header" href="#outputs-that-depend-on-settings">Outputs That Depend on Settings</a></h2>
+<p>Some outputs only exist with certain settings. The <em>Vector Math</em> node, for example, outputs a <em>Value</em> instead of a <em>Vector</em> for <code>DOT_PRODUCT</code>. Accessing an output that the node doesn’t have with its current settings raises an error naming the outputs that do exist:</p>
+<pre><code>'Vector Math' has no 'vector' output with its current settings {'operation': 'DOT_PRODUCT'}; available: ['value'].
+</code></pre>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<p>Here are two examples to show how a node maps to a function.</p>
+<h3 id="cube"><a class="header" href="#cube">Cube</a></h3>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/cube_node.png" alt=""><span class="img-wrapper"><img src="api/basics/cube_node.png" alt=""></span></label></p>
+<ol>
+<li>Name: <code>Cube</code> -&gt; <code>cube</code></li>
+<li>Keyword Arguments
+<ul>
+<li><code>size: Vector</code></li>
+<li><code>vertices_x: int</code></li>
+<li><code>vertices_y: int</code></li>
+<li><code>vertices_z: int</code></li>
+</ul>
+</li>
+<li>Returns <code>.mesh: Geometry</code> and <code>.uv_map: Field[Vector]</code></li>
+</ol>
+<p>The node can now be used as a function:</p>
+<pre><code class="language-python">cube() # All arguments are optional
+cube(size=(1.0, 1.0, 1.0), vertices_x=3) # Optionally specify keyword arguments
+cube_mesh = cube().mesh # Pick the Mesh output
+</code></pre>
+<h3 id="capture-attribute"><a class="header" href="#capture-attribute">Capture Attribute</a></h3>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/basics/capture_attribute_node.png" alt=""><span class="img-wrapper"><img src="api/basics/capture_attribute_node.png" alt=""></span></label></p>
+<p>Some nodes, such as <em>Capture Attribute</em>, have a list of items you add yourself. Their items are passed as extra keyword arguments, and each item’s output is available by the same name:</p>
+<ol>
+<li>Name <code>Capture Attribute</code> -&gt; <code>capture_attribute</code></li>
+<li>Keyword Arguments
+<ul>
+<li><code>geometry: Geometry</code></li>
+<li><code>selection: Field[bool]</code></li>
+<li><code>domain: 'POINT' | 'EDGE' | 'FACE' | ...</code></li>
+<li>Any number of items, by name</li>
+</ul>
+</li>
+<li>Returns <code>.geometry: Geometry</code> plus one output per item</li>
+</ol>
+<pre><code class="language-python">result = capture_attribute(geometry=cube_mesh, domain="FACE", normal=normal().normal)
+result.geometry # Access the geometry
+result.normal # Access the captured normal
+</code></pre>
+<p>See <a href="#item-nodes">Item Nodes</a> for the other nodes that work this way.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="advanced-scripting"><a class="header" href="#advanced-scripting">Advanced Scripting</a></h1>
+<p>Now that we’ve covered the basics, let’s take a look at some more advanced scripting techniques.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="node-groups"><a class="header" href="#node-groups">Node Groups</a></h1>
+<p>A Geometry Script can have more than one tree function. Each tree function is a node group, and tree functions can be used in other tree functions to create <em>Node Group</em> nodes.</p>
+<pre><code class="language-python">@tree("Instance Grid")
+def instance_grid(instance: Geometry):
+    """ Instance the input geometry on a grid """
+    points = mesh_to_points(mesh=grid().mesh).points
+    return instance_on_points(points=points, instance=instance).instances
+
+@tree("Cube Grid")
+def cube_grid():
+    """ Create a grid of cubes """
+    return instance_grid(instance=cube(size=(0.2, 0.2, 0.2)).mesh)
+</code></pre>
+<p>The <em>Cube Grid</em> tree uses the <em>Instance Grid</em> node group by calling the <code>instance_grid</code> function:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/advanced-scripting/cube_grid.png" alt=""><span class="img-wrapper"><img src="api/advanced-scripting/cube_grid.png" alt=""></span></label></p>
+<p>The <em>Instance Grid</em> node group uses the passed in <code>instance</code> argument to create a grid of instances:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="api/advanced-scripting/instance_grid.png" alt=""><span class="img-wrapper"><img src="api/advanced-scripting/instance_grid.png" alt=""></span></label></p>
+<p>Unlike node functions, tree functions accept positional arguments as well, in the order of their parameters: <code>instance_grid(cube(...).mesh)</code>. Arguments you leave out use the parameter’s default.</p>
+<p>A group with a single output returns that socket directly. A group with several outputs returns a named tuple with a field for each output. The field names are the output names, with any characters that can’t be used in a Python name replaced by underscores (an output named <em>Bounding Box</em> becomes <code>.Bounding_Box</code>):</p>
+<pre><code class="language-python">@tree("Measure")
+def measure(geometry: Geometry):
+    bounds = bounding_box(geometry=geometry)
+    return {"Size": bounds.max - bounds.min, "Center": (bounds.max + bounds.min) / 2}
+
+@tree("Centered")
+def centered(geometry: Geometry):
+    center = measure(geometry).Center
+    return set_position(geometry=geometry, offset=-center).geometry
+</code></pre>
+<p>Define a tree function before any tree that uses it, since each tree is built when its function is decorated.</p>
+<p>This concept can scale to complex interconnected node trees, while keeping everything neatly organized in separate functions.</p>
+<h2 id="functions-vs-node-groups"><a class="header" href="#functions-vs-node-groups">Functions vs Node Groups</a></h2>
+<p>You do not have to mark a function with <code>@tree(...)</code>. If you don’t, function calls are treated as normal in Python. Any nodes created in the callee will be placed in the caller’s tree.</p>
+<pre><code class="language-python">def instance_grid(instance): # Not marked with `@tree(...)`
+    points = mesh_to_points(mesh=grid().mesh).points
+    return instance_on_points(points=points, instance=instance).instances
+
+@tree("Cube Grid")
+def cube_grid(): # Marked with `@tree(...)`
+    return instance_grid(cube(size=(0.2, 0.2, 0.2)).mesh)
+</code></pre>
+<p>The above example would place the <em>Grid</em>, <em>Mesh to Points</em>, and <em>Instance on Points</em> nodes in the main “Cube Grid” tree. It could be rewritten as:</p>
+<pre><code class="language-python">@tree("Cube Grid")
+def cube_grid():
+    points = mesh_to_points(mesh=grid().mesh).points
+    return instance_on_points(points=points, instance=cube(size=(0.2, 0.2, 0.2)).mesh).instances
+</code></pre>
+<p>Plain Python functions are a good way to reuse a few nodes without creating a separate node group.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="generators"><a class="header" href="#generators">Generators</a></h1>
+<p>Python has support for <a href="https://wiki.python.org/moin/Generators">generators</a> using the <code>yield</code> keyword.</p>
+<p>Tree functions can be written as generators. Each yielded value becomes a separate output, just like returning a tuple:</p>
+<pre><code class="language-python">@tree("Primitive Shapes")
+def primitive_shapes():
+    yield cube().mesh        # Result
+    yield uv_sphere().mesh   # Result 2
+    yield 5                  # Result 3
+</code></pre>
+<p>This is handy when the outputs are computed in several steps, since each one can be yielded as soon as it’s ready.</p>
+<h2 id="joining-geometry"><a class="header" href="#joining-geometry">Joining Geometry</a></h2>
+<p>Yielded geometry is <em>not</em> joined automatically. To output several geometries as one, pass a list to <em>Join Geometry</em>:</p>
+<pre><code class="language-python">@tree("Primitive Shapes")
+def primitive_shapes():
+    return join_geometry(geometry=[
+        cube().mesh,
+        uv_sphere().mesh,
+        cylinder().mesh,
+    ]).geometry
+</code></pre>
+<p>Multi-input sockets, such as the <em>Geometry</em> input of <em>Join Geometry</em> or the <em>Mesh</em> input of <em>Mesh Boolean</em>, accept a list of sockets.</p>
+<blockquote>
+<p>The first output is always displayed when using a <em>Geometry Nodes</em> modifier. Ensure it is a <code>Geometry</code> socket, unless you are using the function as a node group.</p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
+<p>An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one domain to another.</p>
+<h2 id="capturing-attributes"><a class="header" href="#capturing-attributes">Capturing Attributes</a></h2>
+<p><em>Capture Attribute</em> evaluates fields on a geometry and keeps the values for later. Pass each value to capture as a keyword argument; its output has the same name.</p>
+<pre><code class="language-python">@tree("Twist")
+def twist(geometry: Geometry, amount: float = 1.0):
+    captured = capture_attribute(
+        geometry=geometry,
+        height=separate_xyz(vector=position().position).z,
+    )
+    # captured.height still refers to the height before the geometry was moved
+    moved = set_position(geometry=captured.geometry, offset=(0.0, 0.0, 1.0)).geometry
+    return set_position(geometry=moved, offset=(captured.height * amount, 0.0, 0.0)).geometry
+</code></pre>
+<blockquote>
+<p>Use the <code>Geometry</code> returned from <code>capture_attribute(...)</code>, not the original, for the captured values to be available.</p>
+</blockquote>
+<p>You can capture several values at once, and choose the domain:</p>
+<pre><code class="language-python">captured = capture_attribute(geometry=mesh, domain="FACE", normal=normal().normal, index=index().index)
+captured.normal, captured.index
+</code></pre>
+<h2 id="named-attributes"><a class="header" href="#named-attributes">Named Attributes</a></h2>
+<p>Store an attribute by name with <em>Store Named Attribute</em>, and read it back with <em>Named Attribute</em>. The data type is inferred when storing; set it when reading.</p>
+<pre><code class="language-python">@tree("Named Attributes")
+def named_attributes(geometry: Geometry):
+    # Store a value
+    geometry = store_named_attribute(
+        geometry=geometry,
+        name="my_custom_attribute",
+        value=0.5,
+        domain="POINT",
+    ).geometry
+    # Read it back
+    value = named_attribute(name="my_custom_attribute", data_type="FLOAT").attribute
+    return set_position(geometry=geometry, offset=(0.0, 0.0, value)).geometry
+</code></pre>
+<p>A helper function can keep the name and type in one place:</p>
+<pre><code class="language-python">def height_attribute():
+    return named_attribute(name="height", data_type="FLOAT").attribute
+</code></pre>
+<h2 id="attribute-sampling"><a class="header" href="#attribute-sampling">Attribute Sampling</a></h2>
+<p>To read values from another geometry, use the sampling nodes: <em>Sample Index</em>, <em>Sample Nearest</em>, <em>Sample Nearest Surface</em>, <em>Geometry Proximity</em>, and so on.</p>
+<pre><code class="language-python"># The position of the next point
+next_position = sample_index(geometry=points, value=position().position, index=index().index + 1).value
+
+# The color of the nearest point on another geometry
+nearest = sample_nearest(geometry=other, sample_position=position().position).index
+color = sample_index(geometry=other, value=named_attribute(name="color", data_type="FLOAT_COLOR").attribute, index=nearest).value
+
+# Snap a sphere to the surface of a cube
+snapped = geometry_proximity(geometry=cube().mesh, sample_position=position().position).position
+set_position(geometry=uv_sphere().mesh, position=snapped).geometry
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="boolean-math"><a class="header" href="#boolean-math">Boolean Math</a></h1>
+<p>The <em>Boolean Math</em> node gives access to common boolean operations, such as <code>AND</code>, <code>NOT</code>, <code>XOR</code>, etc. Use it together with comparisons (which create <em>Compare</em> nodes) to build conditions.</p>
+<pre><code class="language-python">@tree("Select Top")
+def select_top(geometry: Geometry, threshold: float = 0.5):
+    z = separate_xyz(vector=position().position).z
+    above = z &gt; threshold
+    is_even = index().index % 2 == 0
+    selection = boolean_math(boolean=above, boolean_2=is_even, operation="AND").boolean
+    return delete_geometry(geometry=geometry, selection=selection).geometry
+</code></pre>
+<p><code>NOT</code> only uses the first input:</p>
+<pre><code class="language-python">boolean_math(boolean=above, operation="NOT").boolean
+</code></pre>
+<blockquote>
+<p>You <em>cannot</em> use the Python keywords <code>and</code>, <code>or</code>, and <code>not</code> on sockets. The script only builds the node tree, so it never sees the values that would decide the result. Use <em>Boolean Math</em> nodes instead.</p>
+</blockquote>
+<p>If a condition gets long, a small helper function keeps it readable:</p>
+<pre><code class="language-python">def all_of(*conditions):
+    result = conditions[0]
+    for condition in conditions[1:]:
+        result = boolean_math(boolean=result, boolean_2=condition, operation="AND").boolean
+    return result
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="item-nodes"><a class="header" href="#item-nodes">Item Nodes</a></h1>
+<p>Some nodes have a list of items you add yourself, instead of a fixed set of sockets. In Geometry Script, the items are passed to the node function and their outputs are available by name.</p>
+<h2 id="capture-attribute-and-format-string"><a class="header" href="#capture-attribute-and-format-string">Capture Attribute and Format String</a></h2>
+<p>Pass each item as a keyword argument. The item’s socket type is inferred from its value.</p>
+<pre><code class="language-python">captured = capture_attribute(geometry=mesh, height=separate_xyz(vector=position().position).z)
+captured.height
+
+label = format_string(format="Point {index}", index=index().index).string
+</code></pre>
+<h2 id="index-switch"><a class="header" href="#index-switch">Index Switch</a></h2>
+<p>Pass the items as a list, in order:</p>
+<pre><code class="language-python">shape = index_switch(index=choice, items=[cube().mesh, uv_sphere().mesh, cylinder().mesh]).output
+</code></pre>
+<h2 id="menu-switch"><a class="header" href="#menu-switch">Menu Switch</a></h2>
+<p>Pass the items as a dictionary from each menu entry’s name to its value. Connecting a tree’s <code>Menu</code> input to the switch gives the modifier a dropdown with those entries:</p>
+<pre><code class="language-python">@tree("Shape Picker")
+def shape_picker(shape: Menu = "Cube"):
+    return menu_switch(menu=shape, items={
+        "Cube": cube().mesh,
+        "Sphere": uv_sphere().mesh,
+    }).output
+</code></pre>
+<h2 id="bundles"><a class="header" href="#bundles">Bundles</a></h2>
+<p><em>Combine Bundle</em> takes its items as keyword arguments. <em>Separate Bundle</em> takes a dictionary from each item’s name to its type, since the values come from the bundle:</p>
+<pre><code class="language-python">bundle = combine_bundle(size=2.0, mesh=cube().mesh).bundle
+
+parts = separate_bundle(bundle=bundle, items={"size": float, "mesh": Geometry})
+parts.size, parts.mesh
+</code></pre>
+<p>Item outputs can also be read with square brackets, e.g. <code>parts["size"]</code>, which is useful for names that aren’t valid Python identifiers.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="repeat-zones"><a class="header" href="#repeat-zones">Repeat Zones</a></h1>
+<p>Using a <em>Repeat Input</em> and <em>Repeat Output</em> node, you can loop a block of nodes for a specific number of iterations.</p>
+<p>Use the <code>@repeat_zone</code> decorator to create these linked nodes. The function’s parameters become the zone’s items, and the function returns their new values in the same order.</p>
+<pre><code class="language-python">@repeat_zone
+def doubler(value: float):
+    return value * 2
+
+@tree("Test Loop")
+def test_loop():
+    # Double the input value 5 times.
+    return points(count=doubler(1.0, iterations=5)).points
+</code></pre>
+<p>When calling the repeat zone, pass the initial value of each item, then the number of iterations as <code>iterations=</code>.</p>
+<p>A zone can also be defined inside the tree function that uses it.</p>
+<h2 id="multiple-items"><a class="header" href="#multiple-items">Multiple Items</a></h2>
+<p>When a repeat zone has multiple items, return a tuple from the zone. Calling it returns a named tuple with a field per item:</p>
+<pre><code class="language-python">@repeat_zone
+def multi_doubler(value1: float, value2: float):
+    return value1 * 2, value2 * 2
+
+@tree("Multi Doubler")
+def multi_doubler_tree():
+    result = multi_doubler(1.0, 2.0, iterations=3)
+    return result.value1, result.value2
+</code></pre>
+<p>You can also return a dictionary from the zone, keyed by parameter name.</p>
+<h2 id="iteration-index"><a class="header" href="#iteration-index">Iteration Index</a></h2>
+<p>A parameter named <code>iteration</code> is not an item. It receives the <em>Iteration</em> output of the zone, which counts from 0.</p>
+<pre><code class="language-python">@repeat_zone
+def stack(geometry: Geometry, iteration: int):
+    layer = transform_geometry(geometry=cube().mesh, translation=(0.0, 0.0, iteration * 1.5)).geometry
+    return join_geometry(geometry=[geometry, layer]).geometry
+
+@tree("Tower")
+def tower(floors: int = 5):
+    return stack(cube().mesh, iterations=floors)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="simulation-zones"><a class="header" href="#simulation-zones">Simulation Zones</a></h1>
+<p>Using a <em>Simulation Input</em> and <em>Simulation Output</em> node, you can create effects that change over time.</p>
+<p>The <code>@simulation_zone</code> decorator creates these linked nodes. Like a repeat zone, its parameters are the simulation’s state items, and the function returns their new values in the same order.</p>
+<pre><code class="language-python">@simulation_zone
+def fall(geometry: Geometry, speed: float, delta_time: float):
+    moved = set_position(geometry=geometry, offset=(0.0, 0.0, -speed * delta_time)).geometry
+    return moved, speed + 9.8 * delta_time
+
+@tree("Falling")
+def falling(geometry: Geometry):
+    return fall(geometry, 0.0).geometry
+</code></pre>
+<p>A parameter named <code>delta_time</code> is not a state item. It receives the time since the previous frame, in seconds.</p>
+<p>Each frame, the result from the previous frame is passed into the zone’s inputs. The initial call to <code>fall</code> in <code>falling</code> provides the initial values for the simulation.</p>
+<h2 id="skipping-steps"><a class="header" href="#skipping-steps">Skipping Steps</a></h2>
+<p>Pass <code>skip=</code> to set the <em>Skip</em> input of the <em>Simulation Output</em> node. When it is true, the simulation keeps its previous state for that frame.</p>
+<pre><code class="language-python">paused = scene_time().frame &gt; 50.0
+fall(geometry, 0.0, skip=paused)
+</code></pre>
+<h2 id="animation-without-a-simulation"><a class="header" href="#animation-without-a-simulation">Animation without a Simulation</a></h2>
+<p>If a value only depends on the current frame, not on the previous state, you don’t need a simulation zone. Use the <em>Scene Time</em> node:</p>
+<pre><code class="language-python">frame = scene_time().frame
+seconds = scene_time().seconds
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="for-each-element-zones"><a class="header" href="#for-each-element-zones">For Each Element Zones</a></h1>
+<p>A <em>For Each Geometry Element</em> zone runs a block of nodes once for each element of a geometry, such as each point or each face.</p>
+<p>Use the <code>@for_each_element</code> decorator, and choose the domain with <code>domain=</code>:</p>
+<pre><code class="language-python">@for_each_element(domain="POINT")
+def ball_per_point(index: int, radius: float):
+    ball = uv_sphere(radius=radius).mesh
+    return ForEachResult(
+        main={"scale": radius * 2.0},
+        generated=[{"geometry": ball, "id": index}],
+    )
+
+@tree("Balls")
+def balls(geometry: Geometry):
+    points = mesh_to_points(mesh=geometry).points
+    radius = random_value(min=0.05, max=0.2).value
+    result = ball_per_point(points, radius=radius)
+    return result.generated.geometry
+</code></pre>
+<p>When calling the zone, pass the geometry first. Every other parameter is an input of the zone, evaluated as a field on the geometry, so each element receives its own value. You can also pass <code>selection=</code> to only run the zone for some elements.</p>
+<p>Two parameter names are special and are not inputs:</p>
+<ul>
+<li><code>index</code> receives the index of the current element.</li>
+<li><code>element</code> receives the current element as its own geometry.</li>
+</ul>
+<h2 id="results"><a class="header" href="#results">Results</a></h2>
+<p>The zone function returns a <code>ForEachResult</code>:</p>
+<ul>
+<li><code>main</code> values are stored as attributes on the input geometry, one value per element.</li>
+<li><code>generated</code> is a list of groups. Each group starts with a geometry, followed by attributes stored on it. The geometry from every element is joined.</li>
+</ul>
+<p>The zone’s outputs are split the same way. <code>result.main.geometry</code> is the input geometry with the <code>main</code> attributes, readable as <code>result.main.scale</code>. <code>result.generated.geometry</code> is the joined generated geometry.</p>
+<p>If you only need <code>main</code> values, return a dictionary instead of a <code>ForEachResult</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="closure-zones"><a class="header" href="#closure-zones">Closure Zones</a></h1>
+<p>A <em>Closure</em> zone packages a block of nodes as a value. The closure can be passed around, through node groups or bundles, and evaluated later with an <em>Evaluate Closure</em> node.</p>
+<p>Use the <code>@closure_zone</code> decorator. The function’s parameters become the closure’s inputs, and its return values become the closure’s outputs.</p>
+<pre><code class="language-python">@closure_zone
+def scale(x: float, factor: float = 2.0):
+    return x * factor
+
+@tree("Closure")
+def closure_tree(value: float):
+    closure = scale()                          # A Closure socket
+    return scale.evaluate(closure, value, 3.0) # Evaluate it
+</code></pre>
+<p>Calling the decorated function inside a tree creates the zone and returns its <em>Closure</em> socket. <code>scale.evaluate(closure, ...)</code> adds an <em>Evaluate Closure</em> node with the same inputs and outputs as <code>scale</code>, and passes the remaining arguments to its inputs.</p>
+<p>The closure must be created before it is evaluated, so the zone’s outputs are known.</p>
+<p>A tree can take a closure as an input with the <code>Closure</code> annotation:</p>
+<pre><code class="language-python">@tree("Apply")
+def apply(value: float, operation: Closure):
+    return scale.evaluate(operation, value, 2.0)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="shaders-and-compositing"><a class="header" href="#shaders-and-compositing">Shaders and Compositing</a></h1>
+<p>Geometry Script can also build shader and compositor node trees. Each tree type has its own module, because each accepts a different set of nodes:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Module</th><th>Decorators</th><th>Builds</th></tr>
+</thead>
+<tbody>
+<tr><td><code>geometry_script</code></td><td><code>@tree</code> (or <code>@geometry</code>)</td><td>Geometry Nodes groups</td></tr>
+<tr><td><code>geometry_script.shader</code></td><td><code>@shader</code>, <code>@material</code>, <code>@world</code></td><td>Shader node groups, materials and worlds</td></tr>
+<tr><td><code>geometry_script.compositor</code></td><td><code>@compositor</code></td><td>Compositor node groups</td></tr>
+</tbody>
+</table>
+</div>
+<p>Each module has every node its tree type accepts as a typed function, plus the same types (<code>Color</code>, <code>Vector</code>, <code>Shader</code>, …) and <code>Socket</code> arithmetic as the main module. Some names exist in several modules with different nodes behind them. For example, <code>normal()</code> is the <em>Normal</em> input in Geometry Nodes, but the <em>Normal</em> vector node in shaders. Import each module where it’s used. If a node is used in the wrong kind of tree, the error says which module it belongs to.</p>
+<pre><code class="language-python">from geometry_script.shader import *   # A shader-only script
+</code></pre>
+<pre><code class="language-python">from geometry_script import *          # Geometry nodes
+from geometry_script import shader as sh
+
+sh.principled_bsdf(...)                # Shader nodes, behind a namespace
+</code></pre>
+<h2 id="materials"><a class="header" href="#materials">Materials</a></h2>
+<p><code>@material</code> builds a material from a function with no parameters. Return the surface shader:</p>
+<pre><code class="language-python">from geometry_script.shader import *
+
+@material("Gold")
+def gold():
+    return principled_bsdf(
+        base_color=(1.0, 0.77, 0.34, 1.0),
+        metallic=1.0,
+        roughness=0.2,
+    ).bsdf
+</code></pre>
+<p>To use the other inputs of the <em>Material Output</em>, return a dictionary:</p>
+<pre><code class="language-python">@material("Rough Stone")
+def rough_stone():
+    height = noise_texture(scale=8.0).factor
+    return {
+        "surface": principled_bsdf(base_color=(0.4, 0.4, 0.38, 1.0)).bsdf,
+        "displacement": displacement(height=height, scale=0.05).displacement,
+    }
+</code></pre>
+<p>The material is rebuilt in place each time the script runs, so objects that use it keep it. Calling the decorated function returns the material, so a geometry tree can assign it:</p>
+<pre><code class="language-python">@tree("Golden Cube")
+def golden_cube():
+    return set_material(geometry=cube().mesh, material=gold()).geometry
+</code></pre>
+<h2 id="shader-node-groups"><a class="header" href="#shader-node-groups">Shader Node Groups</a></h2>
+<p><code>@shader</code> builds a reusable shader node group. It works like <code>@tree</code>: parameters become group inputs, return values become group outputs, and calling it while building a material, world or another shader group adds a group node.</p>
+<pre><code class="language-python">@shader("Stripes")
+def stripes(color_a: Color, color_b: Color, scale: float = 6.0):
+    wave = wave_texture(scale=scale)
+    return mix(data_type="RGBA", factor=wave.factor, a=color_a, b=color_b).result
+
+@material("Striped")
+def striped():
+    color = stripes((0.9, 0.3, 0.1, 1.0), (0.1, 0.1, 0.1, 1.0), scale=10.0)
+    return principled_bsdf(base_color=color).bsdf
+</code></pre>
+<p>Materials and worlds have no inputs of their own, so put anything you’d like to adjust in Blender’s UI into a <code>@shader</code> group.</p>
+<p><code>@repeat_zone</code> and <code>@closure_zone</code> work in shader trees too.</p>
+<h2 id="worlds"><a class="header" href="#worlds">Worlds</a></h2>
+<p><code>@world</code> builds a world the same way. Pass <code>scene=True</code> to make it the active scene’s world:</p>
+<pre><code class="language-python">@world("Studio", scene=True)
+def studio():
+    return background(color=(0.05, 0.06, 0.08, 1.0), strength=1.0).background
+</code></pre>
+<h2 id="compositing"><a class="header" href="#compositing">Compositing</a></h2>
+<p><code>@compositor</code> builds a compositor node group from <code>geometry_script.compositor</code>. Pass <code>scene=True</code> to use it as the active scene’s compositor. Its first output is the final image:</p>
+<pre><code class="language-python">from geometry_script.compositor import *
+
+@compositor("Soft Glow", scene=True)
+def soft_glow(strength: float = 0.3):
+    image = render_layers().image
+    glow = blur(image=image, size=(20, 20)).image
+    return mix(data_type="RGBA", blend_type="SCREEN", factor=strength, a=image, b=glow).result
+</code></pre>
+<p>Without <code>scene=True</code>, the group can be used as a node in other compositor groups, just like a <code>@tree</code> inside another <code>@tree</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="voxelize"><a class="header" href="#voxelize">Voxelize</a></h1>
+<p>This tutorial walks you through creating a script that turns any mesh into voxels.</p>
+<h2 id="setting-up"><a class="header" href="#setting-up">Setting Up</a></h2>
+<p>Create a base mesh. I’ll be using a Monkey primitive.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/monkey.png" alt=""><span class="img-wrapper"><img src="tutorials/monkey.png" alt=""></span></label></p>
+<p>Next, create a new script. Setting up an <a href="#external-editing">external editor</a> is recommended.</p>
+<p>Import Geometry Script, and create a basic tree builder function. We’ll add a <code>geometry</code> argument and annotate it with the <code>Geometry</code> type to receive our base mesh (in this case, a monkey).</p>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("Voxelize")
+def voxelize(geometry: Geometry):
+    return geometry
+</code></pre>
+<p>Run the script to create the tree, then add a <em>Geometry Nodes</em> modifier to your mesh and select the <em>Voxelize</em> node group.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/voxelize_modifier.png" alt=""><span class="img-wrapper"><img src="tutorials/voxelize_modifier.png" alt=""></span></label></p>
+<h2 id="arguments"><a class="header" href="#arguments">Arguments</a></h2>
+<p>Add a new argument <code>resolution: float</code>. Give it a default value of <code>0.2</code>. This value will be used throughout the script to configure spacing and voxel density.</p>
+<pre><code class="language-python">def voxelize(geometry: Geometry, resolution: float = 0.2):
+    ...
+</code></pre>
+<h2 id="mesh-to-volume"><a class="header" href="#mesh-to-volume">Mesh to Volume</a></h2>
+<p>We want to convert the mesh to a volume, so we can fill its inside with points.</p>
+<p>Use the <code>mesh_to_volume</code> function on the base mesh to convert it to a volume.</p>
+<pre><code class="language-python">def voxelize(geometry: Geometry, resolution: float = 0.2):
+    volume = mesh_to_volume(mesh=geometry, interior_band_width=resolution).volume
+    return volume
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/monkey_volume.png" alt=""><span class="img-wrapper"><img src="tutorials/monkey_volume.png" alt=""></span></label></p>
+<h2 id="volume-to-points"><a class="header" href="#volume-to-points">Volume to Points</a></h2>
+<p>Next, we need to create points to instance each voxel cube on. Use <code>distribute_points_in_volume</code> with the mode set to <code>Grid</code> to create a uniform distribution of points. Its <code>spacing</code> is a vector, so we pass <code>resolution</code> for each axis.</p>
+<pre><code class="language-python">def voxelize(geometry: Geometry, resolution: float = 0.2):
+    volume = mesh_to_volume(mesh=geometry, interior_band_width=resolution).volume
+    points = distribute_points_in_volume( # Uniform grid distribution
+        volume=volume,
+        mode="Grid",
+        spacing=(resolution, resolution, resolution),
+    ).points
+    return points
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/monkey_points.png" alt=""><span class="img-wrapper"><img src="tutorials/monkey_points.png" alt=""></span></label></p>
+<h2 id="instance-cubes"><a class="header" href="#instance-cubes">Instance Cubes</a></h2>
+<p>Finally, use <code>instance_on_points</code> with a cube of size <code>resolution</code> to instance a cube on each point created from our mesh.</p>
+<pre><code class="language-python">def voxelize(geometry: Geometry, resolution: float = 0.2):
+    ...
+    voxel = cube(size=(resolution, resolution, resolution)).mesh
+    return instance_on_points(points=points, instance=voxel).instances # Cube instancing
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/monkey_voxels.png" alt=""><span class="img-wrapper"><img src="tutorials/monkey_voxels.png" alt=""></span></label></p>
+<p>You can lower the resolution to get smaller, more detailed voxels, or raise it to get larger voxels.</p>
+<h2 id="final-script"><a class="header" href="#final-script">Final Script</a></h2>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("Voxelize")
+def voxelize(geometry: Geometry, resolution: float = 0.2):
+    volume = mesh_to_volume(mesh=geometry, interior_band_width=resolution).volume
+    points = distribute_points_in_volume(
+        volume=volume,
+        mode="Grid",
+        spacing=(resolution, resolution, resolution),
+    ).points
+    voxel = cube(size=(resolution, resolution, resolution)).mesh
+    return instance_on_points(points=points, instance=voxel).instances
+</code></pre>
+<h2 id="generated-node-tree-1"><a class="header" href="#generated-node-tree-1">Generated Node Tree</a></h2>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/voxelize_nodes.png" alt=""><span class="img-wrapper"><img src="tutorials/voxelize_nodes.png" alt=""></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="city-builder"><a class="header" href="#city-builder">City Builder</a></h1>
+<p>In this tutorial we’ll create a dense grid of buildings, then cut away from them to place roads with curves. We’ll then join the buildings and the roads into a single geometry.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/city_builder.gif" alt=""><span class="img-wrapper"><img src="tutorials/city_builder.gif" alt=""></span></label></p>
+<h2 id="setting-up-1"><a class="header" href="#setting-up-1">Setting Up</a></h2>
+<p>Create a Bezier Curve object. You can enter edit mode and delete the default curve it creates.</p>
+<p>Then create a new script. Setting up an <a href="#external-editing">external editor</a> is recommended.</p>
+<p>Import Geometry Script, and create a basic tree builder function. We’ll add a few arguments to configure the buildings.</p>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("City Builder")
+def city_builder(
+    geometry: Geometry,
+    building_size_min: Vector = (0.1, 0.1, 0.2),
+    building_size_max: Vector = (0.3, 0.3, 1.0),
+    size_x: float = 5.0,
+    size_y: float = 5.0,
+    road_width: float = 0.25,
+    seed: int = 0,
+    resolution: int = 60,
+):
+    return geometry
+</code></pre>
+<p>Run the script to create the tree, then add a <em>Geometry Nodes</em> modifier to your curve object and select the <em>City Builder</em> node group.</p>
+<h2 id="buildings"><a class="header" href="#buildings">Buildings</a></h2>
+<p>Let’s start with the buildings. We’ll distribute points on a grid with <code>size_x</code> and <code>size_y</code>.</p>
+<pre><code class="language-python">def city_builder(...):
+    building_points = distribute_points_on_faces(
+        mesh=grid(
+            size_x=size_x, size_y=size_y,
+            vertices_x=resolution, vertices_y=resolution,
+        ).mesh,
+        seed=seed,
+    ).points
+    return building_points
+</code></pre>
+<p>Next, we’ll instance cubes on these points to serve as our buildings. We move the cube up half its height so the buildings sit flat on the grid, and scale them randomly between the min and max sizes. Passing the point’s <code>id</code> to <em>Random Value</em> gives every building a different size.</p>
+<pre><code class="language-python">def city_builder(...):
+    ...
+    building = transform_geometry(
+        geometry=cube(size=(1.0, 1.0, 1.0)).mesh,
+        translation=(0.0, 0.0, 0.5),
+    ).geometry
+    random_scale = random_value(
+        min=building_size_min,
+        max=building_size_max,
+        seed=seed,
+        id=id_().id,
+    ).value
+    buildings = instance_on_points(
+        points=building_points,
+        instance=building,
+        scale=random_scale,
+    ).instances
+    return buildings
+</code></pre>
+<h2 id="roads"><a class="header" href="#roads">Roads</a></h2>
+<p>Using <code>curve_to_mesh</code>, we can turn the input curve into a flat mesh, by sweeping a short line along it. A tuple containing sockets, like <code>(road_width * -0.5, 0.0, 0.0)</code>, is combined into a vector for us.</p>
+<pre><code class="language-python">def city_builder(...):
+    roads = curve_to_mesh(
+        curve=geometry,
+        profile_curve=curve_line(
+            start=(road_width * -0.5, 0.0, 0.0),
+            end=(road_width * 0.5, 0.0, 0.0),
+        ).curve,
+    ).mesh
+    ...
+</code></pre>
+<p>To output both the roads and the buildings, join them with <code>join_geometry</code>:</p>
+<pre><code class="language-python">def city_builder(...):
+    ...
+    return join_geometry(geometry=[roads, buildings]).geometry
+</code></pre>
+<p>But now the buildings are overlapping the road. We need to remove any point that falls within the road curve. We’ll use <code>geometry_proximity</code> to measure the distance from each building to the nearest road point, <code>compare</code> to check it against the road width, and <code>delete_geometry</code> to remove the buildings that are too close.</p>
+<pre><code class="language-python">def city_builder(...):
+    road_points = curve_to_points(curve=geometry, mode="EVALUATED").points
+    ...
+    building_points = ...
+    road_distance = geometry_proximity(
+        geometry=road_points,
+        target_element="POINTS",
+        sample_position=position().position,
+    ).distance
+    building_points = delete_geometry(
+        geometry=building_points,
+        domain="POINT",
+        selection=compare(a=road_distance, b=road_width * 2, operation="LESS_THAN").result,
+    ).geometry
+    ...
+</code></pre>
+<h2 id="drawing-roads"><a class="header" href="#drawing-roads">Drawing Roads</a></h2>
+<p>Enter edit mode and select the <em>Draw</em> tool. Simply draw roads onto your city to see the buildings and meshes update.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/city_builder.gif" alt=""><span class="img-wrapper"><img src="tutorials/city_builder.gif" alt=""></span></label></p>
+<h2 id="final-script-1"><a class="header" href="#final-script-1">Final Script</a></h2>
+<pre><code class="language-python">from geometry_script import *
+
+@tree("City Builder")
+def city_builder(
+    geometry: Geometry,
+    building_size_min: Vector = (0.1, 0.1, 0.2),
+    building_size_max: Vector = (0.3, 0.3, 1.0),
+    size_x: float = 5.0,
+    size_y: float = 5.0,
+    road_width: float = 0.25,
+    seed: int = 0,
+    resolution: int = 60,
+):
+    # Road geometry from input curves
+    road_points = curve_to_points(curve=geometry, mode="EVALUATED").points
+    roads = curve_to_mesh(
+        curve=geometry,
+        profile_curve=curve_line(
+            start=(road_width * -0.5, 0.0, 0.0),
+            end=(road_width * 0.5, 0.0, 0.0),
+        ).curve,
+    ).mesh
+
+    # Randomly distribute buildings on a grid
+    building_points = distribute_points_on_faces(
+        mesh=grid(
+            size_x=size_x, size_y=size_y,
+            vertices_x=resolution, vertices_y=resolution,
+        ).mesh,
+        seed=seed,
+    ).points
+
+    # Delete building points that are too close to a road
+    road_distance = geometry_proximity(
+        geometry=road_points,
+        target_element="POINTS",
+        sample_position=position().position,
+    ).distance
+    building_points = delete_geometry(
+        geometry=building_points,
+        domain="POINT",
+        selection=compare(a=road_distance, b=road_width * 2, operation="LESS_THAN").result,
+    ).geometry
+
+    # Instance a randomly scaled cube on each remaining point
+    building = transform_geometry(
+        geometry=cube(size=(1.0, 1.0, 1.0)).mesh,
+        translation=(0.0, 0.0, 0.5),
+    ).geometry
+    random_scale = random_value(
+        min=building_size_min,
+        max=building_size_max,
+        seed=seed,
+        id=id_().id,
+    ).value
+    buildings = instance_on_points(
+        points=building_points,
+        instance=building,
+        scale=random_scale,
+    ).instances
+
+    return join_geometry(geometry=[roads, buildings]).geometry
+</code></pre>
+<h2 id="generated-node-tree-2"><a class="header" href="#generated-node-tree-2">Generated Node Tree</a></h2>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="tutorials/city_builder_nodes.png" alt=""><span class="img-wrapper"><img src="tutorials/city_builder_nodes.png" alt=""></span></label></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
