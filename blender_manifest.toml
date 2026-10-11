@@ -1,0 +1,35 @@
+schema_version = "1.0.0"
+
+id = "geometry_script"
+version = "1.0.0"
+name = "Geometry Script"
+tagline = "Python DSL for Geometry Nodes"
+maintainer = "Carson Katri"
+type = "add-on"
+
+tags = ["Geometry Nodes"]
+
+blender_version_min = "5.2.0"
+
+license = [
+    "SPDX:GPL-3.0-or-later"
+]
+
+[build]
+paths_exclude_pattern = [
+    "__pycache__/",
+    "/.git/",
+    "/*.zip",
+    "/.github/",
+    "/.claude-plugin/",
+    "/.venv/",
+    "/book/",
+    "/code_generator/",
+    "/tests/",
+    "/tools/",
+    "/dist/",
+    "/pyproject.toml",
+    "/uv.lock",
+    "/.python-version",
+    ".gitignore",
+]

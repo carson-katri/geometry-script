@@ -7,6 +7,7 @@
 - [Installation](./setup/installation.md)
 - [Internal Editing Basics](./setup/internal-editing-basics.md)
 - [External Editing](./setup/external-editing.md)
+- [Command-Line and Agent Tools](./setup/agent-tools.md)
 
 # API
 
@@ -18,13 +19,14 @@
 - [Advanced Scripting](./api/advanced-scripting.md)
     - [Node Groups](./api/advanced-scripting/node-groups.md)
     - [Generators](./api/advanced-scripting/generators.md)
-    - [Input Groups](./api/advanced-scripting/input-groups.md)
     - [Attributes](./api/advanced-scripting/attributes.md)
     - [Boolean Math](./api/advanced-scripting/boolean-math.md)
-    - [Curves](./api/advanced-scripting/curves.md)
-    - [Drivers](./api/advanced-scripting/drivers.md)
-    - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
+    - [Item Nodes](./api/advanced-scripting/item-nodes.md)
     - [Repeat Zones](./api/advanced-scripting/repeat-zones.md)
+    - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
+    - [For Each Element Zones](./api/advanced-scripting/for-each-zones.md)
+    - [Closure Zones](./api/advanced-scripting/closure-zones.md)
+    - [Shaders and Compositing](./api/advanced-scripting/shaders-and-compositing.md)
 
 # Tutorials
 

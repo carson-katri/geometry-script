@@ -1,0 +1,14 @@
+[project]
+name = "geometry-script"
+version = "0.1.0"
+description = "Development uv package for geometry-script."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fake-bpy-module>=20260925",
+]
+
+[tool.pyright]
+reportMissingModuleSource = false
+# bpy props are call expressions in a type expression, so warnings need to be suppressed.
+reportInvalidTypeForm = false

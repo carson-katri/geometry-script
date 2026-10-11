@@ -1,38 +1,38 @@
 # Simulation Zones
 
-Blender 3.6 includes simulation nodes.
-
 Using a *Simulation Input* and *Simulation Output* node, you can create effects that change over time.
 
-As a convenience, the `@simulation_zone` decorator is provided to make simulation node blocks easier to create.
-
-```python
-from geometry_script import *
-
-@tree
-def test_sim(geometry: Geometry):
-    @simulation_zone
-    def my_sim(delta_time, geometry: Geometry, value: Float):
-        return (geometry, value)
-    return my_sim(geometry, 0.26).value
-```
-
-The first argument should always be `delta_time`. Any other arguments must also be returned as a tuple with their modified values.
-Each frame, the result from the previous frame is passed into the zone's inputs.
-The initial call to `my_sim` in `test_sim` provides the initial values for the simulation.
-
-## Blender 4.0+
-
-A "Skip" argument was added to the *Simulation Output* node in Blender 4.0.
-
-Return a boolean value first from any simulation zone to determine whether the step should be skipped.
-
-The simplest way to migrate existing node trees is by adding `False` to the return tuple.
+The `@simulation_zone` decorator creates these linked nodes. Like a repeat zone, its parameters are the simulation's state items, and the function returns their new values in the same order.
 
 ```python
 @simulation_zone
-def my_sim(delta_time, geometry: Geometry, value: Float):
-    return (False, geometry, value)
+def fall(geometry: Geometry, speed: float, delta_time: float):
+    moved = set_position(geometry=geometry, offset=(0.0, 0.0, -speed * delta_time)).geometry
+    return moved, speed + 9.8 * delta_time
+
+@tree("Falling")
+def falling(geometry: Geometry):
+    return fall(geometry, 0.0).geometry
 ```
 
-You can pass any boolean value as the skip output.
+A parameter named `delta_time` is not a state item. It receives the time since the previous frame, in seconds.
+
+Each frame, the result from the previous frame is passed into the zone's inputs. The initial call to `fall` in `falling` provides the initial values for the simulation.
+
+## Skipping Steps
+
+Pass `skip=` to set the *Skip* input of the *Simulation Output* node. When it is true, the simulation keeps its previous state for that frame.
+
+```python
+paused = scene_time().frame > 50.0
+fall(geometry, 0.0, skip=paused)
+```
+
+## Animation without a Simulation
+
+If a value only depends on the current frame, not on the previous state, you don't need a simulation zone. Use the *Scene Time* node:
+
+```python
+frame = scene_time().frame
+seconds = scene_time().seconds
+```

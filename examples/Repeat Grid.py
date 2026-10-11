@@ -3,24 +3,25 @@ from geometry_script import *
 @tree("Repeat Grid")
 def repeat_grid(
     geometry: Geometry,
-    columns: Int,
-    rows: Int,
-    spacing_x: Float = 0.0,
-    spacing_y: Float = 0.0
+    columns: int = 3,
+    rows: int = 3,
+    spacing_x: float = 0.0,
+    spacing_y: float = 0.0,
 ):
-   # measure your geometry’s bounds
-    bbox = geometry.bounding_box()
-    span_x = bbox.max.x - bbox.min.x
-    span_y = bbox.max.y - bbox.min.y
+    # Measure the geometry's bounds
+    bounds = bounding_box(geometry=geometry)
+    size = separate_xyz(vector=bounds.max - bounds.min)
 
-    # total grid size = N * object size
-    total_x = columns * span_x + (columns - 1) * spacing_x
-    total_y = rows    * span_y + (rows - 1) * spacing_y
+    # Place one grid vertex per copy, one object width (plus spacing) apart
+    step_x = size.x + spacing_x
+    step_y = size.y + spacing_y
+    points = mesh_to_points(
+        mesh=grid(
+            size_x=(columns - 1) * step_x,
+            size_y=(rows - 1) * step_y,
+            vertices_x=columns,
+            vertices_y=rows,
+        ).mesh
+    ).points
 
-    # one extra vertex gives N cells
-    g = grid(
-        size_x=total_x, size_y=total_y,
-        vertices_x=columns + 1, vertices_y=rows + 1
-    ).mesh.mesh_to_points()
-
-    return g.instance_on_points(instance=geometry)
+    return instance_on_points(points=points, instance=geometry).instances

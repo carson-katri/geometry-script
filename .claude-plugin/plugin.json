@@ -1,0 +1,7 @@
+{
+  "name": "geometry-script",
+  "description": "Skill for building Blender node trees with Geometry Script.",
+  "author": { "name": "Carson Katri" },
+  "homepage": "https://github.com/carson-katri/geometry-script",
+  "license": "GPL-3.0-or-later"
+}

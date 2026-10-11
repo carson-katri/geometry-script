@@ -1,0 +1,106 @@
+name: build
+
+# Build and test the extension against every supported Blender series.
+# Pushes to main also replace the assets of the rolling `nightly` prerelease.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # The repository is also a Claude Code plugin marketplace for the agent skill.
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate the Claude Code plugin
+        run: npx -y @anthropic-ai/claude-code plugin validate .
+
+  versions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve Blender versions
+        id: matrix
+        run: echo "matrix=$(python3 tools/blender_versions.py)" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: versions
+    name: Blender ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    # Alpha and beta builds report problems early without blocking merges.
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.versions.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxi6 libxkbcommon0 libxrender1 libsm6 libgl1 libegl1
+
+      # Daily builds change every day, so only releases are worth caching.
+      - name: Cache Blender
+        id: cache
+        if: ${{ !matrix.experimental }}
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/blender
+          key: blender-${{ matrix.version }}-linux-x64
+
+      - name: Download Blender ${{ matrix.version }}
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/blender"
+          curl -fsSL -A geometry-script-ci "${{ matrix.url }}" \
+            | tar -xJ -C "$RUNNER_TEMP/blender" --strip-components=1
+
+      - name: Build
+        run: python3 tools/build.py --blender "$RUNNER_TEMP/blender/blender" --output-dir dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: geometry_script-blender-${{ matrix.series }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  nightly:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: geometry_script-blender-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish nightly prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete nightly --yes --cleanup-tag || true
+          gh release create nightly dist/*.zip \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Nightly" \
+            --notes "Built from ${GITHUB_SHA::7}. Install the zip matching your Blender version from Preferences > Get Extensions > Install from Disk."

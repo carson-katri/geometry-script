@@ -3,7 +3,7 @@ import sys
 import os
 
 class GeometryScriptPreferences(bpy.types.AddonPreferences):
-    bl_idname = __package__
+    bl_idname = __package__ or "geometry_script"
 
     typeshed_path: bpy.props.StringProperty(
         name="Typeshed Path",

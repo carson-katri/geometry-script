@@ -2,29 +2,32 @@
 
 Python has support for [generators](https://wiki.python.org/moin/Generators) using the `yield` keyword.
 
-Geometry Script tree functions can be represented as generators to output multiple values. If every generated value is `Geometry`, the values are automatically connected to a *Join Geometry* node and output as a single mesh.
+Tree functions can be written as generators. Each yielded value becomes a separate output, just like returning a tuple:
 
 ```python
 @tree("Primitive Shapes")
 def primitive_shapes():
-    yield cube()
-    yield uv_sphere()
-    yield cylinder().mesh
+    yield cube().mesh        # Result
+    yield uv_sphere().mesh   # Result 2
+    yield 5                  # Result 3
 ```
 
-![](./geometry_generator.png)
+This is handy when the outputs are computed in several steps, since each one can be yielded as soon as it's ready.
 
-However, if any of the outputs is not `Geometry`, separate sockets are created for each output.
+## Joining Geometry
+
+Yielded geometry is *not* joined automatically. To output several geometries as one, pass a list to *Join Geometry*:
 
 ```python
-@tree("Primitive Shapes and Integer")
+@tree("Primitive Shapes")
 def primitive_shapes():
-    yield cube()
-    yield uv_sphere()
-    yield cylinder().mesh
-    yield 5 # Not a geometry socket type
+    return join_geometry(geometry=[
+        cube().mesh,
+        uv_sphere().mesh,
+        cylinder().mesh,
+    ]).geometry
 ```
 
-![](./mixed_generator.png)
+Multi-input sockets, such as the *Geometry* input of *Join Geometry* or the *Mesh* input of *Mesh Boolean*, accept a list of sockets.
 
-> The first output is always displayed when using a *Geometry Nodes* modifier. Ensure it is a `Geometry` socket type, unless you are using the function as a node group.
+> The first output is always displayed when using a *Geometry Nodes* modifier. Ensure it is a `Geometry` socket, unless you are using the function as a node group.
