@@ -195,7 +195,7 @@ def _single_socket_value_type(socket: NodeMetatype, *, is_output: bool) -> str:
         return f"typing.Literal[{values}]"
     if socket.is_menu:
         # The menu domain can depend on links and may not exist at generation
-        # time. Keep the public Menu name; builtins aliases it to str.
+        # time. Keep the public Menu name; it is an annotated str.
         return "Menu"
     if structure_kind == "GRID":
         # A scalar RNA default on a grid socket is only the base socket's

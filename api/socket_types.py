@@ -6,8 +6,10 @@ import inspect
 import re
 import types
 import typing
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
+
+from .types import SocketMarker
 
 
 SOCKET_TYPES = {
@@ -47,24 +49,16 @@ _STRUCTURE_TYPES = {"Field": "FIELD", "Grid": "GRID", "List": "LIST"}
 _BUILTIN_TYPE_NAMES = {float: "float", int: "int", bool: "bool", str: "str"}
 
 
-def _flatten_annotation(
-    annotation: Any, namespace: Mapping[str, Any]
-) -> tuple[list[str], set[str]]:
+# Interface sockets have one vector type; its ``dimensions`` picks the variant.
+INTERFACE_VECTOR_DIMENSIONS = {"NodeSocketVector2D": 2, "NodeSocketVector4D": 4}
+
+
+def _flatten_annotation(annotation: Any) -> tuple[list[str], set[str]]:
     """Return the socket type names and structures an annotation mentions."""
     names: list[str] = []
     structures: set[str] = set()
 
     def visit(value: Any) -> None:
-        # Built-in types first: aliases such as ``Menu = str`` are the same object.
-        builtin_name = _BUILTIN_TYPE_NAMES.get(value)
-        if builtin_name is not None:
-            names.append(builtin_name)
-            return
-        for alias_name, alias_value in namespace.items():
-            if alias_name in SOCKET_TYPES and value is alias_value:
-                names.append(alias_name)
-                return
-
         if isinstance(value, str):
             for token in re.findall(r"[A-Za-z_][A-Za-z_0-9]*", value):
                 if token in _STRUCTURE_TYPES:
@@ -76,9 +70,21 @@ def _flatten_annotation(
             return
 
         origin = typing.get_origin(value)
+        if origin is typing.Annotated:
+            for metadata in value.__metadata__:
+                if isinstance(metadata, SocketMarker):
+                    names.append(metadata.name)
+                    return
+            visit(typing.get_args(value)[0])
+            return
         if origin in {typing.Union, types.UnionType}:
             for argument in typing.get_args(value):
                 visit(argument)
+            return
+
+        builtin_name = _BUILTIN_TYPE_NAMES.get(value)
+        if builtin_name is not None:
+            names.append(builtin_name)
             return
 
         name = getattr(origin or value, "__name__", "")
@@ -86,7 +92,7 @@ def _flatten_annotation(
             structures.add(_STRUCTURE_TYPES[name])
             for argument in typing.get_args(value):
                 visit(argument)
-        elif name in {"Socket", "Annotated"}:
+        elif name == "Socket":
             for argument in typing.get_args(value):
                 visit(argument)
         elif name == "Literal":
@@ -98,38 +104,31 @@ def _flatten_annotation(
     return names, structures
 
 
-def _default_annotation(default: Any, parameter_name: str) -> Any:
-    """Infer an annotation from a parameter's default value."""
+def _default_socket_type(default: Any, parameter_name: str) -> str:
+    """Infer a socket type from a parameter's default value."""
     if default is inspect.Parameter.empty:
         raise TypeError(
             f"Tree input {parameter_name!r} needs a socket type annotation."
         )
-    for builtin_type in (bool, int, float, str):
-        if isinstance(default, builtin_type):
-            return builtin_type
-    if isinstance(default, Sequence):
-        return f"Vector{len(default)}" if len(default) != 3 else "Vector"
-    raise TypeError(
-        f"Cannot infer a Blender socket type for tree input {parameter_name!r}."
-    )
+    try:
+        return literal_socket_type(default)
+    except TypeError:
+        raise TypeError(
+            f"Cannot infer a Blender socket type for tree input {parameter_name!r}."
+        ) from None
 
 
 def interface_socket_spec(
     annotation: Any,
     *,
-    namespace: Mapping[str, Any],
     default: Any,
     parameter_name: str,
 ) -> tuple[str, str]:
     """Return the socket type and structure type for an annotated parameter."""
     if annotation is inspect.Parameter.empty:
-        annotation = _default_annotation(default, parameter_name)
+        return _default_socket_type(default, parameter_name), "AUTO"
 
-    names, structures = _flatten_annotation(annotation, namespace)
-    if not names and isinstance(annotation, str):
-        annotation_name = annotation.rsplit(".", 1)[-1].strip()
-        if annotation_name in SOCKET_TYPES:
-            names.append(annotation_name)
+    names, structures = _flatten_annotation(annotation)
     if not names:
         raise TypeError(
             f"Tree input {parameter_name!r} has unsupported socket annotation "

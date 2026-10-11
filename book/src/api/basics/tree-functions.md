@@ -18,36 +18,40 @@ def cube_tree():
     ...
 ```
 
+Running the script again rebuilds the tree in place. Modifiers using the tree keep their input values, and if the script raises an error, the previous version of the tree is left untouched.
+
 ## Group Output
-Every node tree is **required** to return `Geometry` as the first output. Let's try returning a simple cube.
+The values you return become the outputs of the tree. Let's try returning a simple cube.
 
 ```python
 @tree("Cube Tree")
 def cube_tree():
-    return cube()
+    return cube().mesh
 ```
 
-Here we call the `cube(...)` function, which creates a *Cube* node and connects it to the *Group Output*.
+Here we call the `cube(...)` function, which creates a *Cube* node. Node functions return their outputs as a named tuple, so `.mesh` picks the *Mesh* output and connects it to the *Group Output*.
 
 ![](./cube_tree.png)
 
-You can also return multiple values. However, `Geometry` must always be returned first for a tree to be valid.
+The *Geometry Nodes* modifier displays the first output, so a tree used as a modifier should return `Geometry` first.
+
+You can also return multiple values as a tuple.
 
 ```python
 @tree("Cube Tree")
 def cube_tree():
-    return cube(), 5
+    return cube().mesh, 5
 ```
 
 ![](./cube_tree_int.png)
 
-By default, each output is named 'Result'. To customize the name, return a dictionary.
+By default, the outputs are named *Result*, *Result 2*, and so on. To customize the names, return a dictionary.
 
 ```python
 @tree("Cube Tree")
 def cube_tree():
     return {
-        "My Cube": cube(),
+        "My Cube": cube().mesh,
         "Scale Constant": 5
     }
 ```
@@ -55,12 +59,12 @@ def cube_tree():
 ![](./cube_tree_named_outputs.png)
 
 ## Group Input
-All arguments in a tree function must be annotated with a valid socket type. These types are provided by Geometry Script, and are not equivalent to Python's built-in types. Let's add a size argument to our Cube Tree.
+Each argument of a tree function becomes an input socket. Its annotation chooses the socket type. Let's add a size argument to our Cube Tree.
 
 ```python
 @tree("Cube Tree")
 def cube_tree(size: Vector):
-    return cube(size=size)
+    return cube(size=size).mesh
 ```
 
 This creates a *Size* socket on the *Group Input* node and connects it to our cube.
@@ -71,23 +75,35 @@ The option is available on the Geometry Nodes modifier.
 
 ![](./cube_tree_modifier.png)
 
-The available socket types match those in the UI. Here are some common ones:
+The available socket types match those in the UI. Python's built-in types are used for the basic ones:
 
-* `Geometry`
-* `Float`
-* `Int`
-* `Vector`
+| Annotation | Socket |
+|---|---|
+| `float` | Float |
+| `int` | Integer |
+| `bool` | Boolean |
+| `str` | String |
+| `Vector`, `Vector2`, `Vector4` | Vector (3, 2 or 4 dimensions) |
+| `Color` | Color |
+| `Rotation` | Rotation |
+| `Matrix` | Matrix |
+| `Menu` | Menu |
+| `Geometry` | Geometry |
+| `Object`, `Collection`, `Material`, `Image` | Data-block |
+| `Bundle`, `Closure` | Bundle, Closure |
 
-> You *cannot* use Python's built-in types in place of these socket types.
+Wrap a type in `Field[...]`, `Grid[...]` or `List[...]` to set the socket's structure type, e.g. `offset: Field[float]` for an input that accepts a field.
 
-In the next chapter, we'll take a closer look at how socket types work, and what you can and cannot do with them.
+In the next chapter, we'll take a closer look at how sockets work, and what you can and cannot do with them.
 
 ### Default Values
 You can specify a default for any argument, and it will be set on the modifier when added:
 
 ```python
 @tree("Cube Tree")
-def cube_tree(size: Vector = (1, 1, 1)):
-    return cube(size=size)
+def cube_tree(size: Vector = (1.0, 1.0, 1.0)):
+    return cube(size=size).mesh
 ```
 ![](./cube_tree_size_input.png)
+
+If an argument has a default but no annotation, its type is inferred from the default: `count=4` becomes an Integer input and `scale=0.5` a Float input.

@@ -23,8 +23,8 @@ __all__ = [
     'attribute_statistic',
     'axes_to_rotation',
     'axis_angle_to_rotation',
-    'b_zier_segment',
     'bake',
+    'bezier_segment',
     'bit_math',
     'blackbody',
     'blur_attribute',
@@ -223,7 +223,7 @@ __all__ = [
     'position',
     'project_point',
     'prune_grid',
-    'quadratic_b_zier',
+    'quadratic_bezier',
     'quadrilateral',
     'quaternion_to_rotation',
     'radial_tiling',
@@ -362,12 +362,13 @@ __all__ = [
 ]
 
 class GeometryNodeAccumulateFieldOutputs(typing.NamedTuple):
+    'Outputs from Accumulate Field: Add the values of an evaluated field together and output the running total for each element'
     leading: Socket[Field[float] | Field[int] | Field[Vector] | Field[Matrix]]
     trailing: Socket[Field[float] | Field[int] | Field[Vector] | Field[Matrix]]
     total: Socket[Field[float] | Field[int] | Field[Vector] | Field[Matrix]]
 
 def accumulate_field(*, value: float | Field[float] | int | Field[int] | Vector | Field[Vector] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | Vector | Field[Vector] | Matrix | Field[Matrix]] = 1.0, group_id: int | Field[int] | Socket[int | Field[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'FLOAT_VECTOR', 'TRANSFORM'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeAccumulateFieldOutputs:
-    'Args:\n    data_type: Type of data that is accumulated Inferred from the linked inputs when None.'
+    'Add the values of an evaluated field together and output the running total for each element\n\nArgs:\n    data_type: Type of data that is accumulated Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeAccumulateField',
         inputs={
@@ -392,9 +393,11 @@ def accumulate_field(*, value: float | Field[float] | int | Field[int] | Vector 
     )
 
 class GeometryNodeInputActiveCameraOutputs(typing.NamedTuple):
+    "Outputs from Active Camera: Retrieve the scene's active camera"
     active_camera: Socket[Object]
 
 def active_camera() -> GeometryNodeInputActiveCameraOutputs:
+    "Retrieve the scene's active camera"
     return _node_function(
         'GeometryNodeInputActiveCamera',
         inputs={
@@ -410,10 +413,12 @@ def active_camera() -> GeometryNodeInputActiveCameraOutputs:
     )
 
 class GeometryNodeToolActiveElementOutputs(typing.NamedTuple):
+    'Outputs from Active Element: Active element indices of the edited geometry, for tool execution'
     index: Socket[int]
     exists: Socket[bool]
 
 def active_element(*, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'LAYER'] = 'POINT') -> GeometryNodeToolActiveElementOutputs:
+    'Active element indices of the edited geometry, for tool execution'
     return _node_function(
         'GeometryNodeToolActiveElement',
         inputs={
@@ -431,10 +436,11 @@ def active_element(*, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'LAYER'] =
     )
 
 class GeometryNodeGridAdvectOutputs(typing.NamedTuple):
+    'Outputs from Advect Grid: Move grid values through a velocity field using numerical integration. Supports multiple integration schemes for different accuracy and performance trade-offs'
     grid: Socket[Grid[float] | Grid[int] | Grid[Vector]]
 
 def advect_grid(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[Vector]] | None = None, velocity: Grid[Vector] | Socket[Grid[Vector]] | None = None, time_step: float | Socket[float] = 1.0, integration_scheme: Menu | Socket[Menu] = 'Runge-Kutta 3', limiter: Menu | Socket[Menu] = 'Clamp', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridAdvectOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Move grid values through a velocity field using numerical integration. Supports multiple integration schemes for different accuracy and performance trade-offs\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridAdvect',
         inputs={
@@ -462,10 +468,11 @@ def advect_grid(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[fl
     )
 
 class FunctionNodeAlignEulerToVectorOutputs(typing.NamedTuple):
+    'Outputs from Align Euler to Vector: Orient an Euler rotation along the given direction'
     rotation: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def align_euler_to_vector(*, rotation: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), axis: typing.Literal['X', 'Y', 'Z'] = 'X', pivot_axis: typing.Literal['AUTO', 'X', 'Y', 'Z'] = 'AUTO') -> FunctionNodeAlignEulerToVectorOutputs:
-    'Args:\n    axis: Axis to align to the vector\n    pivot_axis: Axis to rotate around'
+    'Orient an Euler rotation along the given direction\n\nArgs:\n    axis: Axis to align to the vector\n    pivot_axis: Axis to rotate around'
     return _node_function(
         'FunctionNodeAlignEulerToVector',
         inputs={
@@ -489,10 +496,11 @@ def align_euler_to_vector(*, rotation: Vector | Field[Vector] | Grid[Vector] | L
     )
 
 class FunctionNodeAlignRotationToVectorOutputs(typing.NamedTuple):
+    'Outputs from Align Rotation to Vector: Orient a rotation along the given direction'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def align_rotation_to_vector(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0), factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), axis: typing.Literal['X', 'Y', 'Z'] = 'Z', pivot_axis: typing.Literal['AUTO', 'X', 'Y', 'Z'] = 'AUTO') -> FunctionNodeAlignRotationToVectorOutputs:
-    'Args:\n    axis: Axis to align to the vector\n    pivot_axis: Axis to rotate around'
+    'Orient a rotation along the given direction\n\nArgs:\n    axis: Axis to align to the vector\n    pivot_axis: Axis to rotate around'
     return _node_function(
         'FunctionNodeAlignRotationToVector',
         inputs={
@@ -516,13 +524,14 @@ def align_rotation_to_vector(*, rotation: Rotation | Field[Rotation] | Grid[Rota
     )
 
 class GeometryNodeCurveArcOutputs(typing.NamedTuple):
+    'Outputs from Arc: Generate a poly spline arc'
     curve: Socket[Geometry]
     center: Socket[Vector]
     normal: Socket[Vector]
     radius: Socket[float]
 
 def arc(*, resolution: int | Socket[int] = 16, radius: float | Socket[float] = 1.0, start_angle: float | Socket[float] = 0.0, sweep_angle: float | Socket[float] = 5.497786998748779, connect_center: bool | Socket[bool] = False, invert_arc: bool | Socket[bool] = False, start: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), middle: Vector | Socket[Vector] = (0.0, 2.0, 0.0), end: Vector | Socket[Vector] = (1.0, 0.0, 0.0), offset_angle: float | Socket[float] = 0.0, mode: typing.Literal['POINTS', 'RADIUS'] = 'RADIUS') -> GeometryNodeCurveArcOutputs:
-    'Args:\n    mode: Method used to determine radius and placement'
+    'Generate a poly spline arc\n\nArgs:\n    mode: Method used to determine radius and placement'
     return _node_function(
         'GeometryNodeCurveArc',
         inputs={
@@ -562,6 +571,7 @@ def arc(*, resolution: int | Socket[int] = 16, radius: float | Socket[float] = 1
     )
 
 class GeometryNodeAttributeStatisticOutputs(typing.NamedTuple):
+    'Outputs from Attribute Statistic: Calculate statistics about a data set from a field evaluated on a geometry'
     mean: Socket[float | Vector]
     median: Socket[float | Vector]
     sum: Socket[float | Vector]
@@ -572,7 +582,7 @@ class GeometryNodeAttributeStatisticOutputs(typing.NamedTuple):
     variance: Socket[float | Vector]
 
 def attribute_statistic(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, attribute: float | Field[float] | Vector | Field[Vector] | Socket[float | Field[float] | Vector | Field[Vector]] = 0.0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeAttributeStatisticOutputs:
-    'Args:\n    data_type: The data type the attribute is converted to before calculating the results Inferred from the linked inputs when None.\n    domain: Which domain to read the data from'
+    'Calculate statistics about a data set from a field evaluated on a geometry\n\nArgs:\n    data_type: The data type the attribute is converted to before calculating the results Inferred from the linked inputs when None.\n    domain: Which domain to read the data from'
     return _node_function(
         'GeometryNodeAttributeStatistic',
         inputs={
@@ -604,10 +614,11 @@ def attribute_statistic(*, geometry: Geometry | Socket[Geometry] | None = None, 
     )
 
 class FunctionNodeAxesToRotationOutputs(typing.NamedTuple):
+    'Outputs from Axes to Rotation: Create a rotation from a primary and (ideally orthogonal) secondary axis'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def axes_to_rotation(*, primary_axis: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), secondary_axis: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (1.0, 0.0, 0.0), primary_axis_property: typing.Literal['X', 'Y', 'Z'] = 'Z', secondary_axis_property: typing.Literal['X', 'Y', 'Z'] = 'X') -> FunctionNodeAxesToRotationOutputs:
-    'Args:\n    primary_axis_property: Axis that is aligned exactly to the provided primary direction\n    secondary_axis_property: Axis that is aligned as well as possible given the alignment of the primary axis'
+    'Create a rotation from a primary and (ideally orthogonal) secondary axis\n\nArgs:\n    primary_axis_property: Axis that is aligned exactly to the provided primary direction\n    secondary_axis_property: Axis that is aligned as well as possible given the alignment of the primary axis'
     return _node_function(
         'FunctionNodeAxesToRotation',
         inputs={
@@ -629,9 +640,11 @@ def axes_to_rotation(*, primary_axis: Vector | Field[Vector] | Grid[Vector] | Li
     )
 
 class FunctionNodeAxisAngleToRotationOutputs(typing.NamedTuple):
+    'Outputs from Axis Angle to Rotation: Build a rotation from an axis and a rotation around that axis'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def axis_angle_to_rotation(*, axis: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), angle: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0) -> FunctionNodeAxisAngleToRotationOutputs:
+    'Build a rotation from an axis and a rotation around that axis'
     return _node_function(
         'FunctionNodeAxisAngleToRotation',
         inputs={
@@ -650,11 +663,33 @@ def axis_angle_to_rotation(*, axis: Vector | Field[Vector] | Grid[Vector] | List
         output_type=FunctionNodeAxisAngleToRotationOutputs,
     )
 
+class GeometryNodeBakeOutputs(ItemOutputs):
+    'Outputs from Bake: Cache the incoming data so that it can be used without recomputation'
+
+def bake(**items: typing.Any) -> GeometryNodeBakeOutputs:
+    'Cache the incoming data so that it can be used without recomputation\n\nArgs:\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
+    return _node_function(
+        'GeometryNodeBake',
+        inputs={
+        },
+        input_sockets={
+        },
+        properties={
+        },
+        output_sockets={
+        },
+        output_type=GeometryNodeBakeOutputs,
+        item_collections=(
+            ('bake_items', 'values', items),
+        ),
+    )
+
 class GeometryNodeCurvePrimitiveBezierSegmentOutputs(typing.NamedTuple):
+    'Outputs from Bézier Segment: Generate a 2D Bézier spline from the given control points and handles'
     curve: Socket[Geometry]
 
-def b_zier_segment(*, resolution: int | Socket[int] = 16, start: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), start_handle: Vector | Socket[Vector] = (-0.5, 0.5, 0.0), end_handle: Vector | Socket[Vector] = (0.0, 0.0, 0.0), end: Vector | Socket[Vector] = (1.0, 0.0, 0.0), mode: typing.Literal['POSITION', 'OFFSET'] = 'POSITION') -> GeometryNodeCurvePrimitiveBezierSegmentOutputs:
-    'Args:\n    mode: Method used to determine control handles'
+def bezier_segment(*, resolution: int | Socket[int] = 16, start: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), start_handle: Vector | Socket[Vector] = (-0.5, 0.5, 0.0), end_handle: Vector | Socket[Vector] = (0.0, 0.0, 0.0), end: Vector | Socket[Vector] = (1.0, 0.0, 0.0), mode: typing.Literal['POSITION', 'OFFSET'] = 'POSITION') -> GeometryNodeCurvePrimitiveBezierSegmentOutputs:
+    'Generate a 2D Bézier spline from the given control points and handles\n\nArgs:\n    mode: Method used to determine control handles'
     return _node_function(
         'GeometryNodeCurvePrimitiveBezierSegment',
         inputs={
@@ -680,31 +715,12 @@ def b_zier_segment(*, resolution: int | Socket[int] = 16, start: Vector | Socket
         output_type=GeometryNodeCurvePrimitiveBezierSegmentOutputs,
     )
 
-class GeometryNodeBakeOutputs(ItemOutputs):
-    pass
-
-def bake(**items: typing.Any) -> GeometryNodeBakeOutputs:
-    'Args:\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
-    return _node_function(
-        'GeometryNodeBake',
-        inputs={
-        },
-        input_sockets={
-        },
-        properties={
-        },
-        output_sockets={
-        },
-        output_type=GeometryNodeBakeOutputs,
-        item_collections=(
-            ('bake_items', 'values', items),
-        ),
-    )
-
 class FunctionNodeBitMathOutputs(typing.NamedTuple):
+    'Outputs from Bit Math: Perform bitwise operations on 32-bit integers'
     value: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def bit_math(*, a: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, b: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, shift: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, operation: typing.Literal['AND', 'OR', 'XOR', 'NOT', 'SHIFT', 'ROTATE'] = 'AND') -> FunctionNodeBitMathOutputs:
+    'Perform bitwise operations on 32-bit integers'
     return _node_function(
         'FunctionNodeBitMath',
         inputs={
@@ -727,9 +743,11 @@ def bit_math(*, a: int | Field[int] | Grid[int] | List[int] | Socket[int | Field
     )
 
 class ShaderNodeBlackbodyOutputs(typing.NamedTuple):
+    'Outputs from Blackbody: Convert a blackbody temperature to an RGB value'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def blackbody(*, temperature: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 6500.0) -> ShaderNodeBlackbodyOutputs:
+    'Convert a blackbody temperature to an RGB value'
     return _node_function(
         'ShaderNodeBlackbody',
         inputs={
@@ -747,10 +765,11 @@ def blackbody(*, temperature: float | Field[float] | Grid[float] | List[float] |
     )
 
 class GeometryNodeBlurAttributeOutputs(typing.NamedTuple):
+    'Outputs from Blur Attribute: Mix attribute values of neighboring elements'
     value: Socket[Field[float] | Field[int] | Field[Vector] | Field[Color]]
 
 def blur_attribute(*, value: float | Field[float] | int | Field[int] | Vector | Field[Vector] | Color | Field[Color] | Socket[float | Field[float] | int | Field[int] | Vector | Field[Vector] | Color | Field[Color]] = 0.0, iterations: int | Socket[int] = 1, weight: float | Field[float] | Socket[float | Field[float]] = 1.0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeBlurAttributeOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Mix attribute values of neighboring elements\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeBlurAttribute',
         inputs={
@@ -774,6 +793,7 @@ def blur_attribute(*, value: float | Field[float] | int | Field[int] | Vector | 
     )
 
 class GeometryNodeBoneInfoOutputs(typing.NamedTuple):
+    'Outputs from Bone Info: Retrieve information of armature bones'
     pose: Socket[Matrix]
     local_pose: Socket[Matrix]
     transform_pose: Socket[Matrix]
@@ -782,7 +802,7 @@ class GeometryNodeBoneInfoOutputs(typing.NamedTuple):
     exists: Socket[bool]
 
 def bone_info(*, armature: Object | Socket[Object] | None = None, bone_name: str | Socket[str] = '', transform_space: typing.Literal['ORIGINAL', 'RELATIVE'] = 'ORIGINAL') -> GeometryNodeBoneInfoOutputs:
-    'Args:\n    transform_space: The transformation of the vector and geometry outputs'
+    'Retrieve information of armature bones\n\nArgs:\n    transform_space: The transformation of the vector and geometry outputs'
     return _node_function(
         'GeometryNodeBoneInfo',
         inputs={
@@ -808,10 +828,11 @@ def bone_info(*, armature: Object | Socket[Object] | None = None, bone_name: str
     )
 
 class FunctionNodeInputBoolOutputs(typing.NamedTuple):
+    'Outputs from Boolean: Provide a True/False value that can be connected to other nodes in the tree'
     boolean: Socket[bool]
 
 def boolean(*, boolean: bool = False) -> FunctionNodeInputBoolOutputs:
-    'Args:\n    boolean: Input value used for unconnected socket'
+    'Provide a True/False value that can be connected to other nodes in the tree\n\nArgs:\n    boolean: Input value used for unconnected socket'
     return _node_function(
         'FunctionNodeInputBool',
         inputs={
@@ -828,9 +849,11 @@ def boolean(*, boolean: bool = False) -> FunctionNodeInputBoolOutputs:
     )
 
 class FunctionNodeBooleanMathOutputs(typing.NamedTuple):
+    'Outputs from Boolean Math: Perform a logical operation on the given boolean inputs'
     boolean: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def boolean_math(*, boolean: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = False, boolean_2: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = False, operation: typing.Literal['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XNOR', 'XOR', 'IMPLY', 'NIMPLY'] = 'AND') -> FunctionNodeBooleanMathOutputs:
+    'Perform a logical operation on the given boolean inputs'
     return _node_function(
         'FunctionNodeBooleanMath',
         inputs={
@@ -851,11 +874,13 @@ def boolean_math(*, boolean: bool | Field[bool] | Grid[bool] | List[bool] | Sock
     )
 
 class GeometryNodeBoundBoxOutputs(typing.NamedTuple):
+    "Outputs from Bounding Box: Calculate the limits of a geometry's positions and generate a box mesh with those dimensions"
     bounding_box: Socket[Geometry]
     min: Socket[Vector]
     max: Socket[Vector]
 
 def bounding_box(*, geometry: Geometry | Socket[Geometry] | None = None, use_radius: bool | Socket[bool] = True) -> GeometryNodeBoundBoxOutputs:
+    "Calculate the limits of a geometry's positions and generate a box mesh with those dimensions"
     return _node_function(
         'GeometryNodeBoundBox',
         inputs={
@@ -877,11 +902,12 @@ def bounding_box(*, geometry: Geometry | Socket[Geometry] | None = None, use_rad
     )
 
 class ShaderNodeTexBrickOutputs(typing.NamedTuple):
+    'Outputs from Brick Texture: Generate a procedural texture producing bricks'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def brick_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), color1: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.800000011920929, 0.800000011920929, 0.800000011920929, 1.0), color2: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.20000000298023224, 0.20000000298023224, 0.20000000298023224, 1.0), mortar: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.0, 0.0, 0.0, 1.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, mortar_size: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.019999999552965164, mortar_smooth: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.10000000149011612, bias: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, brick_width: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, row_height: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.25, offset_frequency: int = 2, squash_frequency: int = 2, offset: float = 0.5, squash: float = 1.0) -> ShaderNodeTexBrickOutputs:
-    'Args:\n    offset_frequency: How often rows are offset. A value of 2 gives an even/uneven pattern of rows.\n    squash_frequency: How often rows consist of "squished" bricks\n    offset: Determines the brick offset of the various rows\n    squash: Factor to adjust the brick\'s width for particular rows determined by the Offset Frequency'
+    'Generate a procedural texture producing bricks\n\nArgs:\n    offset_frequency: How often rows are offset. A value of 2 gives an even/uneven pattern of rows.\n    squash_frequency: How often rows consist of "squished" bricks\n    offset: Determines the brick offset of the various rows\n    squash: Factor to adjust the brick\'s width for particular rows determined by the Offset Frequency'
     return _node_function(
         'ShaderNodeTexBrick',
         inputs={
@@ -922,6 +948,7 @@ def brick_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class GeometryNodeCameraInfoOutputs(typing.NamedTuple):
+    'Outputs from Camera Info: Retrieve information from a camera object'
     projection_matrix: Socket[Matrix]
     focal_length: Socket[float]
     sensor: Socket[Vector2]
@@ -933,6 +960,7 @@ class GeometryNodeCameraInfoOutputs(typing.NamedTuple):
     orthographic_scale: Socket[float]
 
 def camera_info(*, camera: Object | Socket[Object] | None = None) -> GeometryNodeCameraInfoOutputs:
+    'Retrieve information from a camera object'
     return _node_function(
         'GeometryNodeCameraInfo',
         inputs={
@@ -958,11 +986,12 @@ def camera_info(*, camera: Object | Socket[Object] | None = None) -> GeometryNod
     )
 
 class GeometryNodeCaptureAttributeOutputs(ItemOutputs):
+    'Outputs from Capture Attribute: Store the result of a field on a geometry and output the data as a node socket. Allows remembering or interpolating data as the geometry changes, such as positions before deformation'
     geometry: Socket[Geometry]
     selection: Socket[Field[bool]]
 
 def capture_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT', **items: typing.Any) -> GeometryNodeCaptureAttributeOutputs:
-    'Args:\n    domain: Which domain to store the data in\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
+    'Store the result of a field on a geometry and output the data as a node socket. Allows remembering or interpolating data as the geometry changes, such as positions before deformation\n\nArgs:\n    domain: Which domain to store the data in\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
     return _node_function(
         'GeometryNodeCaptureAttribute',
         inputs={
@@ -987,10 +1016,12 @@ def capture_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, se
     )
 
 class ShaderNodeTexCheckerOutputs(typing.NamedTuple):
+    'Outputs from Checker Texture: Generate a checkerboard texture'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def checker_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), color1: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.800000011920929, 0.800000011920929, 0.800000011920929, 1.0), color2: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.20000000298023224, 0.20000000298023224, 0.20000000298023224, 1.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0) -> ShaderNodeTexCheckerOutputs:
+    'Generate a checkerboard texture'
     return _node_function(
         'ShaderNodeTexChecker',
         inputs={
@@ -1015,9 +1046,11 @@ def checker_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vect
     )
 
 class ShaderNodeClampOutputs(typing.NamedTuple):
+    'Outputs from Clamp: Clamp a value between a minimum and a maximum'
     result: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def clamp(*, value: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, min: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, max: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, clamp_type: typing.Literal['MINMAX', 'RANGE'] = 'MINMAX') -> ShaderNodeClampOutputs:
+    'Clamp a value between a minimum and a maximum'
     return _node_function(
         'ShaderNodeClamp',
         inputs={
@@ -1040,10 +1073,11 @@ def clamp(*, value: float | Field[float] | Grid[float] | List[float] | Socket[fl
     )
 
 class GeometryNodeGridClipOutputs(typing.NamedTuple):
+    'Outputs from Clip Grid: Deactivate grid voxels outside minimum and maximum coordinates, setting them to the background value.'
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def clip_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, min_x: int | Socket[int] = 0, min_y: int | Socket[int] = 0, min_z: int | Socket[int] = 0, max_x: int | Socket[int] = 32, max_y: int | Socket[int] = 32, max_z: int | Socket[int] = 32, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridClipOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Deactivate grid voxels outside minimum and maximum coordinates, setting them to the background value.\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridClip',
         inputs={
@@ -1075,10 +1109,10 @@ def clip_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Soc
     )
 
 class GeometryNodeClosureToListOutputs(ItemOutputs):
-    pass
+    'Outputs from Closure to List: Create a list of values'
 
 def closure_to_list(*, count: int | Socket[int] = 1, closure: Closure | Socket[Closure] | None = None, items: typing.Mapping[str, typing.Any] | None = None) -> GeometryNodeClosureToListOutputs:
-    'Args:\n    items: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
+    'Create a list of values\n\nArgs:\n    items: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
     return _node_function(
         'GeometryNodeClosureToList',
         inputs={
@@ -1100,9 +1134,11 @@ def closure_to_list(*, count: int | Socket[int] = 1, closure: Closure | Socket[C
     )
 
 class GeometryNodeClusterByConnectedOutputs(typing.NamedTuple):
+    'Outputs from Cluster by Connected: Group mesh vertices connected by edges when they are within a specified distance'
     cluster_id: Socket[Field[int]]
 
 def cluster_by_connected(*, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), distance: float | Socket[float] = 0.0010000000474974513) -> GeometryNodeClusterByConnectedOutputs:
+    'Group mesh vertices connected by edges when they are within a specified distance'
     return _node_function(
         'GeometryNodeClusterByConnected',
         inputs={
@@ -1124,9 +1160,11 @@ def cluster_by_connected(*, selection: bool | Field[bool] | Socket[bool | Field[
     )
 
 class GeometryNodeClusterByDistanceOutputs(typing.NamedTuple):
+    'Outputs from Cluster by Distance: Group elements into integer IDs based on proximity of vector values'
     cluster_id: Socket[Field[int]]
 
 def cluster_by_distance(*, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, group_id: int | Field[int] | Socket[int | Field[int]] = 0, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), distance: float | Socket[float] = 0.0010000000474974513) -> GeometryNodeClusterByDistanceOutputs:
+    'Group elements into integer IDs based on proximity of vector values'
     return _node_function(
         'GeometryNodeClusterByDistance',
         inputs={
@@ -1150,9 +1188,11 @@ def cluster_by_distance(*, selection: bool | Field[bool] | Socket[bool | Field[b
     )
 
 class GeometryNodeInputCollectionOutputs(typing.NamedTuple):
+    'Outputs from Collection: Output a single collection'
     collection: Socket[Collection]
 
 def collection(*, collection: bpy.types.Collection | None = None) -> GeometryNodeInputCollectionOutputs:
+    'Output a single collection'
     return _node_function(
         'GeometryNodeInputCollection',
         inputs={
@@ -1169,10 +1209,12 @@ def collection(*, collection: bpy.types.Collection | None = None) -> GeometryNod
     )
 
 class GeometryNodeCollectionChildrenOutputs(typing.NamedTuple):
+    "Outputs from Collection Children: Retrieve a collection's object and collection children, in a name-based order"
     collections: Socket[List[Collection]]
     objects: Socket[List[Object]]
 
 def collection_children(*, collection: Collection | Socket[Collection] | None = None, recursive: bool | Socket[bool] = False) -> GeometryNodeCollectionChildrenOutputs:
+    "Retrieve a collection's object and collection children, in a name-based order"
     return _node_function(
         'GeometryNodeCollectionChildren',
         inputs={
@@ -1193,10 +1235,11 @@ def collection_children(*, collection: Collection | Socket[Collection] | None = 
     )
 
 class GeometryNodeCollectionInfoOutputs(typing.NamedTuple):
+    'Outputs from Collection Info: Retrieve geometry instances from a collection'
     instances: Socket[Geometry]
 
 def collection_info(*, collection: Collection | Socket[Collection] | None = None, separate_children: bool | Socket[bool] = False, reset_children: bool | Socket[bool] = False, transform_space: typing.Literal['ORIGINAL', 'RELATIVE'] = 'ORIGINAL') -> GeometryNodeCollectionInfoOutputs:
-    'Args:\n    transform_space: The transformation of the instances output. Does not affect the internal geometry'
+    'Retrieve geometry instances from a collection\n\nArgs:\n    transform_space: The transformation of the instances output. Does not affect the internal geometry'
     return _node_function(
         'GeometryNodeCollectionInfo',
         inputs={
@@ -1219,9 +1262,11 @@ def collection_info(*, collection: Collection | Socket[Collection] | None = None
     )
 
 class FunctionNodeInputColorOutputs(typing.NamedTuple):
+    'Outputs from Color: Output a color value chosen with the color picker widget'
     color: Socket[Color]
 
 def color(*, value: Color = (0.5, 0.5, 0.5, 1.0)) -> FunctionNodeInputColorOutputs:
+    'Output a color value chosen with the color picker widget'
     return _node_function(
         'FunctionNodeInputColor',
         inputs={
@@ -1238,10 +1283,12 @@ def color(*, value: Color = (0.5, 0.5, 0.5, 1.0)) -> FunctionNodeInputColorOutpu
     )
 
 class ShaderNodeValToRGBOutputs(typing.NamedTuple):
+    'Outputs from Color Ramp: Map values to colors with the use of a gradient'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     alpha: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def color_ramp(*, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5) -> ShaderNodeValToRGBOutputs:
+    'Map values to colors with the use of a gradient'
     return _node_function(
         'ShaderNodeValToRGB',
         inputs={
@@ -1260,10 +1307,11 @@ def color_ramp(*, factor: float | Field[float] | Grid[float] | List[float] | Soc
     )
 
 class NodeCombineBundleOutputs(typing.NamedTuple):
+    'Outputs from Combine Bundle: Combine multiple socket values into one.'
     bundle: Socket[Bundle]
 
 def combine_bundle(*, define_signature: bool = False, **items: typing.Any) -> NodeCombineBundleOutputs:
-    'Args:\n    define_signature: This node defines a bundle signature that should be used by other nodes\n    items: Items to add, by name; each socket type is inferred from its value.'
+    'Combine multiple socket values into one.\n\nArgs:\n    define_signature: This node defines a bundle signature that should be used by other nodes\n    items: Items to add, by name; each socket type is inferred from its value.'
     return _node_function(
         'NodeCombineBundle',
         inputs={
@@ -1283,10 +1331,11 @@ def combine_bundle(*, define_signature: bool = False, **items: typing.Any) -> No
     )
 
 class FunctionNodeCombineColorOutputs(typing.NamedTuple):
+    'Outputs from Combine Color: Combine four channels into a single color, based on a particular color model'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def combine_color(*, red: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, green: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, blue: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, alpha: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, mode: typing.Literal['RGB', 'HSV', 'HSL'] = 'RGB') -> FunctionNodeCombineColorOutputs:
-    'Args:\n    mode: Mode of color processing'
+    'Combine four channels into a single color, based on a particular color model\n\nArgs:\n    mode: Mode of color processing'
     return _node_function(
         'FunctionNodeCombineColor',
         inputs={
@@ -1311,9 +1360,11 @@ def combine_color(*, red: float | Field[float] | Grid[float] | List[float] | Soc
     )
 
 class FunctionNodeCombineMatrixOutputs(typing.NamedTuple):
+    'Outputs from Combine Matrix: Construct a 4x4 matrix from its individual values'
     matrix: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def combine_matrix(*, column_1_row_1: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, column_1_row_2: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_1_row_3: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_1_row_4: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_2_row_1: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_2_row_2: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, column_2_row_3: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_2_row_4: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_3_row_1: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_3_row_2: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_3_row_3: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, column_3_row_4: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_4_row_1: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_4_row_2: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_4_row_3: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, column_4_row_4: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0) -> FunctionNodeCombineMatrixOutputs:
+    'Construct a 4x4 matrix from its individual values'
     return _node_function(
         'FunctionNodeCombineMatrix',
         inputs={
@@ -1361,9 +1412,11 @@ def combine_matrix(*, column_1_row_1: float | Field[float] | Grid[float] | List[
     )
 
 class FunctionNodeCombineTransformOutputs(typing.NamedTuple):
+    'Outputs from Combine Transform: Combine a translation vector, a rotation, and a scale vector into a transformation matrix'
     transform: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def combine_transform(*, translation: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0), scale: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (1.0, 1.0, 1.0)) -> FunctionNodeCombineTransformOutputs:
+    'Combine a translation vector, a rotation, and a scale vector into a transformation matrix'
     return _node_function(
         'FunctionNodeCombineTransform',
         inputs={
@@ -1385,9 +1438,11 @@ def combine_transform(*, translation: Vector | Field[Vector] | Grid[Vector] | Li
     )
 
 class ShaderNodeCombineXYZOutputs(typing.NamedTuple):
+    'Outputs from Combine XYZ: Create a vector from X, Y, and Z components'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def combine_xyz(*, x: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, y: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, z: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0) -> ShaderNodeCombineXYZOutputs:
+    'Create a vector from X, Y, and Z components'
     return _node_function(
         'ShaderNodeCombineXYZ',
         inputs={
@@ -1409,10 +1464,11 @@ def combine_xyz(*, x: float | Field[float] | Grid[float] | List[float] | Socket[
     )
 
 class FunctionNodeCompareOutputs(typing.NamedTuple):
+    'Outputs from Compare: Perform a comparison operation on the two given inputs'
     result: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def compare(*, a: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | str | Field[str] | Grid[str] | List[str] | Object | Image | Collection | Material | Font | Sound | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | str | Field[str] | Grid[str] | List[str] | Object | Image | Collection | Material | Font | Sound] = 0.0, b: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | str | Field[str] | Grid[str] | List[str] | Object | Image | Collection | Material | Font | Sound | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | str | Field[str] | Grid[str] | List[str] | Object | Image | Collection | Material | Font | Sound] = 0.0, epsilon: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0010000000474974513, c: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.8999999761581421, angle: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.08726649731397629, operation: typing.Literal['LESS_THAN', 'LESS_EQUAL', 'GREATER_THAN', 'GREATER_EQUAL', 'EQUAL', 'NOT_EQUAL', 'BRIGHTER', 'DARKER'] = 'GREATER_THAN', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, mode: typing.Literal['ELEMENT', 'LENGTH', 'AVERAGE', 'DOT_PRODUCT', 'DIRECTION'] = 'ELEMENT') -> FunctionNodeCompareOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Perform a comparison operation on the two given inputs\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'FunctionNodeCompare',
         inputs={
@@ -1442,6 +1498,7 @@ def compare(*, a: float | Field[float] | Grid[float] | List[float] | int | Field
     )
 
 class GeometryNodeMeshConeOutputs(typing.NamedTuple):
+    'Outputs from Cone: Generate a cone mesh'
     mesh: Socket[Geometry]
     top: Socket[Field[bool]]
     bottom: Socket[Field[bool]]
@@ -1449,6 +1506,7 @@ class GeometryNodeMeshConeOutputs(typing.NamedTuple):
     uv_map: Socket[Field[Vector]]
 
 def cone(*, vertices: int | Socket[int] = 32, side_segments: int | Socket[int] = 1, fill_segments: int | Socket[int] = 1, radius_top: float | Socket[float] = 0.0, radius_bottom: float | Socket[float] = 1.0, depth: float | Socket[float] = 2.0, fill_type: typing.Literal['NONE', 'NGON', 'TRIANGLE_FAN'] = 'NGON') -> GeometryNodeMeshConeOutputs:
+    'Generate a cone mesh'
     return _node_function(
         'GeometryNodeMeshCone',
         inputs={
@@ -1481,9 +1539,11 @@ def cone(*, vertices: int | Socket[int] = 32, side_segments: int | Socket[int] =
     )
 
 class GeometryNodeConvexHullOutputs(typing.NamedTuple):
+    'Outputs from Convex Hull: Create a mesh that encloses all points in the input geometry with the smallest number of points'
     convex_hull: Socket[Geometry]
 
 def convex_hull(*, geometry: Geometry | Socket[Geometry] | None = None) -> GeometryNodeConvexHullOutputs:
+    'Create a mesh that encloses all points in the input geometry with the smallest number of points'
     return _node_function(
         'GeometryNodeConvexHull',
         inputs={
@@ -1501,10 +1561,12 @@ def convex_hull(*, geometry: Geometry | Socket[Geometry] | None = None) -> Geome
     )
 
 class GeometryNodeCornersOfEdgeOutputs(typing.NamedTuple):
+    'Outputs from Corners of Edge: Retrieve face corners connected to edges'
     corner_index: Socket[Field[int]]
     total: Socket[Field[int]]
 
 def corners_of_edge(*, edge_index: int | Field[int] | Socket[int | Field[int]] = 0, weights: float | Field[float] | Socket[float | Field[float]] = 0.0, sort_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeCornersOfEdgeOutputs:
+    'Retrieve face corners connected to edges'
     return _node_function(
         'GeometryNodeCornersOfEdge',
         inputs={
@@ -1527,10 +1589,12 @@ def corners_of_edge(*, edge_index: int | Field[int] | Socket[int | Field[int]] =
     )
 
 class GeometryNodeCornersOfFaceOutputs(typing.NamedTuple):
+    'Outputs from Corners of Face: Retrieve corners that make up a face'
     corner_index: Socket[Field[int]]
     total: Socket[Field[int]]
 
 def corners_of_face(*, face_index: int | Field[int] | Socket[int | Field[int]] = 0, weights: float | Field[float] | Socket[float | Field[float]] = 0.0, sort_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeCornersOfFaceOutputs:
+    'Retrieve corners that make up a face'
     return _node_function(
         'GeometryNodeCornersOfFace',
         inputs={
@@ -1553,10 +1617,12 @@ def corners_of_face(*, face_index: int | Field[int] | Socket[int | Field[int]] =
     )
 
 class GeometryNodeCornersOfVertexOutputs(typing.NamedTuple):
+    'Outputs from Corners of Vertex: Retrieve face corners connected to vertices'
     corner_index: Socket[Field[int]]
     total: Socket[Field[int]]
 
 def corners_of_vertex(*, vertex_index: int | Field[int] | Socket[int | Field[int]] = 0, weights: float | Field[float] | Socket[float | Field[float]] = 0.0, sort_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeCornersOfVertexOutputs:
+    'Retrieve face corners connected to vertices'
     return _node_function(
         'GeometryNodeCornersOfVertex',
         inputs={
@@ -1579,10 +1645,12 @@ def corners_of_vertex(*, vertex_index: int | Field[int] | Socket[int | Field[int
     )
 
 class GeometryNodeMeshCubeOutputs(typing.NamedTuple):
+    'Outputs from Cube: Generate a cuboid mesh with variable side lengths and subdivisions'
     mesh: Socket[Geometry]
     uv_map: Socket[Field[Vector]]
 
 def cube(*, size: Vector | Socket[Vector] = (1.0, 1.0, 1.0), vertices_x: int | Socket[int] = 2, vertices_y: int | Socket[int] = 2, vertices_z: int | Socket[int] = 2) -> GeometryNodeMeshCubeOutputs:
+    'Generate a cuboid mesh with variable side lengths and subdivisions'
     return _node_function(
         'GeometryNodeMeshCube',
         inputs={
@@ -1607,9 +1675,11 @@ def cube(*, size: Vector | Socket[Vector] = (1.0, 1.0, 1.0), vertices_x: int | S
     )
 
 class GeometryNodeCubeGridTopologyOutputs(typing.NamedTuple):
+    'Outputs from Cube Grid Topology: Create a boolean grid topology with the given dimensions, for use with the Field to Grid node'
     topology: Socket[Grid[bool]]
 
 def cube_grid_topology(*, bounds_min: Vector | Socket[Vector] = (-1.0, -1.0, -1.0), bounds_max: Vector | Socket[Vector] = (1.0, 1.0, 1.0), resolution_x: int | Socket[int] = 32, resolution_y: int | Socket[int] = 32, resolution_z: int | Socket[int] = 32, min_x: int | Socket[int] = 0, min_y: int | Socket[int] = 0, min_z: int | Socket[int] = 0) -> GeometryNodeCubeGridTopologyOutputs:
+    'Create a boolean grid topology with the given dimensions, for use with the Field to Grid node'
     return _node_function(
         'GeometryNodeCubeGridTopology',
         inputs={
@@ -1641,11 +1711,12 @@ def cube_grid_topology(*, bounds_min: Vector | Socket[Vector] = (-1.0, -1.0, -1.
     )
 
 class GeometryNodeCurvePrimitiveCircleOutputs(typing.NamedTuple):
+    'Outputs from Curve Circle: Generate a poly spline circle'
     curve: Socket[Geometry]
     center: Socket[Vector]
 
 def curve_circle(*, resolution: int | Socket[int] = 32, radius: float | Socket[float] = 1.0, point_1: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), point_2: Vector | Socket[Vector] = (0.0, 1.0, 0.0), point_3: Vector | Socket[Vector] = (1.0, 0.0, 0.0), mode: typing.Literal['POINTS', 'RADIUS'] = 'RADIUS') -> GeometryNodeCurvePrimitiveCircleOutputs:
-    'Args:\n    mode: Method used to determine radius and placement'
+    'Generate a poly spline circle\n\nArgs:\n    mode: Method used to determine radius and placement'
     return _node_function(
         'GeometryNodeCurvePrimitiveCircle',
         inputs={
@@ -1673,10 +1744,12 @@ def curve_circle(*, resolution: int | Socket[int] = 32, radius: float | Socket[f
     )
 
 class GeometryNodeInputCurveHandlePositionsOutputs(typing.NamedTuple):
+    "Outputs from Curve Handle Positions: Retrieve the position of each Bézier control point's handles"
     left: Socket[Field[Vector]]
     right: Socket[Field[Vector]]
 
 def curve_handle_positions(*, relative: bool | Field[bool] | Socket[bool | Field[bool]] = False) -> GeometryNodeInputCurveHandlePositionsOutputs:
+    "Retrieve the position of each Bézier control point's handles"
     return _node_function(
         'GeometryNodeInputCurveHandlePositions',
         inputs={
@@ -1695,9 +1768,11 @@ def curve_handle_positions(*, relative: bool | Field[bool] | Socket[bool | Field
     )
 
 class GeometryNodeCurveLengthOutputs(typing.NamedTuple):
+    'Outputs from Curve Length: Retrieve the length of all splines added together'
     length: Socket[float]
 
 def curve_length(*, curve: Geometry | Socket[Geometry] | None = None) -> GeometryNodeCurveLengthOutputs:
+    'Retrieve the length of all splines added together'
     return _node_function(
         'GeometryNodeCurveLength',
         inputs={
@@ -1715,10 +1790,11 @@ def curve_length(*, curve: Geometry | Socket[Geometry] | None = None) -> Geometr
     )
 
 class GeometryNodeCurvePrimitiveLineOutputs(typing.NamedTuple):
+    'Outputs from Curve Line: Generate a poly spline line with two points'
     curve: Socket[Geometry]
 
 def curve_line(*, start: Vector | Socket[Vector] = (0.0, 0.0, 0.0), end: Vector | Socket[Vector] = (0.0, 0.0, 1.0), direction: Vector | Socket[Vector] = (0.0, 0.0, 1.0), length: float | Socket[float] = 1.0, mode: typing.Literal['POINTS', 'DIRECTION'] = 'POINTS') -> GeometryNodeCurvePrimitiveLineOutputs:
-    'Args:\n    mode: Method used to determine radius and placement'
+    'Generate a poly spline line with two points\n\nArgs:\n    mode: Method used to determine radius and placement'
     return _node_function(
         'GeometryNodeCurvePrimitiveLine',
         inputs={
@@ -1743,10 +1819,12 @@ def curve_line(*, start: Vector | Socket[Vector] = (0.0, 0.0, 0.0), end: Vector 
     )
 
 class GeometryNodeCurveOfPointOutputs(typing.NamedTuple):
+    'Outputs from Curve of Point: Retrieve the curve a control point is part of'
     curve_index: Socket[Field[int]]
     index_in_curve: Socket[Field[int]]
 
 def curve_of_point(*, point_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeCurveOfPointOutputs:
+    'Retrieve the curve a control point is part of'
     return _node_function(
         'GeometryNodeCurveOfPoint',
         inputs={
@@ -1765,9 +1843,11 @@ def curve_of_point(*, point_index: int | Field[int] | Socket[int | Field[int]] =
     )
 
 class GeometryNodeInputTangentOutputs(typing.NamedTuple):
+    'Outputs from Curve Tangent: Retrieve the direction of curves at each control point'
     tangent: Socket[Field[Vector]]
 
 def curve_tangent() -> GeometryNodeInputTangentOutputs:
+    'Retrieve the direction of curves at each control point'
     return _node_function(
         'GeometryNodeInputTangent',
         inputs={
@@ -1783,9 +1863,11 @@ def curve_tangent() -> GeometryNodeInputTangentOutputs:
     )
 
 class GeometryNodeInputCurveTiltOutputs(typing.NamedTuple):
+    "Outputs from Curve Tilt: Retrieve the angle at each control point used to twist the curve's normal around its tangent"
     tilt: Socket[Field[float]]
 
 def curve_tilt() -> GeometryNodeInputCurveTiltOutputs:
+    "Retrieve the angle at each control point used to twist the curve's normal around its tangent"
     return _node_function(
         'GeometryNodeInputCurveTilt',
         inputs={
@@ -1801,9 +1883,11 @@ def curve_tilt() -> GeometryNodeInputCurveTiltOutputs:
     )
 
 class GeometryNodeCurveToMeshOutputs(typing.NamedTuple):
+    'Outputs from Curve to Mesh: Convert curves into a mesh, optionally with a custom profile shape defined by curves'
     mesh: Socket[Geometry]
 
 def curve_to_mesh(*, curve: Geometry | Socket[Geometry] | None = None, profile_curve: Geometry | Socket[Geometry] | None = None, scale: float | Field[float] | Socket[float | Field[float]] = 1.0, fill_caps: bool | Socket[bool] = False) -> GeometryNodeCurveToMeshOutputs:
+    'Convert curves into a mesh, optionally with a custom profile shape defined by curves'
     return _node_function(
         'GeometryNodeCurveToMesh',
         inputs={
@@ -1827,13 +1911,14 @@ def curve_to_mesh(*, curve: Geometry | Socket[Geometry] | None = None, profile_c
     )
 
 class GeometryNodeCurveToPointsOutputs(typing.NamedTuple):
+    'Outputs from Curve to Points: Generate a point cloud by sampling positions along curves'
     points: Socket[Geometry]
     tangent: Socket[Field[Vector]]
     normal: Socket[Field[Vector]]
     rotation: Socket[Field[Rotation]]
 
 def curve_to_points(*, curve: Geometry | Socket[Geometry] | None = None, count: int | Field[int] | Socket[int | Field[int]] = 10, length: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, mode: typing.Literal['EVALUATED', 'COUNT', 'LENGTH'] = 'COUNT') -> GeometryNodeCurveToPointsOutputs:
-    'Args:\n    mode: How to generate points from the input curve'
+    'Generate a point cloud by sampling positions along curves\n\nArgs:\n    mode: How to generate points from the input curve'
     return _node_function(
         'GeometryNodeCurveToPoints',
         inputs={
@@ -1859,9 +1944,11 @@ def curve_to_points(*, curve: Geometry | Socket[Geometry] | None = None, count: 
     )
 
 class GeometryNodeCurvesToGreasePencilOutputs(typing.NamedTuple):
+    'Outputs from Curves to Grease Pencil: Convert the curves in each top-level instance into Grease Pencil layer'
     grease_pencil: Socket[Geometry]
 
 def curves_to_grease_pencil(*, curves: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, instances_as_layers: bool | Socket[bool] = True) -> GeometryNodeCurvesToGreasePencilOutputs:
+    'Convert the curves in each top-level instance into Grease Pencil layer'
     return _node_function(
         'GeometryNodeCurvesToGreasePencil',
         inputs={
@@ -1883,6 +1970,7 @@ def curves_to_grease_pencil(*, curves: Geometry | Socket[Geometry] | None = None
     )
 
 class GeometryNodeMeshCylinderOutputs(typing.NamedTuple):
+    'Outputs from Cylinder: Generate a cylinder mesh'
     mesh: Socket[Geometry]
     top: Socket[Field[bool]]
     side: Socket[Field[bool]]
@@ -1890,6 +1978,7 @@ class GeometryNodeMeshCylinderOutputs(typing.NamedTuple):
     uv_map: Socket[Field[Vector]]
 
 def cylinder(*, vertices: int | Socket[int] = 32, side_segments: int | Socket[int] = 1, fill_segments: int | Socket[int] = 1, radius: float | Socket[float] = 1.0, depth: float | Socket[float] = 2.0, fill_type: typing.Literal['NONE', 'NGON', 'TRIANGLE_FAN'] = 'NGON') -> GeometryNodeMeshCylinderOutputs:
+    'Generate a cylinder mesh'
     return _node_function(
         'GeometryNodeMeshCylinder',
         inputs={
@@ -1920,9 +2009,11 @@ def cylinder(*, vertices: int | Socket[int] = 32, side_segments: int | Socket[in
     )
 
 class GeometryNodeDeformCurvesOnSurfaceOutputs(typing.NamedTuple):
+    "Outputs from Deform Curves on Surface: Translate and rotate curves based on changes between the object's original and evaluated surface mesh"
     curves: Socket[Geometry]
 
 def deform_curves_on_surface(*, curves: Geometry | Socket[Geometry] | None = None) -> GeometryNodeDeformCurvesOnSurfaceOutputs:
+    "Translate and rotate curves based on changes between the object's original and evaluated surface mesh"
     return _node_function(
         'GeometryNodeDeformCurvesOnSurface',
         inputs={
@@ -1940,10 +2031,11 @@ def deform_curves_on_surface(*, curves: Geometry | Socket[Geometry] | None = Non
     )
 
 class GeometryNodeDeleteGeometryOutputs(typing.NamedTuple):
+    'Outputs from Delete Geometry: Remove selected elements of a geometry'
     geometry: Socket[Geometry]
 
 def delete_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, mode: typing.Literal['ALL', 'EDGE_FACE', 'ONLY_FACE'] = 'ALL', domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeDeleteGeometryOutputs:
-    'Args:\n    mode: Which parts of the mesh component to delete\n    domain: Which domain to delete in'
+    'Remove selected elements of a geometry\n\nArgs:\n    mode: Which parts of the mesh component to delete\n    domain: Which domain to delete in'
     return _node_function(
         'GeometryNodeDeleteGeometry',
         inputs={
@@ -1965,9 +2057,11 @@ def delete_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, sele
     )
 
 class GeometryNodeGizmoDialOutputs(typing.NamedTuple):
+    'Outputs from Dial Gizmo: Show a dial gizmo in the viewport for a value'
     transform: Socket[Geometry]
 
 def dial_gizmo(*, value: typing.Sequence[float | Socket[float]] = (), position: Vector | Socket[Vector] = (0.0, 0.0, 0.0), up: Vector | Socket[Vector] = (0.0, 0.0, 1.0), screen_space: bool | Socket[bool] = True, radius: float | Socket[float] = 1.0, color_id: typing.Literal['PRIMARY', 'SECONDARY', 'X', 'Y', 'Z'] = 'PRIMARY') -> GeometryNodeGizmoDialOutputs:
+    'Show a dial gizmo in the viewport for a value'
     return _node_function(
         'GeometryNodeGizmoDial',
         inputs={
@@ -1994,10 +2088,11 @@ def dial_gizmo(*, value: typing.Sequence[float | Socket[float]] = (), position: 
     )
 
 class GeometryNodeDistributePointsInGridOutputs(typing.NamedTuple):
+    'Outputs from Distribute Points in Grid: Generate points inside a volume grid'
     points: Socket[Geometry]
 
 def distribute_points_in_grid(*, grid: Grid[float] | Socket[Grid[float]] | None = None, density: float | Socket[float] = 1.0, seed: int | Socket[int] = 0, spacing: Vector | Socket[Vector] = (0.30000001192092896, 0.30000001192092896, 0.30000001192092896), threshold: float | Socket[float] = 0.10000000149011612, mode: typing.Literal['DENSITY_RANDOM', 'DENSITY_GRID'] = 'DENSITY_RANDOM') -> GeometryNodeDistributePointsInGridOutputs:
-    'Args:\n    mode: Method to use for scattering points'
+    'Generate points inside a volume grid\n\nArgs:\n    mode: Method to use for scattering points'
     return _node_function(
         'GeometryNodeDistributePointsInGrid',
         inputs={
@@ -2024,9 +2119,11 @@ def distribute_points_in_grid(*, grid: Grid[float] | Socket[Grid[float]] | None 
     )
 
 class GeometryNodeDistributePointsInVolumeOutputs(typing.NamedTuple):
+    'Outputs from Distribute Points in Volume: Generate points inside a volume'
     points: Socket[Geometry]
 
 def distribute_points_in_volume(*, volume: Geometry | Socket[Geometry] | None = None, mode: Menu | Socket[Menu] = 'Random', density: float | Socket[float] = 1.0, seed: int | Socket[int] = 0, spacing: Vector | Socket[Vector] = (0.30000001192092896, 0.30000001192092896, 0.30000001192092896), threshold: float | Socket[float] = 0.10000000149011612) -> GeometryNodeDistributePointsInVolumeOutputs:
+    'Generate points inside a volume'
     return _node_function(
         'GeometryNodeDistributePointsInVolume',
         inputs={
@@ -2054,12 +2151,13 @@ def distribute_points_in_volume(*, volume: Geometry | Socket[Geometry] | None = 
     )
 
 class GeometryNodeDistributePointsOnFacesOutputs(typing.NamedTuple):
+    'Outputs from Distribute Points on Faces: Generate points spread out on the surface of a mesh'
     points: Socket[Geometry]
     normal: Socket[Field[Vector]]
     rotation: Socket[Field[Rotation]]
 
 def distribute_points_on_faces(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, density: float | Field[float] | Socket[float | Field[float]] = 10.0, seed: int | Socket[int] = 0, distance_min: float | Socket[float] = 0.0, density_max: float | Socket[float] = 10.0, density_factor: float | Field[float] | Socket[float | Field[float]] = 1.0, distribute_method: typing.Literal['RANDOM', 'POISSON'] = 'RANDOM', use_legacy_normal: bool = False) -> GeometryNodeDistributePointsOnFacesOutputs:
-    'Args:\n    distribute_method: Method to use for scattering points\n    use_legacy_normal: Output the normal and rotation values that have been output before the node started taking smooth normals into account'
+    'Generate points spread out on the surface of a mesh\n\nArgs:\n    distribute_method: Method to use for scattering points\n    use_legacy_normal: Output the normal and rotation values that have been output before the node started taking smooth normals into account'
     return _node_function(
         'GeometryNodeDistributePointsOnFaces',
         inputs={
@@ -2093,6 +2191,7 @@ def distribute_points_on_faces(*, mesh: Geometry | Socket[Geometry] | None = Non
     )
 
 class GeometryNodeAttributeDomainSizeOutputs(typing.NamedTuple):
+    'Outputs from Domain Size: Retrieve the number of elements in a geometry for each attribute domain'
     point_count: Socket[int]
     edge_count: Socket[int]
     face_count: Socket[int]
@@ -2102,6 +2201,7 @@ class GeometryNodeAttributeDomainSizeOutputs(typing.NamedTuple):
     layer_count: Socket[int]
 
 def domain_size(*, geometry: Geometry | Socket[Geometry] | None = None, component: typing.Literal['MESH', 'POINTCLOUD', 'CURVE', 'INSTANCES', 'GREASEPENCIL', 'VOLUME'] = 'MESH') -> GeometryNodeAttributeDomainSizeOutputs:
+    'Retrieve the number of elements in a geometry for each attribute domain'
     return _node_function(
         'GeometryNodeAttributeDomainSize',
         inputs={
@@ -2126,9 +2226,11 @@ def domain_size(*, geometry: Geometry | Socket[Geometry] | None = None, componen
     )
 
 class GeometryNodeDualMeshOutputs(typing.NamedTuple):
+    'Outputs from Dual Mesh: Convert Faces into vertices and vertices into faces'
     dual_mesh: Socket[Geometry]
 
 def dual_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, keep_boundaries: bool | Socket[bool] = False) -> GeometryNodeDualMeshOutputs:
+    'Convert Faces into vertices and vertices into faces'
     return _node_function(
         'GeometryNodeDualMesh',
         inputs={
@@ -2148,11 +2250,12 @@ def dual_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, keep_boundarie
     )
 
 class GeometryNodeDuplicateElementsOutputs(typing.NamedTuple):
+    'Outputs from Duplicate Elements: Generate an arbitrary number copies of each selected input element'
     geometry: Socket[Geometry]
     duplicate_index: Socket[Field[int]]
 
 def duplicate_elements(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, amount: int | Field[int] | Socket[int | Field[int]] = 1, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'SPLINE', 'LAYER', 'INSTANCE'] = 'POINT') -> GeometryNodeDuplicateElementsOutputs:
-    'Args:\n    domain: Which domain to duplicate'
+    'Generate an arbitrary number copies of each selected input element\n\nArgs:\n    domain: Which domain to duplicate'
     return _node_function(
         'GeometryNodeDuplicateElements',
         inputs={
@@ -2176,10 +2279,12 @@ def duplicate_elements(*, geometry: Geometry | Socket[Geometry] | None = None, s
     )
 
 class GeometryNodeInputMeshEdgeAngleOutputs(typing.NamedTuple):
+    'Outputs from Edge Angle: The angle between the normals of connected manifold faces'
     unsigned_angle: Socket[Field[float]]
     signed_angle: Socket[Field[float]]
 
 def edge_angle() -> GeometryNodeInputMeshEdgeAngleOutputs:
+    'The angle between the normals of connected manifold faces'
     return _node_function(
         'GeometryNodeInputMeshEdgeAngle',
         inputs={
@@ -2196,9 +2301,11 @@ def edge_angle() -> GeometryNodeInputMeshEdgeAngleOutputs:
     )
 
 class GeometryNodeInputMeshEdgeNeighborsOutputs(typing.NamedTuple):
+    'Outputs from Edge Neighbors: Retrieve the number of faces that use each edge as one of their sides'
     face_count: Socket[Field[int]]
 
 def edge_neighbors() -> GeometryNodeInputMeshEdgeNeighborsOutputs:
+    'Retrieve the number of faces that use each edge as one of their sides'
     return _node_function(
         'GeometryNodeInputMeshEdgeNeighbors',
         inputs={
@@ -2214,9 +2321,11 @@ def edge_neighbors() -> GeometryNodeInputMeshEdgeNeighborsOutputs:
     )
 
 class GeometryNodeEdgePathsToCurvesOutputs(typing.NamedTuple):
+    'Outputs from Edge Paths to Curves: Output curves following paths across mesh edges'
     curves: Socket[Geometry]
 
 def edge_paths_to_curves(*, mesh: Geometry | Socket[Geometry] | None = None, start_vertices: bool | Field[bool] | Socket[bool | Field[bool]] = True, next_vertex_index: int | Field[int] | Socket[int | Field[int]] = -1) -> GeometryNodeEdgePathsToCurvesOutputs:
+    'Output curves following paths across mesh edges'
     return _node_function(
         'GeometryNodeEdgePathsToCurves',
         inputs={
@@ -2238,9 +2347,11 @@ def edge_paths_to_curves(*, mesh: Geometry | Socket[Geometry] | None = None, sta
     )
 
 class GeometryNodeEdgePathsToSelectionOutputs(typing.NamedTuple):
+    'Outputs from Edge Paths to Selection: Output a selection of edges by following paths across mesh edges'
     selection: Socket[Field[bool]]
 
 def edge_paths_to_selection(*, start_vertices: bool | Field[bool] | Socket[bool | Field[bool]] = True, next_vertex_index: int | Field[int] | Socket[int | Field[int]] = -1) -> GeometryNodeEdgePathsToSelectionOutputs:
+    'Output a selection of edges by following paths across mesh edges'
     return _node_function(
         'GeometryNodeEdgePathsToSelection',
         inputs={
@@ -2260,12 +2371,14 @@ def edge_paths_to_selection(*, start_vertices: bool | Field[bool] | Socket[bool 
     )
 
 class GeometryNodeInputMeshEdgeVerticesOutputs(typing.NamedTuple):
+    'Outputs from Edge Vertices: Retrieve topology information relating to each edge of a mesh'
     vertex_index_1: Socket[Field[int]]
     vertex_index_2: Socket[Field[int]]
     position_1: Socket[Field[Vector]]
     position_2: Socket[Field[Vector]]
 
 def edge_vertices() -> GeometryNodeInputMeshEdgeVerticesOutputs:
+    'Retrieve topology information relating to each edge of a mesh'
     return _node_function(
         'GeometryNodeInputMeshEdgeVertices',
         inputs={
@@ -2284,10 +2397,12 @@ def edge_vertices() -> GeometryNodeInputMeshEdgeVerticesOutputs:
     )
 
 class GeometryNodeEdgesOfCornerOutputs(typing.NamedTuple):
+    'Outputs from Edges of Corner: Retrieve the edges on both sides of a face corner'
     next_edge_index: Socket[Field[int]]
     previous_edge_index: Socket[Field[int]]
 
 def edges_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeEdgesOfCornerOutputs:
+    'Retrieve the edges on both sides of a face corner'
     return _node_function(
         'GeometryNodeEdgesOfCorner',
         inputs={
@@ -2306,10 +2421,12 @@ def edges_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]]
     )
 
 class GeometryNodeEdgesOfVertexOutputs(typing.NamedTuple):
+    'Outputs from Edges of Vertex: Retrieve the edges connected to each vertex'
     edge_index: Socket[Field[int]]
     total: Socket[Field[int]]
 
 def edges_of_vertex(*, vertex_index: int | Field[int] | Socket[int | Field[int]] = 0, weights: float | Field[float] | Socket[float | Field[float]] = 0.0, sort_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeEdgesOfVertexOutputs:
+    'Retrieve the edges connected to each vertex'
     return _node_function(
         'GeometryNodeEdgesOfVertex',
         inputs={
@@ -2332,9 +2449,11 @@ def edges_of_vertex(*, vertex_index: int | Field[int] | Socket[int | Field[int]]
     )
 
 class GeometryNodeEdgesToFaceGroupsOutputs(typing.NamedTuple):
+    'Outputs from Edges to Face Groups: Group faces into regions surrounded by the selected boundary edges'
     face_group_id: Socket[Field[int]]
 
 def edges_to_face_groups(*, boundary_edges: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeEdgesToFaceGroupsOutputs:
+    'Group faces into regions surrounded by the selected boundary edges'
     return _node_function(
         'GeometryNodeEdgesToFaceGroups',
         inputs={
@@ -2352,10 +2471,11 @@ def edges_to_face_groups(*, boundary_edges: bool | Field[bool] | Socket[bool | F
     )
 
 class NodeEnableOutputOutputs(typing.NamedTuple):
+    'Outputs from Enable Output: Either pass through the input value or output the fallback value'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound]
 
 def enable_output(*, enable: bool | Socket[bool] = False, value: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound] = 0.0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> NodeEnableOutputOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Either pass through the input value or output the fallback value\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'NodeEnableOutput',
         inputs={
@@ -2377,9 +2497,11 @@ def enable_output(*, enable: bool | Socket[bool] = False, value: float | Field[f
     )
 
 class GeometryNodeCurveEndpointSelectionOutputs(typing.NamedTuple):
+    'Outputs from Endpoint Selection: Provide a selection for an arbitrary number of endpoints in each spline'
     selection: Socket[Field[bool]]
 
 def endpoint_selection(*, start_size: int | Field[int] | Socket[int | Field[int]] = 1, end_size: int | Field[int] | Socket[int | Field[int]] = 1) -> GeometryNodeCurveEndpointSelectionOutputs:
+    'Provide a selection for an arbitrary number of endpoints in each spline'
     return _node_function(
         'GeometryNodeCurveEndpointSelection',
         inputs={
@@ -2399,9 +2521,11 @@ def endpoint_selection(*, start_size: int | Field[int] | Socket[int | Field[int]
     )
 
 class FunctionNodeEulerToRotationOutputs(typing.NamedTuple):
+    'Outputs from Euler to Rotation: Build a rotation from separate angles around each axis'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def euler_to_rotation(*, euler: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0)) -> FunctionNodeEulerToRotationOutputs:
+    'Build a rotation from separate angles around each axis'
     return _node_function(
         'FunctionNodeEulerToRotation',
         inputs={
@@ -2419,10 +2543,11 @@ def euler_to_rotation(*, euler: Vector | Field[Vector] | Grid[Vector] | List[Vec
     )
 
 class GeometryNodeFieldAtIndexOutputs(typing.NamedTuple):
+    "Outputs from Evaluate at Index: Retrieve data of other elements in the context's geometry"
     value: Socket[Field[float] | Field[int] | Field[bool] | Field[Vector] | Field[Color] | Field[Rotation] | Field[Matrix]]
 
 def evaluate_at_index(*, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, index: int | Field[int] | Socket[int | Field[int]] = 0, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeFieldAtIndexOutputs:
-    'Args:\n    domain: Domain the field is evaluated in\n    data_type:  Inferred from the linked inputs when None.'
+    "Retrieve data of other elements in the context's geometry\n\nArgs:\n    domain: Domain the field is evaluated in\n    data_type:  Inferred from the linked inputs when None."
     return _node_function(
         'GeometryNodeFieldAtIndex',
         inputs={
@@ -2445,10 +2570,10 @@ def evaluate_at_index(*, value: float | Field[float] | int | Field[int] | bool |
     )
 
 class NodeEvaluateClosureOutputs(ItemOutputs):
-    pass
+    'Outputs from Evaluate Closure: Execute a given closure'
 
 def evaluate_closure(*, closure: Closure | Socket[Closure] | None = None, define_signature: bool = False, outputs: typing.Mapping[str, typing.Any] | None = None, **items: typing.Any) -> NodeEvaluateClosureOutputs:
-    'Args:\n    define_signature: This node defines a closure signature that should be used by other nodes\n    items: Items to add, by name; each socket type is inferred from its value.\n    outputs: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
+    'Execute a given closure\n\nArgs:\n    define_signature: This node defines a closure signature that should be used by other nodes\n    items: Items to add, by name; each socket type is inferred from its value.\n    outputs: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
     return _node_function(
         'NodeEvaluateClosure',
         inputs={
@@ -2470,10 +2595,11 @@ def evaluate_closure(*, closure: Closure | Socket[Closure] | None = None, define
     )
 
 class GeometryNodeFieldOnDomainOutputs(typing.NamedTuple):
+    'Outputs from Evaluate on Domain: Retrieve values from a field on a different domain besides the domain from the context'
     value: Socket[Field[float] | Field[int] | Field[bool] | Field[Vector] | Field[Color] | Field[Rotation] | Field[Matrix]]
 
 def evaluate_on_domain(*, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeFieldOnDomainOutputs:
-    'Args:\n    domain: Domain the field is evaluated in\n    data_type:  Inferred from the linked inputs when None.'
+    'Retrieve values from a field on a different domain besides the domain from the context\n\nArgs:\n    domain: Domain the field is evaluated in\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeFieldOnDomain',
         inputs={
@@ -2494,11 +2620,13 @@ def evaluate_on_domain(*, value: float | Field[float] | int | Field[int] | bool 
     )
 
 class GeometryNodeExtrudeMeshOutputs(typing.NamedTuple):
+    'Outputs from Extrude Mesh: Generate new vertices, edges, or faces from selected elements and move them based on an offset while keeping them connected by their boundary'
     mesh: Socket[Geometry]
     top: Socket[Field[bool]]
     side: Socket[Field[bool]]
 
 def extrude_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, offset: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), offset_scale: float | Field[float] | Socket[float | Field[float]] = 1.0, individual: bool | Socket[bool] = True, mode: typing.Literal['VERTICES', 'EDGES', 'FACES'] = 'FACES') -> GeometryNodeExtrudeMeshOutputs:
+    'Generate new vertices, edges, or faces from selected elements and move them based on an offset while keeping them connected by their boundary'
     return _node_function(
         'GeometryNodeExtrudeMesh',
         inputs={
@@ -2527,9 +2655,11 @@ def extrude_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, selection: 
     )
 
 class GeometryNodeInputMeshFaceAreaOutputs(typing.NamedTuple):
+    "Outputs from Face Area: Calculate the surface area of a mesh's faces"
     area: Socket[Field[float]]
 
 def face_area() -> GeometryNodeInputMeshFaceAreaOutputs:
+    "Calculate the surface area of a mesh's faces"
     return _node_function(
         'GeometryNodeInputMeshFaceArea',
         inputs={
@@ -2545,9 +2675,11 @@ def face_area() -> GeometryNodeInputMeshFaceAreaOutputs:
     )
 
 class GeometryNodeMeshFaceSetBoundariesOutputs(typing.NamedTuple):
+    'Outputs from Face Group Boundaries: Find edges on the boundaries between groups of faces with the same ID value'
     boundary_edges: Socket[Field[bool]]
 
 def face_group_boundaries(*, face_group_id: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeMeshFaceSetBoundariesOutputs:
+    'Find edges on the boundaries between groups of faces with the same ID value'
     return _node_function(
         'GeometryNodeMeshFaceSetBoundaries',
         inputs={
@@ -2565,10 +2697,12 @@ def face_group_boundaries(*, face_group_id: int | Field[int] | Socket[int | Fiel
     )
 
 class GeometryNodeInputMeshFaceNeighborsOutputs(typing.NamedTuple):
+    'Outputs from Face Neighbors: Retrieve topology information relating to each face of a mesh'
     vertex_count: Socket[Field[int]]
     face_count: Socket[Field[int]]
 
 def face_neighbors() -> GeometryNodeInputMeshFaceNeighborsOutputs:
+    'Retrieve topology information relating to each face of a mesh'
     return _node_function(
         'GeometryNodeInputMeshFaceNeighbors',
         inputs={
@@ -2585,10 +2719,12 @@ def face_neighbors() -> GeometryNodeInputMeshFaceNeighborsOutputs:
     )
 
 class GeometryNodeFaceOfCornerOutputs(typing.NamedTuple):
+    'Outputs from Face of Corner: Retrieve the face each face corner is part of'
     face_index: Socket[Field[int]]
     index_in_face: Socket[Field[int]]
 
 def face_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeFaceOfCornerOutputs:
+    'Retrieve the face each face corner is part of'
     return _node_function(
         'GeometryNodeFaceOfCorner',
         inputs={
@@ -2607,10 +2743,12 @@ def face_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]] 
     )
 
 class GeometryNodeToolFaceSetOutputs(typing.NamedTuple):
+    "Outputs from Face Set: Each face's sculpt face set value"
     face_set: Socket[Field[int]]
     exists: Socket[Field[bool]]
 
 def face_set() -> GeometryNodeToolFaceSetOutputs:
+    "Each face's sculpt face set value"
     return _node_function(
         'GeometryNodeToolFaceSet',
         inputs={
@@ -2627,11 +2765,12 @@ def face_set() -> GeometryNodeToolFaceSetOutputs:
     )
 
 class GeometryNodeFieldAverageOutputs(typing.NamedTuple):
+    'Outputs from Field Average: Calculate the mean and median of a given field'
     mean: Socket[Field[float] | Field[Vector]]
     median: Socket[Field[float] | Field[Vector]]
 
 def field_average(*, value: float | Field[float] | Vector | Field[Vector] | Socket[float | Field[float] | Vector | Field[Vector]] = 0.0, group_id: int | Field[int] | Socket[int | Field[int]] = 0, data_type: typing.Literal['FLOAT', 'FLOAT_VECTOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeFieldAverageOutputs:
-    'Args:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
+    'Calculate the mean and median of a given field\n\nArgs:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeFieldAverage',
         inputs={
@@ -2655,11 +2794,12 @@ def field_average(*, value: float | Field[float] | Vector | Field[Vector] | Sock
     )
 
 class GeometryNodeFieldMinAndMaxOutputs(typing.NamedTuple):
+    'Outputs from Field Min & Max: Calculate the minimum and maximum of a given field'
     min: Socket[Field[float] | Field[int] | Field[Vector]]
     max: Socket[Field[float] | Field[int] | Field[Vector]]
 
 def field_min_max(*, value: float | Field[float] | int | Field[int] | Vector | Field[Vector] | Socket[float | Field[float] | int | Field[int] | Vector | Field[Vector]] = 0.0, group_id: int | Field[int] | Socket[int | Field[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'FLOAT_VECTOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeFieldMinAndMaxOutputs:
-    'Args:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
+    'Calculate the minimum and maximum of a given field\n\nArgs:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeFieldMinAndMax',
         inputs={
@@ -2683,10 +2823,10 @@ def field_min_max(*, value: float | Field[float] | int | Field[int] | Vector | F
     )
 
 class GeometryNodeFieldToGridOutputs(ItemOutputs):
-    pass
+    'Outputs from Field to Grid: Create new grids by evaluating new values on an existing volume grid topology'
 
 def field_to_grid(*, topology: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, **items: typing.Any) -> GeometryNodeFieldToGridOutputs:
-    'Args:\n    data_type: Data type for topology grid Inferred from the linked inputs when None.\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
+    'Create new grids by evaluating new values on an existing volume grid topology\n\nArgs:\n    data_type: Data type for topology grid Inferred from the linked inputs when None.\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
     return _node_function(
         'GeometryNodeFieldToGrid',
         inputs={
@@ -2708,10 +2848,10 @@ def field_to_grid(*, topology: Grid[float] | Grid[int] | Grid[bool] | Grid[Vecto
     )
 
 class GeometryNodeFieldToListOutputs(ItemOutputs):
-    pass
+    'Outputs from Field to List: Create a list of values'
 
 def field_to_list(*, count: int | Socket[int] = 1, **items: typing.Any) -> GeometryNodeFieldToListOutputs:
-    'Args:\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
+    'Create a list of values\n\nArgs:\n    items: Items to add, by name; each socket type is inferred from its value. Their outputs are available by name on the result.'
     return _node_function(
         'GeometryNodeFieldToList',
         inputs={
@@ -2731,11 +2871,12 @@ def field_to_list(*, count: int | Socket[int] = 1, **items: typing.Any) -> Geome
     )
 
 class GeometryNodeFieldVarianceOutputs(typing.NamedTuple):
+    'Outputs from Field Variance: Calculate the standard deviation and variance of a given field'
     standard_deviation: Socket[Field[float] | Field[Vector]]
     variance: Socket[Field[float] | Field[Vector]]
 
 def field_variance(*, value: float | Field[float] | Vector | Field[Vector] | Socket[float | Field[float] | Vector | Field[Vector]] = 0.0, group_id: int | Field[int] | Socket[int | Field[int]] = 0, data_type: typing.Literal['FLOAT', 'FLOAT_VECTOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeFieldVarianceOutputs:
-    'Args:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
+    'Calculate the standard deviation and variance of a given field\n\nArgs:\n    data_type: Type of data the outputs are calculated from Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeFieldVariance',
         inputs={
@@ -2759,9 +2900,11 @@ def field_variance(*, value: float | Field[float] | Vector | Field[Vector] | Soc
     )
 
 class GeometryNodeFillCurveOutputs(typing.NamedTuple):
+    'Outputs from Fill Curve: Generate a mesh on the XY plane with faces on the inside of input curves'
     mesh: Socket[Geometry]
 
 def fill_curve(*, curve: Geometry | Socket[Geometry] | None = None, group_id: int | Field[int] | Socket[int | Field[int]] = 0, mode: Menu | Socket[Menu] = 'Triangles', fill_rule: Menu | Socket[Menu] = 'Even-Odd') -> GeometryNodeFillCurveOutputs:
+    'Generate a mesh on the XY plane with faces on the inside of input curves'
     return _node_function(
         'GeometryNodeFillCurve',
         inputs={
@@ -2785,9 +2928,11 @@ def fill_curve(*, curve: Geometry | Socket[Geometry] | None = None, group_id: in
     )
 
 class GeometryNodeFilletCurveOutputs(typing.NamedTuple):
+    'Outputs from Fillet Curve: Round corners by generating circular arcs on each control point'
     curve: Socket[Geometry]
 
 def fillet_curve(*, curve: Geometry | Socket[Geometry] | None = None, radius: float | Field[float] | Socket[float | Field[float]] = 0.25, limit_radius: bool | Socket[bool] = False, mode: Menu | Socket[Menu] = 'Bézier', count: int | Field[int] | Socket[int | Field[int]] = 1) -> GeometryNodeFilletCurveOutputs:
+    'Round corners by generating circular arcs on each control point'
     return _node_function(
         'GeometryNodeFilletCurve',
         inputs={
@@ -2813,11 +2958,12 @@ def fillet_curve(*, curve: Geometry | Socket[Geometry] | None = None, radius: fl
     )
 
 class GeometryNodeFilterListOutputs(typing.NamedTuple):
+    'Outputs from Filter List: Remove items from a list'
     selection: Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]]
     inverted: Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]]
 
 def filter_list(*, list: List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound] | Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]] | None = None, selection: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True, socket_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeFilterListOutputs:
-    'Args:\n    socket_type:  Inferred from the linked inputs when None.'
+    'Remove items from a list\n\nArgs:\n    socket_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeFilterList',
         inputs={
@@ -2840,10 +2986,12 @@ def filter_list(*, list: List[float] | List[int] | List[bool] | List[Vector] | L
     )
 
 class FunctionNodeFindInStringOutputs(typing.NamedTuple):
+    'Outputs from Find in String: Find the number of times a given string occurs in another string and the position of the first match'
     first_found: Socket[int | Field[int] | Grid[int] | List[int]]
     count: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def find_in_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', search: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', mode: Menu | Socket[Menu] = 'From Start') -> FunctionNodeFindInStringOutputs:
+    'Find the number of times a given string occurs in another string and the position of the first match'
     return _node_function(
         'FunctionNodeFindInString',
         inputs={
@@ -2866,9 +3014,11 @@ def find_in_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[
     )
 
 class GeometryNodeFlipFacesOutputs(typing.NamedTuple):
+    'Outputs from Flip Faces: Reverse the order of the vertices and edges of selected faces, flipping their normal direction'
     mesh: Socket[Geometry]
 
 def flip_faces(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeFlipFacesOutputs:
+    'Reverse the order of the vertices and edges of selected faces, flipping their normal direction'
     return _node_function(
         'GeometryNodeFlipFaces',
         inputs={
@@ -2888,9 +3038,11 @@ def flip_faces(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bo
     )
 
 class ShaderNodeFloatCurveOutputs(typing.NamedTuple):
+    'Outputs from Float Curve: Map an input float to a curve and outputs a float value'
     value: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def float_curve(*, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, value: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0) -> ShaderNodeFloatCurveOutputs:
+    'Map an input float to a curve and outputs a float value'
     return _node_function(
         'ShaderNodeFloatCurve',
         inputs={
@@ -2910,10 +3062,11 @@ def float_curve(*, factor: float | Field[float] | Grid[float] | List[float] | So
     )
 
 class FunctionNodeFloatToIntOutputs(typing.NamedTuple):
+    'Outputs from Float to Integer: Convert the given floating-point number to an integer, with a choice of methods'
     integer: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def float_to_integer(*, float: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, rounding_mode: typing.Literal['ROUND', 'FLOOR', 'CEILING', 'TRUNCATE'] = 'ROUND') -> FunctionNodeFloatToIntOutputs:
-    'Args:\n    rounding_mode: Method used to convert the float to an integer'
+    'Convert the given floating-point number to an integer, with a choice of methods\n\nArgs:\n    rounding_mode: Method used to convert the float to an integer'
     return _node_function(
         'FunctionNodeFloatToInt',
         inputs={
@@ -2932,9 +3085,11 @@ def float_to_integer(*, float: float | Field[float] | Grid[float] | List[float] 
     )
 
 class GeometryNodeInputFontOutputs(typing.NamedTuple):
+    'Outputs from Font: Output a font'
     font: Socket[Font]
 
 def font(*, font: bpy.types.VectorFont | None) -> GeometryNodeInputFontOutputs:
+    'Output a font'
     return _node_function(
         'GeometryNodeInputFont',
         inputs={
@@ -2951,10 +3106,11 @@ def font(*, font: bpy.types.VectorFont | None) -> GeometryNodeInputFontOutputs:
     )
 
 class FunctionNodeFormatStringOutputs(typing.NamedTuple):
+    'Outputs from Format String: Insert values into a string using a Python and path template compatible formatting syntax'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def format_string(*, format: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', **items: typing.Any) -> FunctionNodeFormatStringOutputs:
-    'Args:\n    items: Items to add, by name; each socket type is inferred from its value.'
+    'Insert values into a string using a Python and path template compatible formatting syntax\n\nArgs:\n    items: Items to add, by name; each socket type is inferred from its value.'
     return _node_function(
         'FunctionNodeFormatString',
         inputs={
@@ -2975,12 +3131,13 @@ def format_string(*, format: str | Field[str] | Grid[str] | List[str] | Socket[s
     )
 
 class ShaderNodeTexGaborOutputs(typing.NamedTuple):
+    'Outputs from Gabor Texture: Generate Gabor noise'
     value: Socket[float | Field[float] | Grid[float] | List[float]]
     phase: Socket[float | Field[float] | Grid[float] | List[float]]
     intensity: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def gabor_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, frequency: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 2.0, anisotropy: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, orientation: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 0.7853981852531433, gabor_type: typing.Literal['2D', '3D'] | None = None) -> ShaderNodeTexGaborOutputs:
-    'Args:\n    gabor_type: The type of Gabor noise to evaluate Inferred from the linked inputs when None.'
+    'Generate Gabor noise\n\nArgs:\n    gabor_type: The type of Gabor noise to evaluate Inferred from the linked inputs when None.'
     return _node_function(
         'ShaderNodeTexGabor',
         inputs={
@@ -3010,9 +3167,11 @@ def gabor_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class ShaderNodeGammaOutputs(typing.NamedTuple):
+    'Outputs from Gamma: Apply a gamma correction'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def gamma(*, color: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (1.0, 1.0, 1.0, 1.0), gamma: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0) -> ShaderNodeGammaOutputs:
+    'Apply a gamma correction'
     return _node_function(
         'ShaderNodeGamma',
         inputs={
@@ -3032,12 +3191,13 @@ def gamma(*, color: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Co
     )
 
 class GeometryNodeProximityOutputs(typing.NamedTuple):
+    'Outputs from Geometry Proximity: Compute the closest location on the target geometry'
     position: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     distance: Socket[float | Field[float] | Grid[float] | List[float]]
     is_valid: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def geometry_proximity(*, geometry: Geometry | Socket[Geometry] | None = None, group_id: int | Field[int] | Socket[int | Field[int]] = 0, sample_position: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), sample_group_id: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, target_element: typing.Literal['POINTS', 'EDGES', 'FACES'] = 'FACES') -> GeometryNodeProximityOutputs:
-    'Args:\n    target_element: Element of the target geometry to calculate the distance from'
+    'Compute the closest location on the target geometry\n\nArgs:\n    target_element: Element of the target geometry to calculate the distance from'
     return _node_function(
         'GeometryNodeProximity',
         inputs={
@@ -3064,9 +3224,11 @@ def geometry_proximity(*, geometry: Geometry | Socket[Geometry] | None = None, g
     )
 
 class GeometryNodeGeometryToInstanceOutputs(typing.NamedTuple):
+    'Outputs from Geometry to Instance: Convert each input geometry into an instance, which can be much faster than the Join Geometry node when the inputs are large'
     instances: Socket[Geometry]
 
 def geometry_to_instance(*, geometry: typing.Sequence[Geometry | Socket[Geometry]] = ()) -> GeometryNodeGeometryToInstanceOutputs:
+    'Convert each input geometry into an instance, which can be much faster than the Join Geometry node when the inputs are large'
     return _node_function(
         'GeometryNodeGeometryToInstance',
         inputs={
@@ -3084,9 +3246,11 @@ def geometry_to_instance(*, geometry: typing.Sequence[Geometry | Socket[Geometry
     )
 
 class GeometryNodeGetAttributeNamesOutputs(typing.NamedTuple):
+    'Outputs from Get Attribute Names: Retrieves attribute names as a list of strings'
     names: Socket[List[str]]
 
 def get_attribute_names(*, geometry: Geometry | Socket[Geometry] | None = None, filter_data_type: bool | Socket[bool] = False, data_type: Menu | Socket[Menu] = 'Float', filter_domain: bool | Socket[bool] = False, domain: Menu | Socket[Menu] = 'Point') -> GeometryNodeGetAttributeNamesOutputs:
+    'Retrieves attribute names as a list of strings'
     return _node_function(
         'GeometryNodeGetAttributeNames',
         inputs={
@@ -3112,12 +3276,13 @@ def get_attribute_names(*, geometry: Geometry | Socket[Geometry] | None = None, 
     )
 
 class NodeGetBundleItemOutputs(typing.NamedTuple):
+    'Outputs from Get Bundle Item: Retrieve a bundle item by path.'
     bundle: Socket[Bundle]
     item: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound]
     exists: Socket[bool]
 
 def get_bundle_item(*, bundle: Bundle | Socket[Bundle] | None = None, path: str | Socket[str] = '', remove: bool | Socket[bool] = False, socket_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, structure_type: typing.Literal['AUTO', 'DYNAMIC', 'FIELD', 'GRID', 'LIST', 'SINGLE'] = 'AUTO') -> NodeGetBundleItemOutputs:
-    'Args:\n    socket_type: Value may be implicitly converted if the type does not match Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
+    'Retrieve a bundle item by path.\n\nArgs:\n    socket_type: Value may be implicitly converted if the type does not match Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
     return _node_function(
         'NodeGetBundleItem',
         inputs={
@@ -3144,10 +3309,12 @@ def get_bundle_item(*, bundle: Bundle | Socket[Bundle] | None = None, path: str 
     )
 
 class GeometryNodeGetGeometryBundleOutputs(typing.NamedTuple):
+    'Outputs from Get Geometry Bundle: Get the bundle of a geometry'
     geometry: Socket[Geometry]
     bundle: Socket[Bundle]
 
 def get_geometry_bundle(*, geometry: Geometry | Socket[Geometry] | None = None, remove: bool | Socket[bool] = False) -> GeometryNodeGetGeometryBundleOutputs:
+    'Get the bundle of a geometry'
     return _node_function(
         'GeometryNodeGetGeometryBundle',
         inputs={
@@ -3168,11 +3335,13 @@ def get_geometry_bundle(*, geometry: Geometry | Socket[Geometry] | None = None, 
     )
 
 class GeometryNodeGetGeometryComponentOutputs(typing.NamedTuple):
+    'Outputs from Get Geometry Component: Get a single component of a geometry'
     geometry: Socket[Geometry]
     component: Socket[Geometry]
     exists: Socket[bool]
 
 def get_geometry_component(*, geometry: Geometry | Socket[Geometry] | None = None, type: Menu | Socket[Menu] = 'Mesh', remove: bool | Socket[bool] = True) -> GeometryNodeGetGeometryComponentOutputs:
+    'Get a single component of a geometry'
     return _node_function(
         'GeometryNodeGetGeometryComponent',
         inputs={
@@ -3196,10 +3365,11 @@ def get_geometry_component(*, geometry: Geometry | Socket[Geometry] | None = Non
     )
 
 class GeometryNodeListGetItemOutputs(typing.NamedTuple):
+    'Outputs from Get List Item: Retrieve a value from a list'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound]
 
 def get_list_item(*, list: List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound] | Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]] | None = None, index: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, socket_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, structure_type: typing.Literal['AUTO', 'DYNAMIC', 'FIELD', 'GRID', 'LIST', 'SINGLE'] = 'AUTO') -> GeometryNodeListGetItemOutputs:
-    'Args:\n    socket_type: Value may be implicitly converted if the type does not match Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
+    'Retrieve a value from a list\n\nArgs:\n    socket_type: Value may be implicitly converted if the type does not match Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
     return _node_function(
         'GeometryNodeListGetItem',
         inputs={
@@ -3222,11 +3392,12 @@ def get_list_item(*, list: List[float] | List[int] | List[bool] | List[Vector] |
     )
 
 class GeometryNodeGetNamedGridOutputs(typing.NamedTuple):
+    'Outputs from Get Named Grid: Get volume grid from a volume geometry with the specified name'
     volume: Socket[Geometry]
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def get_named_grid(*, volume: Geometry | Socket[Geometry] | None = None, name: str | Socket[str] = '', remove: bool | Socket[bool] = True, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGetNamedGridOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Get volume grid from a volume geometry with the specified name\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGetNamedGrid',
         inputs={
@@ -3251,9 +3422,11 @@ def get_named_grid(*, volume: Geometry | Socket[Geometry] | None = None, name: s
     )
 
 class NodeGetNestedBundlePathsOutputs(typing.NamedTuple):
+    'Outputs from Get Nested Bundle Paths: Get paths to items in a nested bundle with a filter'
     paths: Socket[List[str]]
 
 def get_nested_bundle_paths(*, bundle: Bundle | Socket[Bundle] | None = None, mode: Menu | Socket[Menu] = 'All', pattern_mode: Menu | Socket[Menu] = 'Exact', bundle_type: str | Socket[str] = '', data_type: Menu | Socket[Menu] = 'Float') -> NodeGetNestedBundlePathsOutputs:
+    'Get paths to items in a nested bundle with a filter'
     return _node_function(
         'NodeGetNestedBundlePaths',
         inputs={
@@ -3279,11 +3452,12 @@ def get_nested_bundle_paths(*, bundle: Bundle | Socket[Bundle] | None = None, mo
     )
 
 class ShaderNodeTexGradientOutputs(typing.NamedTuple):
+    'Outputs from Gradient Texture: Generate interpolated color and intensity values based on the input vector'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def gradient_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), gradient_type: typing.Literal['LINEAR', 'QUADRATIC', 'EASING', 'DIAGONAL', 'SPHERICAL', 'QUADRATIC_SPHERE', 'RADIAL'] = 'LINEAR') -> ShaderNodeTexGradientOutputs:
-    'Args:\n    gradient_type: Style of the color blending'
+    'Generate interpolated color and intensity values based on the input vector\n\nArgs:\n    gradient_type: Style of the color blending'
     return _node_function(
         'ShaderNodeTexGradient',
         inputs={
@@ -3303,9 +3477,11 @@ def gradient_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vec
     )
 
 class GeometryNodeGreasePencilToCurvesOutputs(typing.NamedTuple):
+    'Outputs from Grease Pencil to Curves: Convert Grease Pencil layers into curve instances'
     curves: Socket[Geometry]
 
 def grease_pencil_to_curves(*, grease_pencil: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, layers_as_instances: bool | Socket[bool] = True) -> GeometryNodeGreasePencilToCurvesOutputs:
+    'Convert Grease Pencil layers into curve instances'
     return _node_function(
         'GeometryNodeGreasePencilToCurves',
         inputs={
@@ -3327,10 +3503,12 @@ def grease_pencil_to_curves(*, grease_pencil: Geometry | Socket[Geometry] | None
     )
 
 class GeometryNodeMeshGridOutputs(typing.NamedTuple):
+    'Outputs from Grid: Generate a planar mesh on the XY plane'
     mesh: Socket[Geometry]
     uv_map: Socket[Field[Vector]]
 
 def grid(*, size_x: float | Socket[float] = 1.0, size_y: float | Socket[float] = 1.0, vertices_x: int | Socket[int] = 3, vertices_y: int | Socket[int] = 3) -> GeometryNodeMeshGridOutputs:
+    'Generate a planar mesh on the XY plane'
     return _node_function(
         'GeometryNodeMeshGrid',
         inputs={
@@ -3355,9 +3533,11 @@ def grid(*, size_x: float | Socket[float] = 1.0, size_y: float | Socket[float] =
     )
 
 class GeometryNodeGridCurlOutputs(typing.NamedTuple):
+    'Outputs from Grid Curl: Calculate the magnitude and direction of circulation of a directional vector grid'
     curl: Socket[Grid[Vector]]
 
 def grid_curl(*, grid: Grid[Vector] | Socket[Grid[Vector]] | None = None) -> GeometryNodeGridCurlOutputs:
+    'Calculate the magnitude and direction of circulation of a directional vector grid'
     return _node_function(
         'GeometryNodeGridCurl',
         inputs={
@@ -3375,10 +3555,11 @@ def grid_curl(*, grid: Grid[Vector] | Socket[Grid[Vector]] | None = None) -> Geo
     )
 
 class GeometryNodeGridDilateAndErodeOutputs(typing.NamedTuple):
+    'Outputs from Grid Dilate & Erode: Dilate or erode the active regions of a grid. This changes which voxels are active but does not change their values.'
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def grid_dilate_erode(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, connectivity: Menu | Socket[Menu] = 'Face', tiles: Menu | Socket[Menu] = 'Preserve', steps: int | Socket[int] = 1, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridDilateAndErodeOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Dilate or erode the active regions of a grid. This changes which voxels are active but does not change their values.\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridDilateAndErode',
         inputs={
@@ -3404,9 +3585,11 @@ def grid_dilate_erode(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vecto
     )
 
 class GeometryNodeGridDivergenceOutputs(typing.NamedTuple):
+    'Outputs from Grid Divergence: Calculate the flow into and out of each point of a directional vector grid'
     divergence: Socket[Grid[float]]
 
 def grid_divergence(*, grid: Grid[Vector] | Socket[Grid[Vector]] | None = None) -> GeometryNodeGridDivergenceOutputs:
+    'Calculate the flow into and out of each point of a directional vector grid'
     return _node_function(
         'GeometryNodeGridDivergence',
         inputs={
@@ -3424,9 +3607,11 @@ def grid_divergence(*, grid: Grid[Vector] | Socket[Grid[Vector]] | None = None) 
     )
 
 class GeometryNodeGridGradientOutputs(typing.NamedTuple):
+    'Outputs from Grid Gradient: Calculate the direction and magnitude of the change in values of a scalar grid'
     gradient: Socket[Grid[Vector]]
 
 def grid_gradient(*, grid: Grid[float] | Socket[Grid[float]] | None = None) -> GeometryNodeGridGradientOutputs:
+    'Calculate the direction and magnitude of the change in values of a scalar grid'
     return _node_function(
         'GeometryNodeGridGradient',
         inputs={
@@ -3444,11 +3629,12 @@ def grid_gradient(*, grid: Grid[float] | Socket[Grid[float]] | None = None) -> G
     )
 
 class GeometryNodeGridInfoOutputs(typing.NamedTuple):
+    'Outputs from Grid Info: Retrieve information about a volume grid'
     transform: Socket[Matrix]
     background_value: Socket[float | int | bool | Vector]
 
 def grid_info(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridInfoOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Retrieve information about a volume grid\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridInfo',
         inputs={
@@ -3469,9 +3655,11 @@ def grid_info(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Soc
     )
 
 class GeometryNodeGridLaplacianOutputs(typing.NamedTuple):
+    'Outputs from Grid Laplacian: Compute the divergence of the gradient of the input grid'
     laplacian: Socket[Grid[float]]
 
 def grid_laplacian(*, grid: Grid[float] | Socket[Grid[float]] | None = None) -> GeometryNodeGridLaplacianOutputs:
+    'Compute the divergence of the gradient of the input grid'
     return _node_function(
         'GeometryNodeGridLaplacian',
         inputs={
@@ -3489,10 +3677,11 @@ def grid_laplacian(*, grid: Grid[float] | Socket[Grid[float]] | None = None) -> 
     )
 
 class GeometryNodeGridMeanOutputs(typing.NamedTuple):
+    'Outputs from Grid Mean: Apply mean (box) filter smoothing to a voxel. The mean value from surrounding voxels in a box-shape defined by the radius replaces the voxel value.'
     grid: Socket[Grid[float] | Grid[int] | Grid[Vector]]
 
 def grid_mean(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[Vector]] | None = None, width: int | Socket[int] = 1, iterations: int | Socket[int] = 1, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridMeanOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Apply mean (box) filter smoothing to a voxel. The mean value from surrounding voxels in a box-shape defined by the radius replaces the voxel value.\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridMean',
         inputs={
@@ -3516,10 +3705,11 @@ def grid_mean(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[floa
     )
 
 class GeometryNodeGridMedianOutputs(typing.NamedTuple):
+    'Outputs from Grid Median: Apply median (box) filter smoothing to a voxel. The median value from surrounding voxels in a box-shape defined by the radius replaces the voxel value.'
     grid: Socket[Grid[float] | Grid[int] | Grid[Vector]]
 
 def grid_median(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[Vector]] | None = None, width: int | Socket[int] = 1, iterations: int | Socket[int] = 1, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridMedianOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Apply median (box) filter smoothing to a voxel. The median value from surrounding voxels in a box-shape defined by the radius replaces the voxel value.\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridMedian',
         inputs={
@@ -3543,9 +3733,11 @@ def grid_median(*, grid: Grid[float] | Grid[int] | Grid[Vector] | Socket[Grid[fl
     )
 
 class GeometryNodeGridToMeshOutputs(typing.NamedTuple):
+    'Outputs from Grid to Mesh: Generate a mesh on the "surface" of a volume grid'
     mesh: Socket[Geometry]
 
 def grid_to_mesh(*, grid: Grid[float] | Socket[Grid[float]] | None = None, threshold: float | Socket[float] = 0.10000000149011612, adaptivity: float | Socket[float] = 0.0) -> GeometryNodeGridToMeshOutputs:
+    'Generate a mesh on the "surface" of a volume grid'
     return _node_function(
         'GeometryNodeGridToMesh',
         inputs={
@@ -3567,6 +3759,7 @@ def grid_to_mesh(*, grid: Grid[float] | Socket[Grid[float]] | None = None, thres
     )
 
 class GeometryNodeGridToPointsOutputs(typing.NamedTuple):
+    "Outputs from Grid to Points: Generate a point cloud from a volume grid's active voxels"
     points: Socket[Geometry]
     value: Socket[Field[float] | Field[int] | Field[bool] | Field[Vector]]
     x: Socket[Field[int]]
@@ -3576,7 +3769,7 @@ class GeometryNodeGridToPointsOutputs(typing.NamedTuple):
     extent: Socket[Field[int]]
 
 def grid_to_points(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridToPointsOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    "Generate a point cloud from a volume grid's active voxels\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None."
     return _node_function(
         'GeometryNodeGridToPoints',
         inputs={
@@ -3602,10 +3795,11 @@ def grid_to_points(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] 
     )
 
 class GeometryNodeCurveHandleTypeSelectionOutputs(typing.NamedTuple):
+    'Outputs from Handle Type Selection: Provide a selection based on the handle types of Bézier control points'
     selection: Socket[Field[bool]]
 
 def handle_type_selection(*, handle_type: typing.Literal['FREE', 'AUTO', 'VECTOR', 'ALIGN'] = 'AUTO', mode: set[typing.Literal['LEFT', 'RIGHT']] = {'LEFT', 'RIGHT'}) -> GeometryNodeCurveHandleTypeSelectionOutputs:
-    'Args:\n    mode: Whether to check the type of left and right handles'
+    'Provide a selection based on the handle types of Bézier control points\n\nArgs:\n    mode: Whether to check the type of left and right handles'
     return _node_function(
         'GeometryNodeCurveHandleTypeSelection',
         inputs={
@@ -3623,10 +3817,11 @@ def handle_type_selection(*, handle_type: typing.Literal['FREE', 'AUTO', 'VECTOR
     )
 
 class FunctionNodeHashValueOutputs(typing.NamedTuple):
+    'Outputs from Hash Value: Generate a randomized integer using the given input value as a seed'
     hash: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def hash_value(*, value: int | Field[int] | Grid[int] | List[int] | float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Socket[int | Field[int] | Grid[int] | List[int] | float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str]] = 0, seed: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> FunctionNodeHashValueOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Generate a randomized integer using the given input value as a seed\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'FunctionNodeHashValue',
         inputs={
@@ -3648,10 +3843,12 @@ def hash_value(*, value: int | Field[int] | Grid[int] | List[int] | float | Fiel
     )
 
 class GeometryNodeMeshIcoSphereOutputs(typing.NamedTuple):
+    'Outputs from Ico Sphere: Generate a spherical mesh that consists of equally sized triangles'
     mesh: Socket[Geometry]
     uv_map: Socket[Field[Vector]]
 
 def ico_sphere(*, radius: float | Socket[float] = 1.0, subdivisions: int | Socket[int] = 1) -> GeometryNodeMeshIcoSphereOutputs:
+    'Generate a spherical mesh that consists of equally sized triangles'
     return _node_function(
         'GeometryNodeMeshIcoSphere',
         inputs={
@@ -3672,9 +3869,11 @@ def ico_sphere(*, radius: float | Socket[float] = 1.0, subdivisions: int | Socke
     )
 
 class GeometryNodeInputIDOutputs(typing.NamedTuple):
+    'Outputs from ID: Retrieve a stable random identifier value from the "id" attribute on the point domain, or the index if the attribute does not exist'
     id: Socket[Field[int]]
 
 def id_() -> GeometryNodeInputIDOutputs:
+    'Retrieve a stable random identifier value from the "id" attribute on the point domain, or the index if the attribute does not exist'
     return _node_function(
         'GeometryNodeInputID',
         inputs={
@@ -3690,9 +3889,11 @@ def id_() -> GeometryNodeInputIDOutputs:
     )
 
 class GeometryNodeInputImageOutputs(typing.NamedTuple):
+    'Outputs from Image: Input an image data-block'
     image: Socket[Image]
 
 def image(*, image: bpy.types.Image | None = None) -> GeometryNodeInputImageOutputs:
+    'Input an image data-block'
     return _node_function(
         'GeometryNodeInputImage',
         inputs={
@@ -3709,6 +3910,7 @@ def image(*, image: bpy.types.Image | None = None) -> GeometryNodeInputImageOutp
     )
 
 class GeometryNodeImageInfoOutputs(typing.NamedTuple):
+    'Outputs from Image Info: Retrieve information about an image'
     width: Socket[int]
     height: Socket[int]
     has_alpha: Socket[bool]
@@ -3716,6 +3918,7 @@ class GeometryNodeImageInfoOutputs(typing.NamedTuple):
     fps: Socket[float]
 
 def image_info(*, image: Image | Socket[Image] | None = None, frame: int | Socket[int] = 0) -> GeometryNodeImageInfoOutputs:
+    'Retrieve information about an image'
     return _node_function(
         'GeometryNodeImageInfo',
         inputs={
@@ -3739,11 +3942,12 @@ def image_info(*, image: Image | Socket[Image] | None = None, frame: int | Socke
     )
 
 class GeometryNodeImageTextureOutputs(typing.NamedTuple):
+    'Outputs from Image Texture: Sample values from an image texture'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     alpha: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def image_texture(*, image: Image | Socket[Image] | None = None, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), frame: int | Socket[int] = 0, interpolation: typing.Literal['Linear', 'Closest', 'Cubic'] = 'Linear', extension: typing.Literal['REPEAT', 'EXTEND', 'CLIP', 'MIRROR'] = 'REPEAT') -> GeometryNodeImageTextureOutputs:
-    'Args:\n    interpolation: Method for smoothing values between pixels\n    extension: How the image is extrapolated past its original bounds'
+    'Sample values from an image texture\n\nArgs:\n    interpolation: Method for smoothing values between pixels\n    extension: How the image is extrapolated past its original bounds'
     return _node_function(
         'GeometryNodeImageTexture',
         inputs={
@@ -3768,9 +3972,11 @@ def image_texture(*, image: Image | Socket[Image] | None = None, vector: Vector 
     )
 
 class GeometryNodeImportCSVOutputs(typing.NamedTuple):
+    'Outputs from Import CSV: Import geometry from an CSV file'
     point_cloud: Socket[Geometry]
 
 def import_csv(*, path: str | Socket[str] = '', delimiter: str | Socket[str] = ',') -> GeometryNodeImportCSVOutputs:
+    'Import geometry from an CSV file'
     return _node_function(
         'GeometryNodeImportCSV',
         inputs={
@@ -3790,9 +3996,11 @@ def import_csv(*, path: str | Socket[str] = '', delimiter: str | Socket[str] = '
     )
 
 class GeometryNodeImportOBJOutputs(typing.NamedTuple):
+    'Outputs from Import OBJ: Import geometry from an OBJ file'
     instances: Socket[Geometry]
 
 def import_obj(*, path: str | Socket[str] = '') -> GeometryNodeImportOBJOutputs:
+    'Import geometry from an OBJ file'
     return _node_function(
         'GeometryNodeImportOBJ',
         inputs={
@@ -3810,9 +4018,11 @@ def import_obj(*, path: str | Socket[str] = '') -> GeometryNodeImportOBJOutputs:
     )
 
 class GeometryNodeImportPLYOutputs(typing.NamedTuple):
+    'Outputs from Import PLY: Import a point cloud from a PLY file'
     mesh: Socket[Geometry]
 
 def import_ply(*, path: str | Socket[str] = '') -> GeometryNodeImportPLYOutputs:
+    'Import a point cloud from a PLY file'
     return _node_function(
         'GeometryNodeImportPLY',
         inputs={
@@ -3830,9 +4040,11 @@ def import_ply(*, path: str | Socket[str] = '') -> GeometryNodeImportPLYOutputs:
     )
 
 class GeometryNodeImportSTLOutputs(typing.NamedTuple):
+    'Outputs from Import STL: Import a mesh from an STL file'
     mesh: Socket[Geometry]
 
 def import_stl(*, path: str | Socket[str] = '') -> GeometryNodeImportSTLOutputs:
+    'Import a mesh from an STL file'
     return _node_function(
         'GeometryNodeImportSTL',
         inputs={
@@ -3850,9 +4062,11 @@ def import_stl(*, path: str | Socket[str] = '') -> GeometryNodeImportSTLOutputs:
     )
 
 class GeometryNodeImportTextOutputs(typing.NamedTuple):
+    'Outputs from Import Text: Import a string from a text file'
     string: Socket[str]
 
 def import_text(*, path: str | Socket[str] = '') -> GeometryNodeImportTextOutputs:
+    'Import a string from a text file'
     return _node_function(
         'GeometryNodeImportText',
         inputs={
@@ -3870,9 +4084,11 @@ def import_text(*, path: str | Socket[str] = '') -> GeometryNodeImportTextOutput
     )
 
 class GeometryNodeImportVDBOutputs(typing.NamedTuple):
+    'Outputs from Import VDB: Import volume data from a .vdb file'
     volume: Socket[Geometry]
 
 def import_vdb(*, path: str | Socket[str] = '') -> GeometryNodeImportVDBOutputs:
+    'Import volume data from a .vdb file'
     return _node_function(
         'GeometryNodeImportVDB',
         inputs={
@@ -3890,9 +4106,11 @@ def import_vdb(*, path: str | Socket[str] = '') -> GeometryNodeImportVDBOutputs:
     )
 
 class GeometryNodeInputIndexOutputs(typing.NamedTuple):
+    'Outputs from Index: Retrieve an integer value indicating the position of each element in the list, starting at zero'
     index: Socket[Field[int]]
 
 def index() -> GeometryNodeInputIndexOutputs:
+    'Retrieve an integer value indicating the position of each element in the list, starting at zero'
     return _node_function(
         'GeometryNodeInputIndex',
         inputs={
@@ -3908,10 +4126,12 @@ def index() -> GeometryNodeInputIndexOutputs:
     )
 
 class GeometryNodeIndexOfNearestOutputs(typing.NamedTuple):
+    'Outputs from Index of Nearest: Find the nearest element in a group. Similar to the "Sample Nearest" node'
     index: Socket[Field[int]]
     has_neighbor: Socket[Field[bool]]
 
 def index_of_nearest(*, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), group_id: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeIndexOfNearestOutputs:
+    'Find the nearest element in a group. Similar to the "Sample Nearest" node'
     return _node_function(
         'GeometryNodeIndexOfNearest',
         inputs={
@@ -3932,10 +4152,11 @@ def index_of_nearest(*, position: Vector | Field[Vector] | Socket[Vector | Field
     )
 
 class GeometryNodeIndexSwitchOutputs(typing.NamedTuple):
+    'Outputs from Index Switch: Choose between an arbitrary number of values with an index'
     output: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound]
 
 def index_switch(*, index: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, items: typing.Sequence[typing.Any] = ()) -> GeometryNodeIndexSwitchOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.\n    items: Item input values, in order.'
+    'Choose between an arbitrary number of values with an index\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.\n    items: Item input values, in order.'
     return _node_function(
         'GeometryNodeIndexSwitch',
         inputs={
@@ -3958,10 +4179,12 @@ def index_switch(*, index: int | Field[int] | Grid[int] | List[int] | Socket[int
     )
 
 class GeometryNodeInputInstanceBoundsOutputs(typing.NamedTuple):
+    "Outputs from Instance Bounds: Calculate position bounds of each instance's geometry set"
     min: Socket[Field[Vector]]
     max: Socket[Field[Vector]]
 
 def instance_bounds(*, use_radius: bool | Socket[bool] = True) -> GeometryNodeInputInstanceBoundsOutputs:
+    "Calculate position bounds of each instance's geometry set"
     return _node_function(
         'GeometryNodeInputInstanceBounds',
         inputs={
@@ -3980,9 +4203,11 @@ def instance_bounds(*, use_radius: bool | Socket[bool] = True) -> GeometryNodeIn
     )
 
 class GeometryNodeInstanceOnPointsOutputs(typing.NamedTuple):
+    'Outputs from Instance on Points: Generate a reference to geometry at each of the input points, without duplicating its underlying data'
     instances: Socket[Geometry]
 
 def instance_on_points(*, points: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, instance: Geometry | Socket[Geometry] | None = None, pick_instance: bool | Field[bool] | Socket[bool | Field[bool]] = False, instance_index: int | Field[int] | Socket[int | Field[int]] = 0, rotation: Rotation | Field[Rotation] | Socket[Rotation | Field[Rotation]] = (0.0, 0.0, 0.0), scale: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (1.0, 1.0, 1.0)) -> GeometryNodeInstanceOnPointsOutputs:
+    'Generate a reference to geometry at each of the input points, without duplicating its underlying data'
     return _node_function(
         'GeometryNodeInstanceOnPoints',
         inputs={
@@ -4012,9 +4237,11 @@ def instance_on_points(*, points: Geometry | Socket[Geometry] | None = None, sel
     )
 
 class GeometryNodeInputInstanceReferenceOutputs(typing.NamedTuple):
+    'Outputs from Instance Reference: Output the reference index of the instance'
     reference_index: Socket[Field[int]]
 
 def instance_reference() -> GeometryNodeInputInstanceReferenceOutputs:
+    'Output the reference index of the instance'
     return _node_function(
         'GeometryNodeInputInstanceReference',
         inputs={
@@ -4030,9 +4257,11 @@ def instance_reference() -> GeometryNodeInputInstanceReferenceOutputs:
     )
 
 class GeometryNodeInputInstanceRotationOutputs(typing.NamedTuple):
+    'Outputs from Instance Rotation: Retrieve the rotation of each instance in the geometry'
     rotation: Socket[Field[Rotation]]
 
 def instance_rotation() -> GeometryNodeInputInstanceRotationOutputs:
+    'Retrieve the rotation of each instance in the geometry'
     return _node_function(
         'GeometryNodeInputInstanceRotation',
         inputs={
@@ -4048,9 +4277,11 @@ def instance_rotation() -> GeometryNodeInputInstanceRotationOutputs:
     )
 
 class GeometryNodeInputInstanceScaleOutputs(typing.NamedTuple):
+    'Outputs from Instance Scale: Retrieve the scale of each instance in the geometry'
     scale: Socket[Field[Vector]]
 
 def instance_scale() -> GeometryNodeInputInstanceScaleOutputs:
+    'Retrieve the scale of each instance in the geometry'
     return _node_function(
         'GeometryNodeInputInstanceScale',
         inputs={
@@ -4066,9 +4297,11 @@ def instance_scale() -> GeometryNodeInputInstanceScaleOutputs:
     )
 
 class GeometryNodeInstanceTransformOutputs(typing.NamedTuple):
+    'Outputs from Instance Transform: Retrieve the full transformation of each instance in the geometry'
     transform: Socket[Field[Matrix]]
 
 def instance_transform() -> GeometryNodeInstanceTransformOutputs:
+    'Retrieve the full transformation of each instance in the geometry'
     return _node_function(
         'GeometryNodeInstanceTransform',
         inputs={
@@ -4084,9 +4317,11 @@ def instance_transform() -> GeometryNodeInstanceTransformOutputs:
     )
 
 class GeometryNodeInstancesToPointsOutputs(typing.NamedTuple):
+    'Outputs from Instances to Points: Generate points at the origins of instances.\nNote: Nested instances are not affected by this node'
     points: Socket[Geometry]
 
 def instances_to_points(*, instances: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), radius: float | Field[float] | Socket[float | Field[float]] = 0.05000000074505806) -> GeometryNodeInstancesToPointsOutputs:
+    'Generate points at the origins of instances.\nNote: Nested instances are not affected by this node'
     return _node_function(
         'GeometryNodeInstancesToPoints',
         inputs={
@@ -4110,10 +4345,11 @@ def instances_to_points(*, instances: Geometry | Socket[Geometry] | None = None,
     )
 
 class FunctionNodeInputIntOutputs(typing.NamedTuple):
+    'Outputs from Integer: Provide an integer value that can be connected to other nodes in the tree'
     integer: Socket[int]
 
 def integer(*, integer: int = 0) -> FunctionNodeInputIntOutputs:
-    'Args:\n    integer: Input value used for unconnected socket'
+    'Provide an integer value that can be connected to other nodes in the tree\n\nArgs:\n    integer: Input value used for unconnected socket'
     return _node_function(
         'FunctionNodeInputInt',
         inputs={
@@ -4130,9 +4366,11 @@ def integer(*, integer: int = 0) -> FunctionNodeInputIntOutputs:
     )
 
 class FunctionNodeIntegerMathOutputs(typing.NamedTuple):
+    'Outputs from Integer Math: Perform various math operations on the given integer inputs'
     value: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def integer_math(*, value: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, value_2: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, value_3: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, operation: typing.Literal['ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE', 'MULTIPLY_ADD', 'ABSOLUTE', 'NEGATE', 'POWER', 'MINIMUM', 'MAXIMUM', 'SIGN', 'DIVIDE_ROUND', 'DIVIDE_FLOOR', 'DIVIDE_CEIL', 'FLOORED_MODULO', 'MODULO', 'GCD', 'LCM'] = 'ADD') -> FunctionNodeIntegerMathOutputs:
+    'Perform various math operations on the given integer inputs'
     return _node_function(
         'FunctionNodeIntegerMath',
         inputs={
@@ -4155,10 +4393,11 @@ def integer_math(*, value: int | Field[int] | Grid[int] | List[int] | Socket[int
     )
 
 class FunctionNodeInputIntVectorOutputs(typing.NamedTuple):
+    'Outputs from Integer Vector: Provide an integer vector value that can be connected to other nodes in the tree'
     vector: Socket[IntVector3]
 
 def integer_vector(*, vector: IntVector3 = (0, 0, 0), vector_dimensions: int = 3) -> FunctionNodeInputIntVectorOutputs:
-    'Args:\n    vector_dimensions: Dimensions of the vector socket'
+    'Provide an integer vector value that can be connected to other nodes in the tree\n\nArgs:\n    vector_dimensions: Dimensions of the vector socket'
     return _node_function(
         'FunctionNodeInputIntVector',
         inputs={
@@ -4176,11 +4415,13 @@ def integer_vector(*, vector: IntVector3 = (0, 0, 0), vector_dimensions: int = 3
     )
 
 class GeometryNodeInterpolateCurvesOutputs(typing.NamedTuple):
+    'Outputs from Interpolate Curves: Generate new curves on points by interpolating between existing curves'
     curves: Socket[Geometry]
     closest_index: Socket[Field[int]]
     closest_weight: Socket[Field[float]]
 
 def interpolate_curves(*, guide_curves: Geometry | Socket[Geometry] | None = None, guide_up: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), guide_group_id: int | Field[int] | Socket[int | Field[int]] = 0, points: Geometry | Socket[Geometry] | None = None, point_up: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), point_group_id: int | Field[int] | Socket[int | Field[int]] = 0, max_neighbors: int | Socket[int] = 4) -> GeometryNodeInterpolateCurvesOutputs:
+    'Generate new curves on points by interpolating between existing curves'
     return _node_function(
         'GeometryNodeInterpolateCurves',
         inputs={
@@ -4212,10 +4453,12 @@ def interpolate_curves(*, guide_curves: Geometry | Socket[Geometry] | None = Non
     )
 
 class FunctionNodeInvertMatrixOutputs(typing.NamedTuple):
+    'Outputs from Invert Matrix: Compute the inverse of the given matrix, if one exists'
     matrix: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
     invertible: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def invert_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeInvertMatrixOutputs:
+    'Compute the inverse of the given matrix, if one exists'
     return _node_function(
         'FunctionNodeInvertMatrix',
         inputs={
@@ -4234,9 +4477,11 @@ def invert_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix
     )
 
 class FunctionNodeInvertRotationOutputs(typing.NamedTuple):
+    'Outputs from Invert Rotation: Compute the inverse of the given rotation'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def invert_rotation(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0)) -> FunctionNodeInvertRotationOutputs:
+    'Compute the inverse of the given rotation'
     return _node_function(
         'FunctionNodeInvertRotation',
         inputs={
@@ -4254,9 +4499,11 @@ def invert_rotation(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | L
     )
 
 class GeometryNodeInputEdgeSmoothOutputs(typing.NamedTuple):
+    'Outputs from Is Edge Smooth: Retrieve whether each edge is marked for smooth or split normals'
     smooth: Socket[Field[bool]]
 
 def is_edge_smooth() -> GeometryNodeInputEdgeSmoothOutputs:
+    'Retrieve whether each edge is marked for smooth or split normals'
     return _node_function(
         'GeometryNodeInputEdgeSmooth',
         inputs={
@@ -4272,9 +4519,11 @@ def is_edge_smooth() -> GeometryNodeInputEdgeSmoothOutputs:
     )
 
 class GeometryNodeInputMeshFaceIsPlanarOutputs(typing.NamedTuple):
+    'Outputs from Is Face Planar: Retrieve whether all triangles in a face are on the same plane, i.e. whether they have the same normal'
     planar: Socket[Field[bool]]
 
 def is_face_planar(*, threshold: float | Field[float] | Socket[float | Field[float]] = 0.009999999776482582) -> GeometryNodeInputMeshFaceIsPlanarOutputs:
+    'Retrieve whether all triangles in a face are on the same plane, i.e. whether they have the same normal'
     return _node_function(
         'GeometryNodeInputMeshFaceIsPlanar',
         inputs={
@@ -4292,9 +4541,11 @@ def is_face_planar(*, threshold: float | Field[float] | Socket[float | Field[flo
     )
 
 class GeometryNodeInputShadeSmoothOutputs(typing.NamedTuple):
+    'Outputs from Is Face Smooth: Retrieve whether each face is marked for smooth or sharp normals'
     smooth: Socket[Field[bool]]
 
 def is_face_smooth() -> GeometryNodeInputShadeSmoothOutputs:
+    'Retrieve whether each face is marked for smooth or sharp normals'
     return _node_function(
         'GeometryNodeInputShadeSmooth',
         inputs={
@@ -4310,9 +4561,11 @@ def is_face_smooth() -> GeometryNodeInputShadeSmoothOutputs:
     )
 
 class GeometryNodeInputSplineCyclicOutputs(typing.NamedTuple):
+    'Outputs from Is Spline Cyclic: Retrieve whether each spline endpoint connects to the beginning'
     cyclic: Socket[Field[bool]]
 
 def is_spline_cyclic() -> GeometryNodeInputSplineCyclicOutputs:
+    'Retrieve whether each spline endpoint connects to the beginning'
     return _node_function(
         'GeometryNodeInputSplineCyclic',
         inputs={
@@ -4328,9 +4581,11 @@ def is_spline_cyclic() -> GeometryNodeInputSplineCyclicOutputs:
     )
 
 class GeometryNodeIsViewportOutputs(typing.NamedTuple):
+    'Outputs from Is Viewport: Retrieve whether the nodes are being evaluated for the viewport rather than the final render'
     is_viewport: Socket[bool]
 
 def is_viewport() -> GeometryNodeIsViewportOutputs:
+    'Retrieve whether the nodes are being evaluated for the viewport rather than the final render'
     return _node_function(
         'GeometryNodeIsViewport',
         inputs={
@@ -4346,9 +4601,11 @@ def is_viewport() -> GeometryNodeIsViewportOutputs:
     )
 
 class NodeJoinBundleOutputs(typing.NamedTuple):
+    'Outputs from Join Bundle: Join multiple bundles together'
     bundle: Socket[Bundle]
 
 def join_bundle(*, bundle: typing.Sequence[Bundle | Socket[Bundle]] = ()) -> NodeJoinBundleOutputs:
+    'Join multiple bundles together'
     return _node_function(
         'NodeJoinBundle',
         inputs={
@@ -4366,9 +4623,11 @@ def join_bundle(*, bundle: typing.Sequence[Bundle | Socket[Bundle]] = ()) -> Nod
     )
 
 class GeometryNodeJoinGeometryOutputs(typing.NamedTuple):
+    'Outputs from Join Geometry: Merge separately generated geometries into a single one'
     geometry: Socket[Geometry]
 
 def join_geometry(*, geometry: typing.Sequence[Geometry | Socket[Geometry]] = ()) -> GeometryNodeJoinGeometryOutputs:
+    'Merge separately generated geometries into a single one'
     return _node_function(
         'GeometryNodeJoinGeometry',
         inputs={
@@ -4386,9 +4645,11 @@ def join_geometry(*, geometry: typing.Sequence[Geometry | Socket[Geometry]] = ()
     )
 
 class GeometryNodeStringJoinOutputs(typing.NamedTuple):
+    'Outputs from Join Strings: Combine any number of input strings'
     string: Socket[str]
 
 def join_strings(*, delimiter: str | Socket[str] = '', strings: typing.Sequence[str | Socket[str]] = ()) -> GeometryNodeStringJoinOutputs:
+    'Combine any number of input strings'
     return _node_function(
         'GeometryNodeStringJoin',
         inputs={
@@ -4408,9 +4669,11 @@ def join_strings(*, delimiter: str | Socket[str] = '', strings: typing.Sequence[
     )
 
 class GeometryNodeGizmoLinearOutputs(typing.NamedTuple):
+    'Outputs from Linear Gizmo: Show a linear gizmo in the viewport for a value'
     transform: Socket[Geometry]
 
 def linear_gizmo(*, value: typing.Sequence[float | Socket[float]] = (), position: Vector | Socket[Vector] = (0.0, 0.0, 0.0), direction: Vector | Socket[Vector] = (0.0, 0.0, 1.0), color_id: typing.Literal['PRIMARY', 'SECONDARY', 'X', 'Y', 'Z'] = 'PRIMARY', draw_style: typing.Literal['ARROW', 'CROSS', 'BOX'] = 'ARROW') -> GeometryNodeGizmoLinearOutputs:
+    'Show a linear gizmo in the viewport for a value'
     return _node_function(
         'GeometryNodeGizmoLinear',
         inputs={
@@ -4434,10 +4697,11 @@ def linear_gizmo(*, value: typing.Sequence[float | Socket[float]] = (), position
     )
 
 class GeometryNodeListLengthOutputs(typing.NamedTuple):
+    'Outputs from List Length: Count how many items are in a given list'
     length: Socket[int]
 
 def list_length(*, list: List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound] | Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeListLengthOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Count how many items are in a given list\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeListLength',
         inputs={
@@ -4457,11 +4721,12 @@ def list_length(*, list: List[float] | List[int] | List[bool] | List[Vector] | L
     )
 
 class ShaderNodeTexMagicOutputs(typing.NamedTuple):
+    'Outputs from Magic Texture: Generate a psychedelic color texture'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def magic_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, distortion: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, turbulence_depth: int = 2) -> ShaderNodeTexMagicOutputs:
-    'Args:\n    turbulence_depth: Level of detail in the added turbulent noise'
+    'Generate a psychedelic color texture\n\nArgs:\n    turbulence_depth: Level of detail in the added turbulent noise'
     return _node_function(
         'ShaderNodeTexMagic',
         inputs={
@@ -4485,11 +4750,12 @@ def magic_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class ShaderNodeMapRangeOutputs(typing.NamedTuple):
+    'Outputs from Map Range: Remap a value from a range to a target range'
     result: Socket[float | Field[float] | Grid[float] | List[float]]
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def map_range(*, value: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, from_min: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 0.0, from_max: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 1.0, to_min: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 0.0, to_max: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 1.0, steps: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 4.0, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), clamp: bool = True, interpolation_type: typing.Literal['LINEAR', 'STEPPED', 'SMOOTHSTEP', 'SMOOTHERSTEP'] = 'LINEAR', data_type: typing.Literal['FLOAT', 'FLOAT_VECTOR'] | None = None) -> ShaderNodeMapRangeOutputs:
-    'Args:\n    clamp: Clamp the result to the target range [To Min, To Max]\n    data_type:  Inferred from the linked inputs when None.'
+    'Remap a value from a range to a target range\n\nArgs:\n    clamp: Clamp the result to the target range [To Min, To Max]\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'ShaderNodeMapRange',
         inputs={
@@ -4524,9 +4790,11 @@ def map_range(*, value: float | Field[float] | Grid[float] | List[float] | Socke
     )
 
 class FunctionNodeMatchStringOutputs(typing.NamedTuple):
+    'Outputs from Match String: Check if a given string exists within another string'
     result: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def match_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', operation: Menu | Socket[Menu] = 'Starts With', key: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '') -> FunctionNodeMatchStringOutputs:
+    'Check if a given string exists within another string'
     return _node_function(
         'FunctionNodeMatchString',
         inputs={
@@ -4548,9 +4816,11 @@ def match_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[st
     )
 
 class GeometryNodeInputMaterialOutputs(typing.NamedTuple):
+    'Outputs from Material: Output a single material'
     material: Socket[Material]
 
 def material(*, material: bpy.types.Material | None = None) -> GeometryNodeInputMaterialOutputs:
+    'Output a single material'
     return _node_function(
         'GeometryNodeInputMaterial',
         inputs={
@@ -4567,9 +4837,11 @@ def material(*, material: bpy.types.Material | None = None) -> GeometryNodeInput
     )
 
 class GeometryNodeInputMaterialIndexOutputs(typing.NamedTuple):
+    "Outputs from Material Index: Retrieve the index of the material used for each element in the geometry's list of materials"
     material_index: Socket[Field[int]]
 
 def material_index() -> GeometryNodeInputMaterialIndexOutputs:
+    "Retrieve the index of the material used for each element in the geometry's list of materials"
     return _node_function(
         'GeometryNodeInputMaterialIndex',
         inputs={
@@ -4585,9 +4857,11 @@ def material_index() -> GeometryNodeInputMaterialIndexOutputs:
     )
 
 class GeometryNodeMaterialSelectionOutputs(typing.NamedTuple):
+    'Outputs from Material Selection: Provide a selection of faces that use the specified material'
     selection: Socket[Field[bool]]
 
 def material_selection(*, material: Material | Socket[Material] | None = None) -> GeometryNodeMaterialSelectionOutputs:
+    'Provide a selection of faces that use the specified material'
     return _node_function(
         'GeometryNodeMaterialSelection',
         inputs={
@@ -4605,10 +4879,11 @@ def material_selection(*, material: Material | Socket[Material] | None = None) -
     )
 
 class ShaderNodeMathOutputs(typing.NamedTuple):
+    'Outputs from Math: Perform math operations'
     value: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def math_(*, value: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, value_2: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, value_3: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, operation: typing.Literal['ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE', 'MULTIPLY_ADD', 'POWER', 'LOGARITHM', 'SQRT', 'INVERSE_SQRT', 'ABSOLUTE', 'EXPONENT', 'MINIMUM', 'MAXIMUM', 'LESS_THAN', 'GREATER_THAN', 'SIGN', 'COMPARE', 'SMOOTH_MIN', 'SMOOTH_MAX', 'ROUND', 'FLOOR', 'CEIL', 'TRUNC', 'FRACT', 'MODULO', 'FLOORED_MODULO', 'WRAP', 'SNAP', 'PINGPONG', 'SINE', 'COSINE', 'TANGENT', 'ARCSINE', 'ARCCOSINE', 'ARCTANGENT', 'ARCTAN2', 'SINH', 'COSH', 'TANH', 'RADIANS', 'DEGREES'] = 'ADD', use_clamp: bool = False) -> ShaderNodeMathOutputs:
-    'Args:\n    use_clamp: Clamp result of the node to 0.0 to 1.0 range'
+    'Perform math operations\n\nArgs:\n    use_clamp: Clamp result of the node to 0.0 to 1.0 range'
     return _node_function(
         'ShaderNodeMath',
         inputs={
@@ -4632,9 +4907,11 @@ def math_(*, value: float | Field[float] | Grid[float] | List[float] | Socket[fl
     )
 
 class FunctionNodeMatrixDeterminantOutputs(typing.NamedTuple):
+    'Outputs from Matrix Determinant: Compute the determinant of the given matrix'
     determinant: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def matrix_determinant(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeMatrixDeterminantOutputs:
+    'Compute the determinant of the given matrix'
     return _node_function(
         'FunctionNodeMatrixDeterminant',
         inputs={
@@ -4652,11 +4929,13 @@ def matrix_determinant(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[M
     )
 
 class FunctionNodeMatrixSVDOutputs(typing.NamedTuple):
+    'Outputs from Matrix SVD: Compute the singular value decomposition of the 3x3 part of a matrix'
     u: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
     s: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     v: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def matrix_svd(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeMatrixSVDOutputs:
+    'Compute the singular value decomposition of the 3x3 part of a matrix'
     return _node_function(
         'FunctionNodeMatrixSVD',
         inputs={
@@ -4676,10 +4955,11 @@ def matrix_svd(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] |
     )
 
 class FunctionNodeInputMenuOutputs(typing.NamedTuple):
+    'Outputs from Menu: Provide a menu value that can be connected to other nodes in the tree'
     menu: Socket[Menu]
 
 def menu(*, value: str = '') -> FunctionNodeInputMenuOutputs:
-    'Args:\n    value: Value of the output socket'
+    'Provide a menu value that can be connected to other nodes in the tree\n\nArgs:\n    value: Value of the output socket'
     return _node_function(
         'FunctionNodeInputMenu',
         inputs={
@@ -4696,10 +4976,11 @@ def menu(*, value: str = '') -> FunctionNodeInputMenuOutputs:
     )
 
 class GeometryNodeMenuSwitchOutputs(ItemOutputs):
+    'Outputs from Menu Switch: Select from multiple inputs by name'
     output: Socket[Geometry | float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Collection | Material | Bundle | Closure | Font | Sound]
 
 def menu_switch(*, menu: Menu | Socket[Menu] = '', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, items: typing.Mapping[str, typing.Any] | None = None) -> GeometryNodeMenuSwitchOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.\n    items: Items to add, mapping each name to its input value. Their outputs are available by name on the result.'
+    'Select from multiple inputs by name\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.\n    items: Items to add, mapping each name to its input value. Their outputs are available by name on the result.'
     return _node_function(
         'GeometryNodeMenuSwitch',
         inputs={
@@ -4722,9 +5003,11 @@ def menu_switch(*, menu: Menu | Socket[Menu] = '', data_type: typing.Literal['FL
     )
 
 class GeometryNodeMergeByDistanceOutputs(typing.NamedTuple):
+    'Outputs from Merge by Distance: Merge vertices or points within a given distance'
     geometry: Socket[Geometry]
 
 def merge_by_distance(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, mode: Menu | Socket[Menu] = 'All', distance: float | Socket[float] = 0.0010000000474974513) -> GeometryNodeMergeByDistanceOutputs:
+    'Merge vertices or points within a given distance'
     return _node_function(
         'GeometryNodeMergeByDistance',
         inputs={
@@ -4748,10 +5031,11 @@ def merge_by_distance(*, geometry: Geometry | Socket[Geometry] | None = None, se
     )
 
 class GeometryNodeMergeLayersOutputs(typing.NamedTuple):
+    'Outputs from Merge Layers: Join groups of Grease Pencil layers into one'
     grease_pencil: Socket[Geometry]
 
 def merge_layers(*, grease_pencil: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, group_id: int | Field[int] | Socket[int | Field[int]] = 0, mode: typing.Literal['MERGE_BY_NAME', 'MERGE_BY_ID'] = 'MERGE_BY_NAME') -> GeometryNodeMergeLayersOutputs:
-    'Args:\n    mode: Determines how to choose which layers are merged'
+    'Join groups of Grease Pencil layers into one\n\nArgs:\n    mode: Determines how to choose which layers are merged'
     return _node_function(
         'GeometryNodeMergeLayers',
         inputs={
@@ -4774,9 +5058,11 @@ def merge_layers(*, grease_pencil: Geometry | Socket[Geometry] | None = None, se
     )
 
 class GeometryNodeMergePointsOutputs(typing.NamedTuple):
+    'Outputs from Merge Points: Merge points of a point cloud or mesh based on group ID and selection.'
     geometry: Socket[Geometry]
 
 def merge_points(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, merge_id: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeMergePointsOutputs:
+    'Merge points of a point cloud or mesh based on group ID and selection.'
     return _node_function(
         'GeometryNodeMergePoints',
         inputs={
@@ -4798,6 +5084,7 @@ def merge_points(*, geometry: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class GeometryNodeMeshBevelOutputs(typing.NamedTuple):
+    'Outputs from Mesh Bevel: Bevel selected edges or vertices'
     mesh: Socket[Geometry]
     vertex_face: Socket[Field[bool]]
     edge_face: Socket[Field[bool]]
@@ -4805,6 +5092,7 @@ class GeometryNodeMeshBevelOutputs(typing.NamedTuple):
     mid_edge: Socket[Field[bool]]
 
 def mesh_bevel(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, affect_kind: Menu | Socket[Menu] = 'Edges', start_left_offset: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, start_right_offset: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, end_left_offset: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, end_right_offset: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, offset: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, miter: bool | Field[bool] | Socket[bool | Field[bool]] = False, spread: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, segments: int | Socket[int] = 1, shape: float | Socket[float] = 0.5, profile: Geometry | Socket[Geometry] | None = None) -> GeometryNodeMeshBevelOutputs:
+    'Bevel selected edges or vertices'
     return _node_function(
         'GeometryNodeMeshBevel',
         inputs={
@@ -4850,10 +5138,12 @@ def mesh_bevel(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bo
     )
 
 class GeometryNodeMeshBooleanOutputs(typing.NamedTuple):
+    'Outputs from Mesh Boolean: Cut, subtract, or join multiple mesh inputs'
     mesh: Socket[Geometry]
     intersecting_edges: Socket[Field[bool]]
 
 def mesh_boolean(*, mesh_1: Geometry | Socket[Geometry] | None = None, mesh_2: typing.Sequence[Geometry | Socket[Geometry]] = (), mesh: typing.Sequence[Geometry | Socket[Geometry]] = (), self_intersection: bool | Socket[bool] = False, hole_tolerant: bool | Socket[bool] = False, operation: typing.Literal['INTERSECT', 'UNION', 'DIFFERENCE'] = 'DIFFERENCE', solver: typing.Literal['EXACT', 'FLOAT', 'MANIFOLD'] = 'FLOAT') -> GeometryNodeMeshBooleanOutputs:
+    'Cut, subtract, or join multiple mesh inputs'
     return _node_function(
         'GeometryNodeMeshBoolean',
         inputs={
@@ -4882,9 +5172,11 @@ def mesh_boolean(*, mesh_1: Geometry | Socket[Geometry] | None = None, mesh_2: t
     )
 
 class GeometryNodeMeshCircleOutputs(typing.NamedTuple):
+    'Outputs from Mesh Circle: Generate a circular ring of edges'
     mesh: Socket[Geometry]
 
 def mesh_circle(*, vertices: int | Socket[int] = 32, radius: float | Socket[float] = 1.0, fill_type: typing.Literal['NONE', 'NGON', 'TRIANGLE_FAN'] = 'NONE') -> GeometryNodeMeshCircleOutputs:
+    'Generate a circular ring of edges'
     return _node_function(
         'GeometryNodeMeshCircle',
         inputs={
@@ -4905,10 +5197,12 @@ def mesh_circle(*, vertices: int | Socket[int] = 32, radius: float | Socket[floa
     )
 
 class GeometryNodeInputMeshIslandOutputs(typing.NamedTuple):
+    'Outputs from Mesh Island: Retrieve information about separate connected regions in a mesh'
     island_index: Socket[Field[int]]
     island_count: Socket[Field[int]]
 
 def mesh_island() -> GeometryNodeInputMeshIslandOutputs:
+    'Retrieve information about separate connected regions in a mesh'
     return _node_function(
         'GeometryNodeInputMeshIsland',
         inputs={
@@ -4925,9 +5219,11 @@ def mesh_island() -> GeometryNodeInputMeshIslandOutputs:
     )
 
 class GeometryNodeMeshLineOutputs(typing.NamedTuple):
+    'Outputs from Mesh Line: Generate vertices in a line and connect them with edges'
     mesh: Socket[Geometry]
 
 def mesh_line(*, count: int | Socket[int] = 10, start_location: Vector | Socket[Vector] = (0.0, 0.0, 0.0), offset: Vector | Socket[Vector] = (0.0, 0.0, 1.0), resolution: float | Socket[float] = 1.0, mode: typing.Literal['OFFSET', 'END_POINTS'] = 'OFFSET', count_mode: typing.Literal['TOTAL', 'RESOLUTION'] = 'TOTAL') -> GeometryNodeMeshLineOutputs:
+    'Generate vertices in a line and connect them with edges'
     return _node_function(
         'GeometryNodeMeshLine',
         inputs={
@@ -4953,9 +5249,11 @@ def mesh_line(*, count: int | Socket[int] = 10, start_location: Vector | Socket[
     )
 
 class GeometryNodeMeshToCurveOutputs(typing.NamedTuple):
+    'Outputs from Mesh to Curve: Generate a curve from a mesh'
     curve: Socket[Geometry]
 
 def mesh_to_curve(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, mode: typing.Literal['EDGES', 'FACES'] = 'EDGES') -> GeometryNodeMeshToCurveOutputs:
+    'Generate a curve from a mesh'
     return _node_function(
         'GeometryNodeMeshToCurve',
         inputs={
@@ -4976,9 +5274,11 @@ def mesh_to_curve(*, mesh: Geometry | Socket[Geometry] | None = None, selection:
     )
 
 class GeometryNodeMeshToDensityGridOutputs(typing.NamedTuple):
+    'Outputs from Mesh to Density Grid: Create a filled volume grid from a mesh'
     density_grid: Socket[Grid[float]]
 
 def mesh_to_density_grid(*, mesh: Geometry | Socket[Geometry] | None = None, density: float | Socket[float] = 1.0, voxel_size: float | Socket[float] = 0.30000001192092896, gradient_width: float | Socket[float] = 0.20000000298023224) -> GeometryNodeMeshToDensityGridOutputs:
+    'Create a filled volume grid from a mesh'
     return _node_function(
         'GeometryNodeMeshToDensityGrid',
         inputs={
@@ -5002,9 +5302,11 @@ def mesh_to_density_grid(*, mesh: Geometry | Socket[Geometry] | None = None, den
     )
 
 class GeometryNodeMeshToPointsOutputs(typing.NamedTuple):
+    "Outputs from Mesh to Points: Generate a point cloud from a mesh's vertices"
     points: Socket[Geometry]
 
 def mesh_to_points(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), radius: float | Field[float] | Socket[float | Field[float]] = 0.05000000074505806, mode: typing.Literal['VERTICES', 'EDGES', 'FACES', 'CORNERS'] = 'VERTICES') -> GeometryNodeMeshToPointsOutputs:
+    "Generate a point cloud from a mesh's vertices"
     return _node_function(
         'GeometryNodeMeshToPoints',
         inputs={
@@ -5029,9 +5331,11 @@ def mesh_to_points(*, mesh: Geometry | Socket[Geometry] | None = None, selection
     )
 
 class GeometryNodeMeshToSDFGridOutputs(typing.NamedTuple):
+    'Outputs from Mesh to SDF Grid: Create a signed distance volume grid from a mesh'
     sdf_grid: Socket[Grid[float]]
 
 def mesh_to_sdf_grid(*, mesh: Geometry | Socket[Geometry] | None = None, voxel_size: float | Socket[float] = 0.30000001192092896, band_width: int | Socket[int] = 3) -> GeometryNodeMeshToSDFGridOutputs:
+    'Create a signed distance volume grid from a mesh'
     return _node_function(
         'GeometryNodeMeshToSDFGrid',
         inputs={
@@ -5053,9 +5357,11 @@ def mesh_to_sdf_grid(*, mesh: Geometry | Socket[Geometry] | None = None, voxel_s
     )
 
 class GeometryNodeMeshToVolumeOutputs(typing.NamedTuple):
+    "Outputs from Mesh to Volume: Create a fog volume with the shape of the input mesh's surface"
     volume: Socket[Geometry]
 
 def mesh_to_volume(*, mesh: Geometry | Socket[Geometry] | None = None, density: float | Socket[float] = 1.0, resolution_mode: Menu | Socket[Menu] = 'Amount', voxel_size: float | Socket[float] = 0.30000001192092896, voxel_amount: float | Socket[float] = 64.0, interior_band_width: float | Socket[float] = 0.20000000298023224) -> GeometryNodeMeshToVolumeOutputs:
+    "Create a fog volume with the shape of the input mesh's surface"
     return _node_function(
         'GeometryNodeMeshToVolume',
         inputs={
@@ -5083,10 +5389,11 @@ def mesh_to_volume(*, mesh: Geometry | Socket[Geometry] | None = None, density: 
     )
 
 class ShaderNodeMixOutputs(typing.NamedTuple):
+    'Outputs from Mix: Mix values by a factor'
     result: Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def mix(*, factor: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 1.0, a: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = 0.0, b: float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[float | Field[float] | Grid[float] | List[float] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = 0.0, data_type: typing.Literal['FLOAT', 'VECTOR', 'RGBA', 'ROTATION'] | None = None, factor_mode: typing.Literal['UNIFORM', 'NON_UNIFORM'] = 'UNIFORM', blend_type: typing.Literal['MIX', 'DARKEN', 'MULTIPLY', 'BURN', 'LIGHTEN', 'SCREEN', 'DODGE', 'ADD', 'OVERLAY', 'SOFT_LIGHT', 'LINEAR_LIGHT', 'DIFFERENCE', 'EXCLUSION', 'SUBTRACT', 'DIVIDE', 'HUE', 'SATURATION', 'COLOR', 'VALUE'] = 'MIX', clamp_factor: bool = True, clamp_result: bool = False) -> ShaderNodeMixOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.\n    clamp_factor: Clamp the factor to [0,1] range\n    clamp_result: Clamp the result to [0,1] range'
+    'Mix values by a factor\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.\n    clamp_factor: Clamp the factor to [0,1] range\n    clamp_result: Clamp the result to [0,1] range'
     return _node_function(
         'ShaderNodeMix',
         inputs={
@@ -5114,10 +5421,11 @@ def mix(*, factor: float | Field[float] | Grid[float] | List[float] | Vector | F
     )
 
 class ShaderNodeMixRGBOutputs(typing.NamedTuple):
+    'Outputs from Mix (Legacy): Mix two input colors'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def mix_legacy(*, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, color1: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.5, 0.5, 0.5, 1.0), color2: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (0.5, 0.5, 0.5, 1.0), blend_type: typing.Literal['MIX', 'DARKEN', 'MULTIPLY', 'BURN', 'LIGHTEN', 'SCREEN', 'DODGE', 'ADD', 'OVERLAY', 'SOFT_LIGHT', 'LINEAR_LIGHT', 'DIFFERENCE', 'EXCLUSION', 'SUBTRACT', 'DIVIDE', 'HUE', 'SATURATION', 'COLOR', 'VALUE'] = 'MIX', use_alpha: bool = False, use_clamp: bool = False) -> ShaderNodeMixRGBOutputs:
-    'Args:\n    use_alpha: Include alpha of second input in this operation\n    use_clamp: Clamp result of the node to 0.0 to 1.0 range'
+    'Mix two input colors\n\nArgs:\n    use_alpha: Include alpha of second input in this operation\n    use_clamp: Clamp result of the node to 0.0 to 1.0 range'
     return _node_function(
         'ShaderNodeMixRGB',
         inputs={
@@ -5142,12 +5450,14 @@ def mix_legacy(*, factor: float | Field[float] | Grid[float] | List[float] | Soc
     )
 
 class GeometryNodeToolMousePositionOutputs(typing.NamedTuple):
+    'Outputs from Mouse Position: Retrieve the position of the mouse cursor'
     mouse_x: Socket[int]
     mouse_y: Socket[int]
     region_width: Socket[int]
     region_height: Socket[int]
 
 def mouse_position() -> GeometryNodeToolMousePositionOutputs:
+    'Retrieve the position of the mouse cursor'
     return _node_function(
         'GeometryNodeToolMousePosition',
         inputs={
@@ -5166,9 +5476,11 @@ def mouse_position() -> GeometryNodeToolMousePositionOutputs:
     )
 
 class FunctionNodeMatrixMultiplyOutputs(typing.NamedTuple):
+    'Outputs from Multiply Matrices: Perform a matrix multiplication on two input matrices'
     matrix: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def multiply_matrices(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None, matrix_2: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeMatrixMultiplyOutputs:
+    'Perform a matrix multiplication on two input matrices'
     return _node_function(
         'FunctionNodeMatrixMultiply',
         inputs={
@@ -5188,11 +5500,12 @@ def multiply_matrices(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Ma
     )
 
 class GeometryNodeInputNamedAttributeOutputs(typing.NamedTuple):
+    'Outputs from Named Attribute: Retrieve the data of a specified attribute'
     attribute: Socket[Field[float] | Field[int] | Field[bool] | Field[Vector] | Field[Color] | Field[Rotation] | Field[Matrix]]
     exists: Socket[Field[bool]]
 
 def named_attribute(*, name: str | Socket[str] = '', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeInputNamedAttributeOutputs:
-    'Args:\n    data_type: The data type used to read the attribute values Inferred from the linked inputs when None.'
+    'Retrieve the data of a specified attribute\n\nArgs:\n    data_type: The data type used to read the attribute values Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeInputNamedAttribute',
         inputs={
@@ -5213,9 +5526,11 @@ def named_attribute(*, name: str | Socket[str] = '', data_type: typing.Literal['
     )
 
 class GeometryNodeInputNamedLayerSelectionOutputs(typing.NamedTuple):
+    'Outputs from Named Layer Selection: Output a selection of a Grease Pencil layer'
     selection: Socket[Field[bool]]
 
 def named_layer_selection(*, name: str | Socket[str] = '') -> GeometryNodeInputNamedLayerSelectionOutputs:
+    'Output a selection of a Grease Pencil layer'
     return _node_function(
         'GeometryNodeInputNamedLayerSelection',
         inputs={
@@ -5233,10 +5548,12 @@ def named_layer_selection(*, name: str | Socket[str] = '') -> GeometryNodeInputN
     )
 
 class GeometryNodeTool3DCursorOutputs(typing.NamedTuple):
+    "Outputs from 3D Cursor: The scene's 3D cursor location and rotation"
     location: Socket[Vector]
     rotation: Socket[Rotation]
 
 def node_3_d_cursor() -> GeometryNodeTool3DCursorOutputs:
+    "The scene's 3D cursor location and rotation"
     return _node_function(
         'GeometryNodeTool3DCursor',
         inputs={
@@ -5253,11 +5570,12 @@ def node_3_d_cursor() -> GeometryNodeTool3DCursorOutputs:
     )
 
 class ShaderNodeTexNoiseOutputs(typing.NamedTuple):
+    'Outputs from Noise Texture: Generate fractal Perlin noise'
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def noise_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, detail: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 2.0, roughness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, lacunarity: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 2.0, distortion: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, w: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, offset: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, gain: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, noise_dimensions: typing.Literal['1D', '2D', '3D', '4D'] = '3D', noise_type: typing.Literal['MULTIFRACTAL', 'RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL', 'FBM', 'HETERO_TERRAIN'] = 'FBM', normalize: bool = True) -> ShaderNodeTexNoiseOutputs:
-    'Args:\n    noise_dimensions: Number of dimensions to output noise for\n    noise_type: Type of the Noise texture\n    normalize: Normalize outputs to 0.0 to 1.0 range'
+    'Generate fractal Perlin noise\n\nArgs:\n    noise_dimensions: Number of dimensions to output noise for\n    noise_type: Type of the Noise texture\n    normalize: Normalize outputs to 0.0 to 1.0 range'
     return _node_function(
         'ShaderNodeTexNoise',
         inputs={
@@ -5295,11 +5613,12 @@ def noise_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class GeometryNodeInputNormalOutputs(typing.NamedTuple):
+    'Outputs from Normal: Retrieve a unit length vector indicating the direction pointing away from the geometry at each element'
     normal: Socket[Field[Vector]]
     true_normal: Socket[Field[Vector]]
 
 def normal(*, legacy_corner_normals: bool = False) -> GeometryNodeInputNormalOutputs:
-    'Args:\n    legacy_corner_normals: Always use face normals for the face corner domain, matching old behavior of the node'
+    'Retrieve a unit length vector indicating the direction pointing away from the geometry at each element\n\nArgs:\n    legacy_corner_normals: Always use face normals for the face corner domain, matching old behavior of the node'
     return _node_function(
         'GeometryNodeInputNormal',
         inputs={
@@ -5317,9 +5636,11 @@ def normal(*, legacy_corner_normals: bool = False) -> GeometryNodeInputNormalOut
     )
 
 class GeometryNodeInputObjectOutputs(typing.NamedTuple):
+    'Outputs from Object: Output a single object'
     object: Socket[Object]
 
 def object_(*, object: bpy.types.Object | None = None) -> GeometryNodeInputObjectOutputs:
+    'Output a single object'
     return _node_function(
         'GeometryNodeInputObject',
         inputs={
@@ -5336,6 +5657,7 @@ def object_(*, object: bpy.types.Object | None = None) -> GeometryNodeInputObjec
     )
 
 class GeometryNodeObjectInfoOutputs(typing.NamedTuple):
+    'Outputs from Object Info: Retrieve information from an object'
     transform: Socket[Matrix]
     location: Socket[Vector]
     rotation: Socket[Rotation]
@@ -5343,7 +5665,7 @@ class GeometryNodeObjectInfoOutputs(typing.NamedTuple):
     geometry: Socket[Geometry]
 
 def object_info(*, object: Object | Socket[Object] | None = None, as_instance: bool | Socket[bool] = False, transform_space: typing.Literal['ORIGINAL', 'RELATIVE'] = 'ORIGINAL') -> GeometryNodeObjectInfoOutputs:
-    'Args:\n    transform_space: The transformation of the vector and geometry outputs'
+    'Retrieve information from an object\n\nArgs:\n    transform_space: The transformation of the vector and geometry outputs'
     return _node_function(
         'GeometryNodeObjectInfo',
         inputs={
@@ -5368,9 +5690,11 @@ def object_info(*, object: Object | Socket[Object] | None = None, as_instance: b
     )
 
 class GeometryNodeOffsetCornerInFaceOutputs(typing.NamedTuple):
+    'Outputs from Offset Corner in Face: Retrieve corners in the same face as another'
     corner_index: Socket[Field[int]]
 
 def offset_corner_in_face(*, corner_index: int | Field[int] | Socket[int | Field[int]] = 0, offset: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeOffsetCornerInFaceOutputs:
+    'Retrieve corners in the same face as another'
     return _node_function(
         'GeometryNodeOffsetCornerInFace',
         inputs={
@@ -5390,10 +5714,12 @@ def offset_corner_in_face(*, corner_index: int | Field[int] | Socket[int | Field
     )
 
 class GeometryNodeOffsetPointInCurveOutputs(typing.NamedTuple):
+    'Outputs from Offset Point in Curve: Offset a control point index within its curve'
     is_valid_offset: Socket[Field[bool]]
     point_index: Socket[Field[int]]
 
 def offset_point_in_curve(*, point_index: int | Field[int] | Socket[int | Field[int]] = 0, offset: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeOffsetPointInCurveOutputs:
+    'Offset a control point index within its curve'
     return _node_function(
         'GeometryNodeOffsetPointInCurve',
         inputs={
@@ -5414,9 +5740,11 @@ def offset_point_in_curve(*, point_index: int | Field[int] | Socket[int | Field[
     )
 
 class GeometryNodeUVPackIslandsOutputs(typing.NamedTuple):
+    'Outputs from Pack UV Islands: Scale islands of a UV map and move them so they fill the UV space as much as possible'
     uv: Socket[Field[Vector]]
 
 def pack_uv_islands(*, uv: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, margin: float | Socket[float] = 0.0010000000474974513, rotate: bool | Socket[bool] = True, method: Menu | Socket[Menu] = 'Bounding Box', bottom_left: Vector2 | Socket[Vector2] = (0.0, 0.0), top_right: Vector2 | Socket[Vector2] = (1.0, 1.0)) -> GeometryNodeUVPackIslandsOutputs:
+    'Scale islands of a UV map and move them so they fill the UV space as much as possible'
     return _node_function(
         'GeometryNodeUVPackIslands',
         inputs={
@@ -5446,9 +5774,11 @@ def pack_uv_islands(*, uv: Vector | Field[Vector] | Socket[Vector | Field[Vector
     )
 
 class GeometryNodePointsOutputs(typing.NamedTuple):
+    'Outputs from Points: Generate a point cloud with positions and radii defined by fields'
     points: Socket[Geometry]
 
 def points(*, count: int | Socket[int] = 1, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), radius: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612) -> GeometryNodePointsOutputs:
+    'Generate a point cloud with positions and radii defined by fields'
     return _node_function(
         'GeometryNodePoints',
         inputs={
@@ -5470,10 +5800,12 @@ def points(*, count: int | Socket[int] = 1, position: Vector | Field[Vector] | S
     )
 
 class GeometryNodePointsOfCurveOutputs(typing.NamedTuple):
+    'Outputs from Points of Curve: Retrieve a point index within a curve'
     point_index: Socket[Field[int]]
     total: Socket[Field[int]]
 
 def points_of_curve(*, curve_index: int | Field[int] | Socket[int | Field[int]] = 0, weights: float | Field[float] | Socket[float | Field[float]] = 0.0, sort_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodePointsOfCurveOutputs:
+    'Retrieve a point index within a curve'
     return _node_function(
         'GeometryNodePointsOfCurve',
         inputs={
@@ -5496,9 +5828,11 @@ def points_of_curve(*, curve_index: int | Field[int] | Socket[int | Field[int]] 
     )
 
 class GeometryNodePointsToCurvesOutputs(typing.NamedTuple):
+    'Outputs from Points to Curves: Split all points to curve by its group ID and reorder by weight'
     curves: Socket[Geometry]
 
 def points_to_curves(*, points: Geometry | Socket[Geometry] | None = None, curve_group_id: int | Field[int] | Socket[int | Field[int]] = 0, weight: float | Field[float] | Socket[float | Field[float]] = 0.0) -> GeometryNodePointsToCurvesOutputs:
+    'Split all points to curve by its group ID and reorder by weight'
     return _node_function(
         'GeometryNodePointsToCurves',
         inputs={
@@ -5520,9 +5854,11 @@ def points_to_curves(*, points: Geometry | Socket[Geometry] | None = None, curve
     )
 
 class GeometryNodePointsToSDFGridOutputs(typing.NamedTuple):
+    'Outputs from Points to SDF Grid: Create a signed distance volume grid from points'
     sdf_grid: Socket[Grid[float]]
 
 def points_to_sdf_grid(*, points: Geometry | Socket[Geometry] | None = None, radius: float | Field[float] | Socket[float | Field[float]] = 0.5, voxel_size: float | Socket[float] = 0.30000001192092896) -> GeometryNodePointsToSDFGridOutputs:
+    'Create a signed distance volume grid from points'
     return _node_function(
         'GeometryNodePointsToSDFGrid',
         inputs={
@@ -5544,9 +5880,11 @@ def points_to_sdf_grid(*, points: Geometry | Socket[Geometry] | None = None, rad
     )
 
 class GeometryNodePointsToVerticesOutputs(typing.NamedTuple):
+    'Outputs from Points to Vertices: Generate a mesh vertex for each point cloud point'
     mesh: Socket[Geometry]
 
 def points_to_vertices(*, points: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodePointsToVerticesOutputs:
+    'Generate a mesh vertex for each point cloud point'
     return _node_function(
         'GeometryNodePointsToVertices',
         inputs={
@@ -5566,9 +5904,11 @@ def points_to_vertices(*, points: Geometry | Socket[Geometry] | None = None, sel
     )
 
 class GeometryNodePointsToVolumeOutputs(typing.NamedTuple):
+    'Outputs from Points to Volume: Generate a fog volume sphere around every point'
     volume: Socket[Geometry]
 
 def points_to_volume(*, points: Geometry | Socket[Geometry] | None = None, density: float | Socket[float] = 1.0, resolution_mode: Menu | Socket[Menu] = 'Amount', voxel_size: float | Socket[float] = 0.30000001192092896, voxel_amount: float | Socket[float] = 64.0, radius: float | Field[float] | Socket[float | Field[float]] = 0.5) -> GeometryNodePointsToVolumeOutputs:
+    'Generate a fog volume sphere around every point'
     return _node_function(
         'GeometryNodePointsToVolume',
         inputs={
@@ -5596,9 +5936,11 @@ def points_to_volume(*, points: Geometry | Socket[Geometry] | None = None, densi
     )
 
 class GeometryNodeInputPositionOutputs(typing.NamedTuple):
+    'Outputs from Position: Retrieve a vector indicating the location of each element'
     position: Socket[Field[Vector]]
 
 def position() -> GeometryNodeInputPositionOutputs:
+    'Retrieve a vector indicating the location of each element'
     return _node_function(
         'GeometryNodeInputPosition',
         inputs={
@@ -5614,9 +5956,11 @@ def position() -> GeometryNodeInputPositionOutputs:
     )
 
 class FunctionNodeProjectPointOutputs(typing.NamedTuple):
+    'Outputs from Project Point: Project a point using a matrix, using location, rotation, scale, and perspective divide'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def project_point(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), transform: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeProjectPointOutputs:
+    'Project a point using a matrix, using location, rotation, scale, and perspective divide'
     return _node_function(
         'FunctionNodeProjectPoint',
         inputs={
@@ -5636,10 +5980,11 @@ def project_point(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class GeometryNodeGridPruneOutputs(typing.NamedTuple):
+    'Outputs from Prune Grid: Make the storage of a volume grid more efficient by collapsing data into tiles or inner nodes'
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def prune_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, mode: Menu | Socket[Menu] = 'Threshold', threshold: float | int | Vector | Socket[float | int | Vector] = 0.009999999776482582, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridPruneOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Make the storage of a volume grid more efficient by collapsing data into tiles or inner nodes\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridPrune',
         inputs={
@@ -5663,9 +6008,11 @@ def prune_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | So
     )
 
 class GeometryNodeCurveQuadraticBezierOutputs(typing.NamedTuple):
+    'Outputs from Quadratic Bézier: Generate a poly spline in a parabola shape with control points positions'
     curve: Socket[Geometry]
 
-def quadratic_b_zier(*, resolution: int | Socket[int] = 16, start: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), middle: Vector | Socket[Vector] = (0.0, 2.0, 0.0), end: Vector | Socket[Vector] = (1.0, 0.0, 0.0)) -> GeometryNodeCurveQuadraticBezierOutputs:
+def quadratic_bezier(*, resolution: int | Socket[int] = 16, start: Vector | Socket[Vector] = (-1.0, 0.0, 0.0), middle: Vector | Socket[Vector] = (0.0, 2.0, 0.0), end: Vector | Socket[Vector] = (1.0, 0.0, 0.0)) -> GeometryNodeCurveQuadraticBezierOutputs:
+    'Generate a poly spline in a parabola shape with control points positions'
     return _node_function(
         'GeometryNodeCurveQuadraticBezier',
         inputs={
@@ -5689,9 +6036,11 @@ def quadratic_b_zier(*, resolution: int | Socket[int] = 16, start: Vector | Sock
     )
 
 class GeometryNodeCurvePrimitiveQuadrilateralOutputs(typing.NamedTuple):
+    'Outputs from Quadrilateral: Generate a polygon with four points'
     curve: Socket[Geometry]
 
 def quadrilateral(*, width: float | Socket[float] = 2.0, height: float | Socket[float] = 2.0, offset: float | Socket[float] = 1.0, bottom_width: float | Socket[float] = 4.0, top_width: float | Socket[float] = 2.0, bottom_height: float | Socket[float] = 3.0, top_height: float | Socket[float] = 1.0, point_1: Vector | Socket[Vector] = (-1.0, -1.0, 0.0), point_2: Vector | Socket[Vector] = (1.0, -1.0, 0.0), point_3: Vector | Socket[Vector] = (1.0, 1.0, 0.0), point_4: Vector | Socket[Vector] = (-1.0, 1.0, 0.0), mode: typing.Literal['RECTANGLE', 'PARALLELOGRAM', 'TRAPEZOID', 'KITE', 'POINTS'] = 'RECTANGLE') -> GeometryNodeCurvePrimitiveQuadrilateralOutputs:
+    'Generate a polygon with four points'
     return _node_function(
         'GeometryNodeCurvePrimitiveQuadrilateral',
         inputs={
@@ -5730,9 +6079,11 @@ def quadrilateral(*, width: float | Socket[float] = 2.0, height: float | Socket[
     )
 
 class FunctionNodeQuaternionToRotationOutputs(typing.NamedTuple):
+    'Outputs from Quaternion to Rotation: Build a rotation from quaternion components'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def quaternion_to_rotation(*, w: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, x: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, y: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, z: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0) -> FunctionNodeQuaternionToRotationOutputs:
+    'Build a rotation from quaternion components'
     return _node_function(
         'FunctionNodeQuaternionToRotation',
         inputs={
@@ -5756,13 +6107,14 @@ def quaternion_to_rotation(*, w: float | Field[float] | Grid[float] | List[float
     )
 
 class ShaderNodeRadialTilingOutputs(typing.NamedTuple):
+    'Outputs from Radial Tiling: Transform Coordinate System for Radial Tiling'
     segment_coordinates: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     segment_id: Socket[float | Field[float] | Grid[float] | List[float]]
     segment_width: Socket[float | Field[float] | Grid[float] | List[float]]
     segment_rotation: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def radial_tiling(*, vector: Vector2 | Field[Vector2] | Grid[Vector2] | List[Vector2] | Socket[Vector2 | Field[Vector2] | Grid[Vector2] | List[Vector2]] = (0.0, 0.0), sides: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, roundness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, normalize: bool = False) -> ShaderNodeRadialTilingOutputs:
-    "Args:\n    normalize: Normalize the X coordinate of the Segment Coordinates output to a [0, 1] interval and offset the Y coordinate into a [0, infinity) interval. When checked, the textures are stretched to fit into each angular segment. When not checked, the parts of the textures that don't fit into each angular segment are cropped"
+    "Transform Coordinate System for Radial Tiling\n\nArgs:\n    normalize: Normalize the X coordinate of the Segment Coordinates output to a [0, 1] interval and offset the Y coordinate into a [0, infinity) interval. When checked, the textures are stretched to fit into each angular segment. When not checked, the parts of the textures that don't fit into each angular segment are cropped"
     return _node_function(
         'ShaderNodeRadialTiling',
         inputs={
@@ -5788,9 +6140,11 @@ def radial_tiling(*, vector: Vector2 | Field[Vector2] | Grid[Vector2] | List[Vec
     )
 
 class GeometryNodeInputRadiusOutputs(typing.NamedTuple):
+    'Outputs from Radius: Retrieve the radius at each point on curve or point cloud geometry'
     radius: Socket[Field[float]]
 
 def radius() -> GeometryNodeInputRadiusOutputs:
+    'Retrieve the radius at each point on curve or point cloud geometry'
     return _node_function(
         'GeometryNodeInputRadius',
         inputs={
@@ -5806,10 +6160,11 @@ def radius() -> GeometryNodeInputRadiusOutputs:
     )
 
 class FunctionNodeRandomValueOutputs(typing.NamedTuple):
+    'Outputs from Random Value: Output a randomized value'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def random_value(*, min: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 0.0, max: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Vector | Field[Vector] | Grid[Vector] | List[Vector]] = 1.0, id: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, seed: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, probability: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> FunctionNodeRandomValueOutputs:
-    'Args:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.'
+    'Output a randomized value\n\nArgs:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.'
     return _node_function(
         'FunctionNodeRandomValue',
         inputs={
@@ -5837,6 +6192,7 @@ def random_value(*, min: float | Field[float] | Grid[float] | List[float] | int 
     )
 
 class GeometryNodeRaycastOutputs(typing.NamedTuple):
+    'Outputs from Raycast: Cast rays from the context geometry onto a target geometry, and retrieve information from each hit point'
     is_hit: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
     hit_position: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     hit_normal: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
@@ -5844,7 +6200,7 @@ class GeometryNodeRaycastOutputs(typing.NamedTuple):
     attribute: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def raycast(*, target_geometry: Geometry | Socket[Geometry] | None = None, attribute: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, interpolation: Menu | Socket[Menu] = 'Interpolated', source_position: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), ray_direction: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, -1.0), ray_length: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 100.0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeRaycastOutputs:
-    'Args:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.'
+    'Cast rays from the context geometry onto a target geometry, and retrieve information from each hit point\n\nArgs:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeRaycast',
         inputs={
@@ -5878,10 +6234,11 @@ def raycast(*, target_geometry: Geometry | Socket[Geometry] | None = None, attri
     )
 
 class GeometryNodeRealizeInstancesOutputs(typing.NamedTuple):
+    'Outputs from Realize Instances: Convert instances into real geometry data'
     geometry: Socket[Geometry]
 
 def realize_instances(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, realize_all: bool | Field[bool] | Socket[bool | Field[bool]] = True, depth: int | Field[int] | Socket[int | Field[int]] = 0, realize_to_point_domain: bool = False) -> GeometryNodeRealizeInstancesOutputs:
-    'Args:\n    realize_to_point_domain: Propagate instance attributes to the point domain rather than the curve domain. This property exists for compatibility with 5.0 and earlier.'
+    'Convert instances into real geometry data\n\nArgs:\n    realize_to_point_domain: Propagate instance attributes to the point domain rather than the curve domain. This property exists for compatibility with 5.0 and earlier.'
     return _node_function(
         'GeometryNodeRealizeInstances',
         inputs={
@@ -5906,9 +6263,11 @@ def realize_instances(*, geometry: Geometry | Socket[Geometry] | None = None, se
     )
 
 class GeometryNodeRemoveAttributeOutputs(typing.NamedTuple):
+    'Outputs from Remove Named Attribute: Delete an attribute with a specified name from a geometry. Typically used to optimize performance'
     geometry: Socket[Geometry]
 
 def remove_named_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, pattern_mode: Menu | Socket[Menu] = 'Exact', name: str | Socket[str] = '') -> GeometryNodeRemoveAttributeOutputs:
+    'Delete an attribute with a specified name from a geometry. Typically used to optimize performance'
     return _node_function(
         'GeometryNodeRemoveAttribute',
         inputs={
@@ -5930,9 +6289,11 @@ def remove_named_attribute(*, geometry: Geometry | Socket[Geometry] | None = Non
     )
 
 class GeometryNodeRenameAttributeOutputs(typing.NamedTuple):
+    'Outputs from Rename Attribute: Change the name of an attribute'
     geometry: Socket[Geometry]
 
 def rename_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, mode: Menu | Socket[Menu] = 'Single', old: str | Socket[str] = '', new: str | Socket[str] = '', overwrite: bool | Socket[bool] = False) -> GeometryNodeRenameAttributeOutputs:
+    'Change the name of an attribute'
     return _node_function(
         'GeometryNodeRenameAttribute',
         inputs={
@@ -5958,9 +6319,11 @@ def rename_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, mod
     )
 
 class GeometryNodeReplaceMaterialOutputs(typing.NamedTuple):
+    'Outputs from Replace Material: Swap one material with another'
     geometry: Socket[Geometry]
 
 def replace_material(*, geometry: Geometry | Socket[Geometry] | None = None, old: Material | Socket[Material] | None = None, new: Material | Socket[Material] | None = None) -> GeometryNodeReplaceMaterialOutputs:
+    'Swap one material with another'
     return _node_function(
         'GeometryNodeReplaceMaterial',
         inputs={
@@ -5982,9 +6345,11 @@ def replace_material(*, geometry: Geometry | Socket[Geometry] | None = None, old
     )
 
 class FunctionNodeReplaceStringOutputs(typing.NamedTuple):
+    'Outputs from Replace String: Replace a given string segment with another'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def replace_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', find: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', replace: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '') -> FunctionNodeReplaceStringOutputs:
+    'Replace a given string segment with another'
     return _node_function(
         'FunctionNodeReplaceString',
         inputs={
@@ -6006,10 +6371,11 @@ def replace_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[
     )
 
 class GeometryNodeResampleCurveOutputs(typing.NamedTuple):
+    'Outputs from Resample Curve: Generate a poly spline for each input spline'
     curve: Socket[Geometry]
 
 def resample_curve(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, mode: Menu | Socket[Menu] = 'Count', count: int | Field[int] | Socket[int | Field[int]] = 10, length: float | Field[float] | Socket[float | Field[float]] = 0.10000000149011612, keep_last_segment: bool = True) -> GeometryNodeResampleCurveOutputs:
-    'Args:\n    keep_last_segment: Do not collapse curves to single points if they are shorter than the given length. The collapsing behavior exists for compatibility reasons.'
+    'Generate a poly spline for each input spline\n\nArgs:\n    keep_last_segment: Do not collapse curves to single points if they are shorter than the given length. The collapsing behavior exists for compatibility reasons.'
     return _node_function(
         'GeometryNodeResampleCurve',
         inputs={
@@ -6036,9 +6402,11 @@ def resample_curve(*, curve: Geometry | Socket[Geometry] | None = None, selectio
     )
 
 class GeometryNodeReverseCurveOutputs(typing.NamedTuple):
+    'Outputs from Reverse Curve: Change the direction of curves by swapping their start and end data'
     curve: Socket[Geometry]
 
 def reverse_curve(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeReverseCurveOutputs:
+    'Change the direction of curves by swapping their start and end data'
     return _node_function(
         'GeometryNodeReverseCurve',
         inputs={
@@ -6058,9 +6426,11 @@ def reverse_curve(*, curve: Geometry | Socket[Geometry] | None = None, selection
     )
 
 class FunctionNodeReverseStringOutputs(typing.NamedTuple):
+    'Outputs from Reverse String: Reverse the order of the characters in a string'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def reverse_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '') -> FunctionNodeReverseStringOutputs:
+    'Reverse the order of the characters in a string'
     return _node_function(
         'FunctionNodeReverseString',
         inputs={
@@ -6078,9 +6448,11 @@ def reverse_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[
     )
 
 class ShaderNodeRGBCurveOutputs(typing.NamedTuple):
+    'Outputs from RGB Curves: Apply color corrections for each color channel'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def rgb_curves(*, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, color: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (1.0, 1.0, 1.0, 1.0)) -> ShaderNodeRGBCurveOutputs:
+    'Apply color corrections for each color channel'
     return _node_function(
         'ShaderNodeRGBCurve',
         inputs={
@@ -6100,10 +6472,11 @@ def rgb_curves(*, factor: float | Field[float] | Grid[float] | List[float] | Soc
     )
 
 class FunctionNodeRotateEulerOutputs(typing.NamedTuple):
+    'Outputs from Rotate Euler: Apply a secondary Euler rotation to a given Euler rotation'
     rotation: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def rotate_euler(*, rotation: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), rotate_by: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), axis: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), angle: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, rotation_type: typing.Literal['AXIS_ANGLE', 'EULER'] = 'EULER', space: typing.Literal['OBJECT', 'LOCAL'] = 'OBJECT') -> FunctionNodeRotateEulerOutputs:
-    'Args:\n    rotation_type: Method used to describe the rotation\n    space: Base orientation for rotation'
+    'Apply a secondary Euler rotation to a given Euler rotation\n\nArgs:\n    rotation_type: Method used to describe the rotation\n    space: Base orientation for rotation'
     return _node_function(
         'FunctionNodeRotateEuler',
         inputs={
@@ -6129,9 +6502,11 @@ def rotate_euler(*, rotation: Vector | Field[Vector] | Grid[Vector] | List[Vecto
     )
 
 class GeometryNodeRotateInstancesOutputs(typing.NamedTuple):
+    'Outputs from Rotate Instances: Rotate geometry instances in local or global space'
     instances: Socket[Geometry]
 
 def rotate_instances(*, instances: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, rotation: Rotation | Field[Rotation] | Socket[Rotation | Field[Rotation]] = (0.0, 0.0, 0.0), pivot_point: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), local_space: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeRotateInstancesOutputs:
+    'Rotate geometry instances in local or global space'
     return _node_function(
         'GeometryNodeRotateInstances',
         inputs={
@@ -6157,10 +6532,11 @@ def rotate_instances(*, instances: Geometry | Socket[Geometry] | None = None, se
     )
 
 class FunctionNodeRotateRotationOutputs(typing.NamedTuple):
+    'Outputs from Rotate Rotation: Apply a secondary rotation to a given rotation value'
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
 
 def rotate_rotation(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0), rotate_by: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0), rotation_space: typing.Literal['GLOBAL', 'LOCAL'] = 'GLOBAL') -> FunctionNodeRotateRotationOutputs:
-    'Args:\n    rotation_space: Base orientation for the rotation'
+    'Apply a secondary rotation to a given rotation value\n\nArgs:\n    rotation_space: Base orientation for the rotation'
     return _node_function(
         'FunctionNodeRotateRotation',
         inputs={
@@ -6181,9 +6557,11 @@ def rotate_rotation(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | L
     )
 
 class FunctionNodeRotateVectorOutputs(typing.NamedTuple):
+    'Outputs from Rotate Vector: Apply a rotation to a given vector'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def rotate_vector(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0)) -> FunctionNodeRotateVectorOutputs:
+    'Apply a rotation to a given vector'
     return _node_function(
         'FunctionNodeRotateVector',
         inputs={
@@ -6203,10 +6581,11 @@ def rotate_vector(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class FunctionNodeInputRotationOutputs(typing.NamedTuple):
+    'Outputs from Rotation: Provide a rotation value that can be connected to other nodes in the tree'
     rotation: Socket[Rotation]
 
 def rotation(*, rotation_euler: Vector = (0.0, 0.0, 0.0)) -> FunctionNodeInputRotationOutputs:
-    'Args:\n    rotation_euler: Input value used for unconnected socket'
+    'Provide a rotation value that can be connected to other nodes in the tree\n\nArgs:\n    rotation_euler: Input value used for unconnected socket'
     return _node_function(
         'FunctionNodeInputRotation',
         inputs={
@@ -6223,10 +6602,12 @@ def rotation(*, rotation_euler: Vector = (0.0, 0.0, 0.0)) -> FunctionNodeInputRo
     )
 
 class FunctionNodeRotationToAxisAngleOutputs(typing.NamedTuple):
+    'Outputs from Rotation to Axis Angle: Convert a rotation to axis angle components'
     axis: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     angle: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def rotation_to_axis_angle(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0)) -> FunctionNodeRotationToAxisAngleOutputs:
+    'Convert a rotation to axis angle components'
     return _node_function(
         'FunctionNodeRotationToAxisAngle',
         inputs={
@@ -6245,9 +6626,11 @@ def rotation_to_axis_angle(*, rotation: Rotation | Field[Rotation] | Grid[Rotati
     )
 
 class FunctionNodeRotationToEulerOutputs(typing.NamedTuple):
+    'Outputs from Rotation to Euler: Convert a standard rotation value to an Euler rotation'
     euler: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def rotation_to_euler(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0)) -> FunctionNodeRotationToEulerOutputs:
+    'Convert a standard rotation value to an Euler rotation'
     return _node_function(
         'FunctionNodeRotationToEuler',
         inputs={
@@ -6265,12 +6648,14 @@ def rotation_to_euler(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] |
     )
 
 class FunctionNodeRotationToQuaternionOutputs(typing.NamedTuple):
+    'Outputs from Rotation to Quaternion: Retrieve the quaternion components representing a rotation'
     w: Socket[float | Field[float] | Grid[float] | List[float]]
     x: Socket[float | Field[float] | Grid[float] | List[float]]
     y: Socket[float | Field[float] | Grid[float] | List[float]]
     z: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def rotation_to_quaternion(*, rotation: Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]] = (0.0, 0.0, 0.0)) -> FunctionNodeRotationToQuaternionOutputs:
+    'Retrieve the quaternion components representing a rotation'
     return _node_function(
         'FunctionNodeRotationToQuaternion',
         inputs={
@@ -6291,13 +6676,14 @@ def rotation_to_quaternion(*, rotation: Rotation | Field[Rotation] | Grid[Rotati
     )
 
 class GeometryNodeSampleCurveOutputs(typing.NamedTuple):
+    'Outputs from Sample Curve: Retrieve data from a point on a curve at a certain distance from its start'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
     position: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     tangent: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     normal: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def sample_curve(*, curves: Geometry | Socket[Geometry] | None = None, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, curve_index: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, length: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, mode: typing.Literal['FACTOR', 'LENGTH'] = 'FACTOR', use_all_curves: bool = False, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeSampleCurveOutputs:
-    'Args:\n    mode: Method for sampling input\n    use_all_curves: Sample lengths based on the total length of all curves, rather than using a length inside each selected curve\n    data_type:  Inferred from the linked inputs when None.'
+    'Retrieve data from a point on a curve at a certain distance from its start\n\nArgs:\n    mode: Method for sampling input\n    use_all_curves: Sample lengths based on the total length of all curves, rather than using a length inside each selected curve\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSampleCurve',
         inputs={
@@ -6330,10 +6716,11 @@ def sample_curve(*, curves: Geometry | Socket[Geometry] | None = None, value: fl
     )
 
 class GeometryNodeSampleGridOutputs(typing.NamedTuple):
+    'Outputs from Sample Grid: Retrieve values from the specified volume grid'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def sample_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, position: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), interpolation: Menu | Socket[Menu] = 'Trilinear', data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSampleGridOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Retrieve values from the specified volume grid\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSampleGrid',
         inputs={
@@ -6357,10 +6744,11 @@ def sample_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | S
     )
 
 class GeometryNodeSampleGridIndexOutputs(typing.NamedTuple):
+    'Outputs from Sample Grid Index: Retrieve volume grid values at specific voxels'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def sample_grid_index(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, x: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, y: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, z: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSampleGridIndexOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Retrieve volume grid values at specific voxels\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSampleGridIndex',
         inputs={
@@ -6386,10 +6774,11 @@ def sample_grid_index(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vecto
     )
 
 class GeometryNodeSampleIndexOutputs(typing.NamedTuple):
+    'Outputs from Sample Index: Retrieve values from specific geometry elements'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def sample_index(*, geometry: Geometry | Socket[Geometry] | None = None, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, index: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT', clamp: bool = False) -> GeometryNodeSampleIndexOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.\n    clamp: Clamp the indices to the size of the attribute domain instead of outputting a default value for invalid indices'
+    'Retrieve values from specific geometry elements\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.\n    clamp: Clamp the indices to the size of the attribute domain instead of outputting a default value for invalid indices'
     return _node_function(
         'GeometryNodeSampleIndex',
         inputs={
@@ -6415,9 +6804,11 @@ def sample_index(*, geometry: Geometry | Socket[Geometry] | None = None, value: 
     )
 
 class GeometryNodeSampleNearestOutputs(typing.NamedTuple):
+    'Outputs from Sample Nearest: Find the element of a geometry closest to a position. Similar to the "Index of Nearest" node'
     index: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def sample_nearest(*, geometry: Geometry | Socket[Geometry] | None = None, sample_position: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER'] = 'POINT') -> GeometryNodeSampleNearestOutputs:
+    'Find the element of a geometry closest to a position. Similar to the "Index of Nearest" node'
     return _node_function(
         'GeometryNodeSampleNearest',
         inputs={
@@ -6438,11 +6829,12 @@ def sample_nearest(*, geometry: Geometry | Socket[Geometry] | None = None, sampl
     )
 
 class GeometryNodeSampleNearestSurfaceOutputs(typing.NamedTuple):
+    'Outputs from Sample Nearest Surface: Calculate the interpolated value of a mesh attribute on the closest point of its surface'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
     is_valid: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def sample_nearest_surface(*, mesh: Geometry | Socket[Geometry] | None = None, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, group_id: int | Field[int] | Socket[int | Field[int]] = 0, sample_position: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), sample_group_id: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeSampleNearestSurfaceOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Calculate the interpolated value of a mesh attribute on the closest point of its surface\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSampleNearestSurface',
         inputs={
@@ -6471,9 +6863,11 @@ def sample_nearest_surface(*, mesh: Geometry | Socket[Geometry] | None = None, v
     )
 
 class GeometryNodeSampleSoundFrequenciesOutputs(typing.NamedTuple):
+    'Outputs from Sample Sound Frequencies: Retrieve the amplitude from a sound data-block of a frequency range at a given time'
     amplitude: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def sample_sound_frequencies(*, sound: Sound | Socket[Sound] | None = None, time: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, all_channels: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True, channel: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, low: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, high: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 10000.0, fft_size: Menu | Socket[Menu] = '4096', window_function: Menu | Socket[Menu] = 'Hann') -> GeometryNodeSampleSoundFrequenciesOutputs:
+    'Retrieve the amplitude from a sound data-block of a frequency range at a given time'
     return _node_function(
         'GeometryNodeSampleSoundFrequencies',
         inputs={
@@ -6505,11 +6899,12 @@ def sample_sound_frequencies(*, sound: Sound | Socket[Sound] | None = None, time
     )
 
 class GeometryNodeSampleUVSurfaceOutputs(typing.NamedTuple):
+    'Outputs from Sample UV Surface: Calculate the interpolated values of a mesh attribute at a UV coordinate'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
     is_valid: Socket[bool | Field[bool] | Grid[bool] | List[bool]]
 
 def sample_uv_surface(*, mesh: Geometry | Socket[Geometry] | None = None, value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, uv_map: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), sample_uv: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None) -> GeometryNodeSampleUVSurfaceOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Calculate the interpolated values of a mesh attribute at a UV coordinate\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSampleUVSurface',
         inputs={
@@ -6536,10 +6931,11 @@ def sample_uv_surface(*, mesh: Geometry | Socket[Geometry] | None = None, value:
     )
 
 class GeometryNodeScaleElementsOutputs(typing.NamedTuple):
+    'Outputs from Scale Elements: Scale groups of connected edges and faces'
     geometry: Socket[Geometry]
 
 def scale_elements(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, scale: float | Field[float] | Socket[float | Field[float]] = 1.0, center: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), scale_mode: Menu | Socket[Menu] = 'Uniform', axis: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (1.0, 0.0, 0.0), domain: typing.Literal['FACE', 'EDGE'] = 'FACE') -> GeometryNodeScaleElementsOutputs:
-    'Args:\n    domain: Element type to transform'
+    'Scale groups of connected edges and faces\n\nArgs:\n    domain: Element type to transform'
     return _node_function(
         'GeometryNodeScaleElements',
         inputs={
@@ -6568,9 +6964,11 @@ def scale_elements(*, geometry: Geometry | Socket[Geometry] | None = None, selec
     )
 
 class GeometryNodeScaleInstancesOutputs(typing.NamedTuple):
+    'Outputs from Scale Instances: Scale geometry instances in local or global space'
     instances: Socket[Geometry]
 
 def scale_instances(*, instances: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, scale: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (1.0, 1.0, 1.0), center: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), local_space: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeScaleInstancesOutputs:
+    'Scale geometry instances in local or global space'
     return _node_function(
         'GeometryNodeScaleInstances',
         inputs={
@@ -6596,10 +6994,12 @@ def scale_instances(*, instances: Geometry | Socket[Geometry] | None = None, sel
     )
 
 class GeometryNodeInputSceneTimeOutputs(typing.NamedTuple):
+    "Outputs from Scene Time: Retrieve the current time in the scene's animation in units of seconds or frames"
     seconds: Socket[float]
     frame: Socket[float]
 
 def scene_time() -> GeometryNodeInputSceneTimeOutputs:
+    "Retrieve the current time in the scene's animation in units of seconds or frames"
     return _node_function(
         'GeometryNodeInputSceneTime',
         inputs={
@@ -6616,9 +7016,11 @@ def scene_time() -> GeometryNodeInputSceneTimeOutputs:
     )
 
 class GeometryNodeSDFGridBooleanOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Boolean: Cut, subtract, or join multiple SDF volume grid inputs'
     grid: Socket[Grid[float]]
 
 def sdf_grid_boolean(*, grid_1: Grid[float] | Socket[Grid[float]] | None = None, grid_2: typing.Sequence[Grid[float] | Socket[Grid[float]]] = (), grid: typing.Sequence[Grid[float] | Socket[Grid[float]]] = (), operation: typing.Literal['INTERSECT', 'UNION', 'DIFFERENCE'] = 'DIFFERENCE') -> GeometryNodeSDFGridBooleanOutputs:
+    'Cut, subtract, or join multiple SDF volume grid inputs'
     return _node_function(
         'GeometryNodeSDFGridBoolean',
         inputs={
@@ -6641,9 +7043,11 @@ def sdf_grid_boolean(*, grid_1: Grid[float] | Socket[Grid[float]] | None = None,
     )
 
 class GeometryNodeSDFGridFilletOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Fillet: Round off concave internal corners in a signed distance field. Only affects areas with negative principal curvature, creating smoother transitions between surfaces'
     grid: Socket[Grid[float]]
 
 def sdf_grid_fillet(*, grid: Grid[float] | Socket[Grid[float]] | None = None, iterations: int | Socket[int] = 1) -> GeometryNodeSDFGridFilletOutputs:
+    'Round off concave internal corners in a signed distance field. Only affects areas with negative principal curvature, creating smoother transitions between surfaces'
     return _node_function(
         'GeometryNodeSDFGridFillet',
         inputs={
@@ -6663,9 +7067,11 @@ def sdf_grid_fillet(*, grid: Grid[float] | Socket[Grid[float]] | None = None, it
     )
 
 class GeometryNodeSDFGridLaplacianOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Laplacian: Apply Laplacian flow smoothing to a signed distance field. Computationally efficient alternative to mean curvature flow, ideal when combined with SDF normalization'
     grid: Socket[Grid[float]]
 
 def sdf_grid_laplacian(*, grid: Grid[float] | Socket[Grid[float]] | None = None, iterations: int | Socket[int] = 1) -> GeometryNodeSDFGridLaplacianOutputs:
+    'Apply Laplacian flow smoothing to a signed distance field. Computationally efficient alternative to mean curvature flow, ideal when combined with SDF normalization'
     return _node_function(
         'GeometryNodeSDFGridLaplacian',
         inputs={
@@ -6685,9 +7091,11 @@ def sdf_grid_laplacian(*, grid: Grid[float] | Socket[Grid[float]] | None = None,
     )
 
 class GeometryNodeSDFGridMeanOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Mean: Apply mean (box) filter smoothing to a signed distance field. Fast separable averaging filter for general smoothing of the distance field'
     grid: Socket[Grid[float]]
 
 def sdf_grid_mean(*, grid: Grid[float] | Socket[Grid[float]] | None = None, width: int | Socket[int] = 1, iterations: int | Socket[int] = 1) -> GeometryNodeSDFGridMeanOutputs:
+    'Apply mean (box) filter smoothing to a signed distance field. Fast separable averaging filter for general smoothing of the distance field'
     return _node_function(
         'GeometryNodeSDFGridMean',
         inputs={
@@ -6709,9 +7117,11 @@ def sdf_grid_mean(*, grid: Grid[float] | Socket[Grid[float]] | None = None, widt
     )
 
 class GeometryNodeSDFGridMeanCurvatureOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Mean Curvature: Apply mean curvature flow smoothing to a signed distance field. Evolves the surface based on its mean curvature, naturally smoothing high-curvature regions more than flat areas'
     grid: Socket[Grid[float]]
 
 def sdf_grid_mean_curvature(*, grid: Grid[float] | Socket[Grid[float]] | None = None, iterations: int | Socket[int] = 1) -> GeometryNodeSDFGridMeanCurvatureOutputs:
+    'Apply mean curvature flow smoothing to a signed distance field. Evolves the surface based on its mean curvature, naturally smoothing high-curvature regions more than flat areas'
     return _node_function(
         'GeometryNodeSDFGridMeanCurvature',
         inputs={
@@ -6731,9 +7141,11 @@ def sdf_grid_mean_curvature(*, grid: Grid[float] | Socket[Grid[float]] | None = 
     )
 
 class GeometryNodeSDFGridMedianOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Median: Apply median filter to a signed distance field. Reduces noise while preserving sharp features and edges in the distance field'
     grid: Socket[Grid[float]]
 
 def sdf_grid_median(*, grid: Grid[float] | Socket[Grid[float]] | None = None, width: int | Socket[int] = 1, iterations: int | Socket[int] = 1) -> GeometryNodeSDFGridMedianOutputs:
+    'Apply median filter to a signed distance field. Reduces noise while preserving sharp features and edges in the distance field'
     return _node_function(
         'GeometryNodeSDFGridMedian',
         inputs={
@@ -6755,9 +7167,11 @@ def sdf_grid_median(*, grid: Grid[float] | Socket[Grid[float]] | None = None, wi
     )
 
 class GeometryNodeSDFGridOffsetOutputs(typing.NamedTuple):
+    'Outputs from SDF Grid Offset: Offset a signed distance field surface by a world-space distance. Dilates (positive) or erodes (negative) while maintaining the signed distance property'
     grid: Socket[Grid[float]]
 
 def sdf_grid_offset(*, grid: Grid[float] | Socket[Grid[float]] | None = None, distance: float | Socket[float] = 0.10000000149011612) -> GeometryNodeSDFGridOffsetOutputs:
+    'Offset a signed distance field surface by a world-space distance. Dilates (positive) or erodes (negative) while maintaining the signed distance property'
     return _node_function(
         'GeometryNodeSDFGridOffset',
         inputs={
@@ -6777,10 +7191,12 @@ def sdf_grid_offset(*, grid: Grid[float] | Socket[Grid[float]] | None = None, di
     )
 
 class GeometryNodeToolSelectionOutputs(typing.NamedTuple):
+    'Outputs from Selection: User selection of the edited geometry, for tool execution'
     boolean: Socket[Field[bool]]
     float: Socket[Field[float]]
 
 def selection() -> GeometryNodeToolSelectionOutputs:
+    'User selection of the edited geometry, for tool execution'
     return _node_function(
         'GeometryNodeToolSelection',
         inputs={
@@ -6797,9 +7213,11 @@ def selection() -> GeometryNodeToolSelectionOutputs:
     )
 
 class GeometryNodeSelfObjectOutputs(typing.NamedTuple):
+    'Outputs from Self Object: Retrieve the object that contains the geometry nodes modifier currently being executed'
     self_object: Socket[Object]
 
 def self_object() -> GeometryNodeSelfObjectOutputs:
+    'Retrieve the object that contains the geometry nodes modifier currently being executed'
     return _node_function(
         'GeometryNodeSelfObject',
         inputs={
@@ -6815,10 +7233,10 @@ def self_object() -> GeometryNodeSelfObjectOutputs:
     )
 
 class NodeSeparateBundleOutputs(ItemOutputs):
-    pass
+    'Outputs from Separate Bundle: Split a bundle into multiple sockets.'
 
 def separate_bundle(*, bundle: Bundle | Socket[Bundle] | None = None, define_signature: bool = False, items: typing.Mapping[str, typing.Any] | None = None) -> NodeSeparateBundleOutputs:
-    'Args:\n    define_signature: This node defines a bundle signature that should be used by other nodes\n    items: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
+    'Split a bundle into multiple sockets.\n\nArgs:\n    define_signature: This node defines a bundle signature that should be used by other nodes\n    items: Items to add, mapping each name to its type (float, Vector, Geometry, ...). Their outputs are available by name on the result.'
     return _node_function(
         'NodeSeparateBundle',
         inputs={
@@ -6839,13 +7257,14 @@ def separate_bundle(*, bundle: Bundle | Socket[Bundle] | None = None, define_sig
     )
 
 class FunctionNodeSeparateColorOutputs(typing.NamedTuple):
+    'Outputs from Separate Color: Split a color into separate channels, based on a particular color model'
     red: Socket[float | Field[float] | Grid[float] | List[float]]
     green: Socket[float | Field[float] | Grid[float] | List[float]]
     blue: Socket[float | Field[float] | Grid[float] | List[float]]
     alpha: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def separate_color(*, color: Color | Field[Color] | Grid[Color] | List[Color] | Socket[Color | Field[Color] | Grid[Color] | List[Color]] = (1.0, 1.0, 1.0, 1.0), mode: typing.Literal['RGB', 'HSV', 'HSL'] = 'RGB') -> FunctionNodeSeparateColorOutputs:
-    'Args:\n    mode: Mode of color processing'
+    'Split a color into separate channels, based on a particular color model\n\nArgs:\n    mode: Mode of color processing'
     return _node_function(
         'FunctionNodeSeparateColor',
         inputs={
@@ -6867,6 +7286,7 @@ def separate_color(*, color: Color | Field[Color] | Grid[Color] | List[Color] | 
     )
 
 class GeometryNodeSeparateComponentsOutputs(typing.NamedTuple):
+    'Outputs from Separate Components: Split a geometry into a separate output for each type of data in the geometry'
     mesh: Socket[Geometry]
     curve: Socket[Geometry]
     grease_pencil: Socket[Geometry]
@@ -6875,6 +7295,7 @@ class GeometryNodeSeparateComponentsOutputs(typing.NamedTuple):
     instances: Socket[Geometry]
 
 def separate_components(*, geometry: Geometry | Socket[Geometry] | None = None) -> GeometryNodeSeparateComponentsOutputs:
+    'Split a geometry into a separate output for each type of data in the geometry'
     return _node_function(
         'GeometryNodeSeparateComponents',
         inputs={
@@ -6897,11 +7318,12 @@ def separate_components(*, geometry: Geometry | Socket[Geometry] | None = None) 
     )
 
 class GeometryNodeSeparateGeometryOutputs(typing.NamedTuple):
+    'Outputs from Separate Geometry: Split a geometry into two geometry outputs based on a selection'
     selection: Socket[Geometry]
     inverted: Socket[Geometry]
 
 def separate_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeSeparateGeometryOutputs:
-    'Args:\n    domain: Which domain to separate on'
+    'Split a geometry into two geometry outputs based on a selection\n\nArgs:\n    domain: Which domain to separate on'
     return _node_function(
         'GeometryNodeSeparateGeometry',
         inputs={
@@ -6923,6 +7345,7 @@ def separate_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, se
     )
 
 class FunctionNodeSeparateMatrixOutputs(typing.NamedTuple):
+    'Outputs from Separate Matrix: Split a 4x4 matrix into its individual values'
     column_1_row_1: Socket[float | Field[float] | Grid[float] | List[float]]
     column_1_row_2: Socket[float | Field[float] | Grid[float] | List[float]]
     column_1_row_3: Socket[float | Field[float] | Grid[float] | List[float]]
@@ -6941,6 +7364,7 @@ class FunctionNodeSeparateMatrixOutputs(typing.NamedTuple):
     column_4_row_4: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def separate_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeSeparateMatrixOutputs:
+    'Split a 4x4 matrix into its individual values'
     return _node_function(
         'FunctionNodeSeparateMatrix',
         inputs={
@@ -6973,11 +7397,13 @@ def separate_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matr
     )
 
 class FunctionNodeSeparateTransformOutputs(typing.NamedTuple):
+    'Outputs from Separate Transform: Split a transformation matrix into a translation vector, a rotation, and a scale vector'
     translation: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     rotation: Socket[Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation]]
     scale: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def separate_transform(*, transform: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeSeparateTransformOutputs:
+    'Split a transformation matrix into a translation vector, a rotation, and a scale vector'
     return _node_function(
         'FunctionNodeSeparateTransform',
         inputs={
@@ -6997,11 +7423,13 @@ def separate_transform(*, transform: Matrix | Field[Matrix] | Grid[Matrix] | Lis
     )
 
 class ShaderNodeSeparateXYZOutputs(typing.NamedTuple):
+    'Outputs from Separate XYZ: Split a vector into its X, Y, and Z components'
     x: Socket[float | Field[float] | Grid[float] | List[float]]
     y: Socket[float | Field[float] | Grid[float] | List[float]]
     z: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def separate_xyz(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0)) -> ShaderNodeSeparateXYZOutputs:
+    'Split a vector into its X, Y, and Z components'
     return _node_function(
         'ShaderNodeSeparateXYZ',
         inputs={
@@ -7021,9 +7449,11 @@ def separate_xyz(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector]
     )
 
 class GeometryNodeSetCurveNormalOutputs(typing.NamedTuple):
+    'Outputs from Set Curve Normal: Set the evaluation mode for curve normals'
     curve: Socket[Geometry]
 
 def set_curve_normal(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, mode: Menu | Socket[Menu] = 'Minimum Twist', normal: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 1.0)) -> GeometryNodeSetCurveNormalOutputs:
+    'Set the evaluation mode for curve normals'
     return _node_function(
         'GeometryNodeSetCurveNormal',
         inputs={
@@ -7047,9 +7477,11 @@ def set_curve_normal(*, curve: Geometry | Socket[Geometry] | None = None, select
     )
 
 class GeometryNodeSetCurveRadiusOutputs(typing.NamedTuple):
+    'Outputs from Set Curve Radius: Set the radius of the curve at each control point'
     curve: Socket[Geometry]
 
 def set_curve_radius(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, radius: float | Field[float] | Socket[float | Field[float]] = 0.004999999888241291) -> GeometryNodeSetCurveRadiusOutputs:
+    'Set the radius of the curve at each control point'
     return _node_function(
         'GeometryNodeSetCurveRadius',
         inputs={
@@ -7071,9 +7503,11 @@ def set_curve_radius(*, curve: Geometry | Socket[Geometry] | None = None, select
     )
 
 class GeometryNodeSetCurveTiltOutputs(typing.NamedTuple):
+    'Outputs from Set Curve Tilt: Set the tilt angle at each curve control point'
     curve: Socket[Geometry]
 
 def set_curve_tilt(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, tilt: float | Field[float] | Socket[float | Field[float]] = 0.0) -> GeometryNodeSetCurveTiltOutputs:
+    'Set the tilt angle at each curve control point'
     return _node_function(
         'GeometryNodeSetCurveTilt',
         inputs={
@@ -7095,9 +7529,11 @@ def set_curve_tilt(*, curve: Geometry | Socket[Geometry] | None = None, selectio
     )
 
 class GeometryNodeToolSetFaceSetOutputs(typing.NamedTuple):
+    'Outputs from Set Face Set: Set sculpt face set values for faces'
     mesh: Socket[Geometry]
 
 def set_face_set(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, face_set: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeToolSetFaceSetOutputs:
+    'Set sculpt face set values for faces'
     return _node_function(
         'GeometryNodeToolSetFaceSet',
         inputs={
@@ -7119,9 +7555,11 @@ def set_face_set(*, mesh: Geometry | Socket[Geometry] | None = None, selection: 
     )
 
 class GeometryNodeSetGeometryBundleOutputs(typing.NamedTuple):
+    'Outputs from Set Geometry Bundle: Set the bundle of a geometry'
     geometry: Socket[Geometry]
 
 def set_geometry_bundle(*, geometry: Geometry | Socket[Geometry] | None = None, bundle: Bundle | Socket[Bundle] | None = None) -> GeometryNodeSetGeometryBundleOutputs:
+    'Set the bundle of a geometry'
     return _node_function(
         'GeometryNodeSetGeometryBundle',
         inputs={
@@ -7141,9 +7579,11 @@ def set_geometry_bundle(*, geometry: Geometry | Socket[Geometry] | None = None, 
     )
 
 class GeometryNodeSetGeometryNameOutputs(typing.NamedTuple):
+    'Outputs from Set Geometry Name: Set the name of a geometry for easier debugging'
     geometry: Socket[Geometry]
 
 def set_geometry_name(*, geometry: Geometry | Socket[Geometry] | None = None, name: str | Socket[str] = '') -> GeometryNodeSetGeometryNameOutputs:
+    'Set the name of a geometry for easier debugging'
     return _node_function(
         'GeometryNodeSetGeometryName',
         inputs={
@@ -7163,9 +7603,11 @@ def set_geometry_name(*, geometry: Geometry | Socket[Geometry] | None = None, na
     )
 
 class GeometryNodeSetGreasePencilColorOutputs(typing.NamedTuple):
+    'Outputs from Set Grease Pencil Color: Set color and opacity attributes on Grease Pencil geometry'
     grease_pencil: Socket[Geometry]
 
 def set_grease_pencil_color(*, grease_pencil: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, color: Color | Field[Color] | Socket[Color | Field[Color]] = (1.0, 1.0, 1.0, 1.0), opacity: float | Field[float] | Socket[float | Field[float]] = 1.0, mode: typing.Literal['STROKE', 'FILL'] = 'STROKE') -> GeometryNodeSetGreasePencilColorOutputs:
+    'Set color and opacity attributes on Grease Pencil geometry'
     return _node_function(
         'GeometryNodeSetGreasePencilColor',
         inputs={
@@ -7190,9 +7632,11 @@ def set_grease_pencil_color(*, grease_pencil: Geometry | Socket[Geometry] | None
     )
 
 class GeometryNodeSetGreasePencilDepthOutputs(typing.NamedTuple):
+    'Outputs from Set Grease Pencil Depth: Set the Grease Pencil depth order to use'
     grease_pencil: Socket[Geometry]
 
 def set_grease_pencil_depth(*, grease_pencil: Geometry | Socket[Geometry] | None = None, depth_order: typing.Literal['2D', '3D'] = '2D') -> GeometryNodeSetGreasePencilDepthOutputs:
+    'Set the Grease Pencil depth order to use'
     return _node_function(
         'GeometryNodeSetGreasePencilDepth',
         inputs={
@@ -7211,9 +7655,11 @@ def set_grease_pencil_depth(*, grease_pencil: Geometry | Socket[Geometry] | None
     )
 
 class GeometryNodeSetGreasePencilSoftnessOutputs(typing.NamedTuple):
+    'Outputs from Set Grease Pencil Softness: Set softness attribute on Grease Pencil geometry'
     grease_pencil: Socket[Geometry]
 
 def set_grease_pencil_softness(*, grease_pencil: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, softness: float | Field[float] | Socket[float | Field[float]] = 0.0) -> GeometryNodeSetGreasePencilSoftnessOutputs:
+    'Set softness attribute on Grease Pencil geometry'
     return _node_function(
         'GeometryNodeSetGreasePencilSoftness',
         inputs={
@@ -7235,10 +7681,11 @@ def set_grease_pencil_softness(*, grease_pencil: Geometry | Socket[Geometry] | N
     )
 
 class GeometryNodeSetGridBackgroundOutputs(typing.NamedTuple):
+    'Outputs from Set Grid Background: Set the background value used for inactive voxels and tiles'
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def set_grid_background(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, background: float | int | bool | Vector | Socket[float | int | bool | Vector] = 0.0, update_inactive: bool | Socket[bool] = False, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSetGridBackgroundOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Set the background value used for inactive voxels and tiles\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSetGridBackground',
         inputs={
@@ -7262,11 +7709,12 @@ def set_grid_background(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vec
     )
 
 class GeometryNodeSetGridTransformOutputs(typing.NamedTuple):
+    'Outputs from Set Grid Transform: Set the transform for the grid from index space into object space.'
     is_valid: Socket[bool]
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def set_grid_transform(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, transform: Matrix | Socket[Matrix] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSetGridTransformOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Set the transform for the grid from index space into object space.\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSetGridTransform',
         inputs={
@@ -7289,10 +7737,11 @@ def set_grid_transform(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vect
     )
 
 class GeometryNodeSetCurveHandlePositionsOutputs(typing.NamedTuple):
+    'Outputs from Set Handle Positions: Set the positions for the handles of Bézier curves'
     curve: Socket[Geometry]
 
 def set_handle_positions(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), offset: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), mode: typing.Literal['LEFT', 'RIGHT'] = 'LEFT') -> GeometryNodeSetCurveHandlePositionsOutputs:
-    'Args:\n    mode: Whether to update left and right handles'
+    'Set the positions for the handles of Bézier curves\n\nArgs:\n    mode: Whether to update left and right handles'
     return _node_function(
         'GeometryNodeSetCurveHandlePositions',
         inputs={
@@ -7317,10 +7766,11 @@ def set_handle_positions(*, curve: Geometry | Socket[Geometry] | None = None, se
     )
 
 class GeometryNodeCurveSetHandlesOutputs(typing.NamedTuple):
+    'Outputs from Set Handle Type: Set the handle type for the control points of a Bézier curve'
     curve: Socket[Geometry]
 
 def set_handle_type(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, handle_type: typing.Literal['FREE', 'AUTO', 'VECTOR', 'ALIGN'] = 'AUTO', mode: set[typing.Literal['LEFT', 'RIGHT']] = {'LEFT', 'RIGHT'}) -> GeometryNodeCurveSetHandlesOutputs:
-    'Args:\n    mode: Whether to update left and right handles'
+    'Set the handle type for the control points of a Bézier curve\n\nArgs:\n    mode: Whether to update left and right handles'
     return _node_function(
         'GeometryNodeCurveSetHandles',
         inputs={
@@ -7342,9 +7792,11 @@ def set_handle_type(*, curve: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class GeometryNodeSetIDOutputs(typing.NamedTuple):
+    'Outputs from Set ID: Set the id attribute on the input geometry, mainly used internally for randomizing'
     geometry: Socket[Geometry]
 
 def set_id(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, id: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeSetIDOutputs:
+    'Set the id attribute on the input geometry, mainly used internally for randomizing'
     return _node_function(
         'GeometryNodeSetID',
         inputs={
@@ -7366,9 +7818,11 @@ def set_id(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bo
     )
 
 class GeometryNodeSetInstanceTransformOutputs(typing.NamedTuple):
+    'Outputs from Set Instance Transform: Set the transformation matrix of every instance'
     instances: Socket[Geometry]
 
 def set_instance_transform(*, instances: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, transform: Matrix | Field[Matrix] | Socket[Matrix | Field[Matrix]] | None = None) -> GeometryNodeSetInstanceTransformOutputs:
+    'Set the transformation matrix of every instance'
     return _node_function(
         'GeometryNodeSetInstanceTransform',
         inputs={
@@ -7390,9 +7844,11 @@ def set_instance_transform(*, instances: Geometry | Socket[Geometry] | None = No
     )
 
 class GeometryNodeSetMaterialOutputs(typing.NamedTuple):
+    'Outputs from Set Material: Assign a material to geometry elements'
     geometry: Socket[Geometry]
 
 def set_material(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, material: Material | Socket[Material] | None = None) -> GeometryNodeSetMaterialOutputs:
+    'Assign a material to geometry elements'
     return _node_function(
         'GeometryNodeSetMaterial',
         inputs={
@@ -7414,9 +7870,11 @@ def set_material(*, geometry: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class GeometryNodeSetMaterialIndexOutputs(typing.NamedTuple):
+    'Outputs from Set Material Index: Set the material index for each selected geometry element'
     geometry: Socket[Geometry]
 
 def set_material_index(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, material_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeSetMaterialIndexOutputs:
+    'Set the material index for each selected geometry element'
     return _node_function(
         'GeometryNodeSetMaterialIndex',
         inputs={
@@ -7438,10 +7896,11 @@ def set_material_index(*, geometry: Geometry | Socket[Geometry] | None = None, s
     )
 
 class GeometryNodeSetMeshNormalOutputs(typing.NamedTuple):
+    'Outputs from Set Mesh Normal: Store a normal vector for each mesh element'
     mesh: Socket[Geometry]
 
 def set_mesh_normal(*, mesh: Geometry | Socket[Geometry] | None = None, remove_custom: bool | Socket[bool] = True, edge_sharpness: bool | Field[bool] | Socket[bool | Field[bool]] = False, face_sharpness: bool | Field[bool] | Socket[bool | Field[bool]] = False, custom_normal: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), mode: typing.Literal['SHARPNESS', 'FREE', 'TANGENT_SPACE'] = 'SHARPNESS', domain: typing.Literal['POINT', 'FACE', 'CORNER'] = 'POINT') -> GeometryNodeSetMeshNormalOutputs:
-    'Args:\n    mode: Storage mode for custom normal data\n    domain: Attribute domain to store free custom normals'
+    'Store a normal vector for each mesh element\n\nArgs:\n    mode: Storage mode for custom normal data\n    domain: Attribute domain to store free custom normals'
     return _node_function(
         'GeometryNodeSetMeshNormal',
         inputs={
@@ -7469,9 +7928,11 @@ def set_mesh_normal(*, mesh: Geometry | Socket[Geometry] | None = None, remove_c
     )
 
 class GeometryNodeSetNURBSOrderOutputs(typing.NamedTuple):
+    'Outputs from Set NURBS Order: Control how many curve control points influence each evaluated point by changing the "nurbs_order" attribute'
     curves: Socket[Geometry]
 
 def set_nurbs_order(*, curves: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, order: int | Field[int] | Socket[int | Field[int]] = 4) -> GeometryNodeSetNURBSOrderOutputs:
+    'Control how many curve control points influence each evaluated point by changing the "nurbs_order" attribute'
     return _node_function(
         'GeometryNodeSetNURBSOrder',
         inputs={
@@ -7493,9 +7954,11 @@ def set_nurbs_order(*, curves: Geometry | Socket[Geometry] | None = None, select
     )
 
 class GeometryNodeSetNURBSWeightOutputs(typing.NamedTuple):
+    'Outputs from Set NURBS Weight: Control the influence of each NURBS control point on the curve by changing the "nurbs_weight" attribute'
     curves: Socket[Geometry]
 
 def set_nurbs_weight(*, curves: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, weight: float | Field[float] | Socket[float | Field[float]] = 1.0) -> GeometryNodeSetNURBSWeightOutputs:
+    'Control the influence of each NURBS control point on the curve by changing the "nurbs_weight" attribute'
     return _node_function(
         'GeometryNodeSetNURBSWeight',
         inputs={
@@ -7517,9 +7980,11 @@ def set_nurbs_weight(*, curves: Geometry | Socket[Geometry] | None = None, selec
     )
 
 class GeometryNodeSetPointRadiusOutputs(typing.NamedTuple):
+    'Outputs from Set Point Radius: Set the display size of point cloud points'
     points: Socket[Geometry]
 
 def set_point_radius(*, points: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, radius: float | Field[float] | Socket[float | Field[float]] = 0.05000000074505806) -> GeometryNodeSetPointRadiusOutputs:
+    'Set the display size of point cloud points'
     return _node_function(
         'GeometryNodeSetPointRadius',
         inputs={
@@ -7541,9 +8006,11 @@ def set_point_radius(*, points: Geometry | Socket[Geometry] | None = None, selec
     )
 
 class GeometryNodeSetPositionOutputs(typing.NamedTuple):
+    'Outputs from Set Position: Set the location of each point'
     geometry: Socket[Geometry]
 
 def set_position(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, position: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), offset: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0)) -> GeometryNodeSetPositionOutputs:
+    'Set the location of each point'
     return _node_function(
         'GeometryNodeSetPosition',
         inputs={
@@ -7567,10 +8034,11 @@ def set_position(*, geometry: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class GeometryNodeToolSetSelectionOutputs(typing.NamedTuple):
+    'Outputs from Set Selection: Set selection of the edited geometry, for tool execution'
     geometry: Socket[Geometry]
 
 def set_selection(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | float | Field[float] | Socket[bool | Field[bool] | float | Field[float]] = True, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CURVE'] = 'POINT', selection_type: typing.Literal['BOOLEAN', 'FLOAT'] | None = None) -> GeometryNodeToolSetSelectionOutputs:
-    'Args:\n    selection_type:  Inferred from the linked inputs when None.'
+    'Set selection of the edited geometry, for tool execution\n\nArgs:\n    selection_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeToolSetSelection',
         inputs={
@@ -7593,9 +8061,11 @@ def set_selection(*, geometry: Geometry | Socket[Geometry] | None = None, select
     )
 
 class GeometryNodeSetShadeSmoothOutputs(typing.NamedTuple):
+    'Outputs from Set Shade Smooth: Control the smoothness of mesh normals around each face by changing the "shade smooth" attribute'
     mesh: Socket[Geometry]
 
 def set_shade_smooth(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, shade_smooth: bool | Field[bool] | Socket[bool | Field[bool]] = True, domain: typing.Literal['EDGE', 'FACE'] = 'FACE') -> GeometryNodeSetShadeSmoothOutputs:
+    'Control the smoothness of mesh normals around each face by changing the "shade smooth" attribute'
     return _node_function(
         'GeometryNodeSetShadeSmooth',
         inputs={
@@ -7618,9 +8088,11 @@ def set_shade_smooth(*, mesh: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class GeometryNodeSetSplineCyclicOutputs(typing.NamedTuple):
+    'Outputs from Set Spline Cyclic: Control whether each spline loops back on itself by changing the "cyclic" attribute'
     curve: Socket[Geometry]
 
 def set_spline_cyclic(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, cyclic: bool | Field[bool] | Socket[bool | Field[bool]] = False) -> GeometryNodeSetSplineCyclicOutputs:
+    'Control whether each spline loops back on itself by changing the "cyclic" attribute'
     return _node_function(
         'GeometryNodeSetSplineCyclic',
         inputs={
@@ -7642,9 +8114,11 @@ def set_spline_cyclic(*, curve: Geometry | Socket[Geometry] | None = None, selec
     )
 
 class GeometryNodeSetSplineResolutionOutputs(typing.NamedTuple):
+    'Outputs from Set Spline Resolution: Control how many evaluated points should be generated on every curve segment'
     curve: Socket[Geometry]
 
 def set_spline_resolution(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, resolution: int | Field[int] | Socket[int | Field[int]] = 12) -> GeometryNodeSetSplineResolutionOutputs:
+    'Control how many evaluated points should be generated on every curve segment'
     return _node_function(
         'GeometryNodeSetSplineResolution',
         inputs={
@@ -7666,10 +8140,11 @@ def set_spline_resolution(*, curve: Geometry | Socket[Geometry] | None = None, s
     )
 
 class GeometryNodeCurveSplineTypeOutputs(typing.NamedTuple):
+    'Outputs from Set Spline Type: Change the type of curves'
     curve: Socket[Geometry]
 
 def set_spline_type(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, spline_type: typing.Literal['CATMULL_ROM', 'POLY', 'BEZIER', 'NURBS'] = 'POLY') -> GeometryNodeCurveSplineTypeOutputs:
-    'Args:\n    spline_type: The curve type to change the selected curves to'
+    'Change the type of curves\n\nArgs:\n    spline_type: The curve type to change the selected curves to'
     return _node_function(
         'GeometryNodeCurveSplineType',
         inputs={
@@ -7690,9 +8165,11 @@ def set_spline_type(*, curve: Geometry | Socket[Geometry] | None = None, selecti
     )
 
 class FunctionNodeSetStringCaseOutputs(typing.NamedTuple):
+    'Outputs from Set String Case: Convert the case of a string'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def set_string_case(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', case: Menu | Socket[Menu] = 'Uppercase') -> FunctionNodeSetStringCaseOutputs:
+    'Convert the case of a string'
     return _node_function(
         'FunctionNodeSetStringCase',
         inputs={
@@ -7712,10 +8189,12 @@ def set_string_case(*, string: str | Field[str] | Grid[str] | List[str] | Socket
     )
 
 class GeometryNodeInputShortestEdgePathsOutputs(typing.NamedTuple):
+    'Outputs from Shortest Edge Paths: Find the shortest paths along mesh edges to selected end vertices, with customizable cost per edge'
     next_vertex_index: Socket[Field[int]]
     total_cost: Socket[Field[float]]
 
 def shortest_edge_paths(*, end_vertex: bool | Field[bool] | Socket[bool | Field[bool]] = False, edge_cost: float | Field[float] | Socket[float | Field[float]] = 1.0) -> GeometryNodeInputShortestEdgePathsOutputs:
+    'Find the shortest paths along mesh edges to selected end vertices, with customizable cost per edge'
     return _node_function(
         'GeometryNodeInputShortestEdgePaths',
         inputs={
@@ -7736,9 +8215,11 @@ def shortest_edge_paths(*, end_vertex: bool | Field[bool] | Socket[bool | Field[
     )
 
 class FunctionNodeSliceStringOutputs(typing.NamedTuple):
+    'Outputs from Slice String: Extract a string segment from a larger string'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def slice_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', position: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, length: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 10) -> FunctionNodeSliceStringOutputs:
+    'Extract a string segment from a larger string'
     return _node_function(
         'FunctionNodeSliceString',
         inputs={
@@ -7760,9 +8241,11 @@ def slice_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[st
     )
 
 class GeometryNodeSortElementsOutputs(typing.NamedTuple):
+    'Outputs from Sort Elements: Rearrange geometry elements, changing their indices'
     geometry: Socket[Geometry]
 
 def sort_elements(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, group_id: int | Field[int] | Socket[int | Field[int]] = 0, sort_weight: float | Field[float] | Socket[float | Field[float]] = 0.0, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CURVE', 'INSTANCE'] = 'POINT') -> GeometryNodeSortElementsOutputs:
+    'Rearrange geometry elements, changing their indices'
     return _node_function(
         'GeometryNodeSortElements',
         inputs={
@@ -7787,10 +8270,11 @@ def sort_elements(*, geometry: Geometry | Socket[Geometry] | None = None, select
     )
 
 class GeometryNodeSortListOutputs(typing.NamedTuple):
+    'Outputs from Sort List: Sort a list based on weights'
     list: Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]]
 
 def sort_list(*, list: List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound] | Socket[List[float] | List[int] | List[bool] | List[Vector] | List[Color] | List[Rotation] | List[Matrix] | List[str] | List[Menu] | List[Object] | List[Image] | List[Geometry] | List[Collection] | List[Material] | List[Bundle] | List[Closure] | List[Font] | List[Sound]] | None = None, selection: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True, group_id: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, sort_weight: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, socket_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSortListOutputs:
-    'Args:\n    socket_type:  Inferred from the linked inputs when None.'
+    'Sort a list based on weights\n\nArgs:\n    socket_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSortList',
         inputs={
@@ -7816,10 +8300,12 @@ def sort_list(*, list: List[float] | List[int] | List[bool] | List[Vector] | Lis
     )
 
 class FunctionNodeInputSpecialCharactersOutputs(typing.NamedTuple):
+    'Outputs from Special Characters: Output string characters that cannot be typed directly with the keyboard'
     line_break: Socket[str]
     tab: Socket[str]
 
 def special_characters() -> FunctionNodeInputSpecialCharactersOutputs:
+    'Output string characters that cannot be typed directly with the keyboard'
     return _node_function(
         'FunctionNodeInputSpecialCharacters',
         inputs={
@@ -7836,9 +8322,11 @@ def special_characters() -> FunctionNodeInputSpecialCharactersOutputs:
     )
 
 class GeometryNodeCurveSpiralOutputs(typing.NamedTuple):
+    'Outputs from Spiral: Generate a poly spline in a spiral shape'
     curve: Socket[Geometry]
 
 def spiral(*, resolution: int | Socket[int] = 32, rotations: float | Socket[float] = 2.0, start_radius: float | Socket[float] = 1.0, end_radius: float | Socket[float] = 2.0, height: float | Socket[float] = 2.0, reverse: bool | Socket[bool] = False) -> GeometryNodeCurveSpiralOutputs:
+    'Generate a poly spline in a spiral shape'
     return _node_function(
         'GeometryNodeCurveSpiral',
         inputs={
@@ -7866,10 +8354,12 @@ def spiral(*, resolution: int | Socket[int] = 32, rotations: float | Socket[floa
     )
 
 class GeometryNodeSplineLengthOutputs(typing.NamedTuple):
+    'Outputs from Spline Length: Retrieve the total length of each spline, as a distance or as a number of points'
     length: Socket[Field[float]]
     point_count: Socket[Field[int]]
 
 def spline_length() -> GeometryNodeSplineLengthOutputs:
+    'Retrieve the total length of each spline, as a distance or as a number of points'
     return _node_function(
         'GeometryNodeSplineLength',
         inputs={
@@ -7886,11 +8376,13 @@ def spline_length() -> GeometryNodeSplineLengthOutputs:
     )
 
 class GeometryNodeSplineParameterOutputs(typing.NamedTuple):
+    'Outputs from Spline Parameter: Retrieve how far along each spline a control point is'
     factor: Socket[Field[float]]
     length: Socket[Field[float]]
     index: Socket[Field[int]]
 
 def spline_parameter() -> GeometryNodeSplineParameterOutputs:
+    'Retrieve how far along each spline a control point is'
     return _node_function(
         'GeometryNodeSplineParameter',
         inputs={
@@ -7908,9 +8400,11 @@ def spline_parameter() -> GeometryNodeSplineParameterOutputs:
     )
 
 class GeometryNodeInputSplineResolutionOutputs(typing.NamedTuple):
+    'Outputs from Spline Resolution: Retrieve the number of evaluated points that will be generated for every control point on curves'
     resolution: Socket[Field[int]]
 
 def spline_resolution() -> GeometryNodeInputSplineResolutionOutputs:
+    'Retrieve the number of evaluated points that will be generated for every control point on curves'
     return _node_function(
         'GeometryNodeInputSplineResolution',
         inputs={
@@ -7926,9 +8420,11 @@ def spline_resolution() -> GeometryNodeInputSplineResolutionOutputs:
     )
 
 class GeometryNodeSplitEdgesOutputs(typing.NamedTuple):
+    'Outputs from Split Edges: Duplicate mesh edges and break connections with the surrounding faces'
     mesh: Socket[Geometry]
 
 def split_edges(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeSplitEdgesOutputs:
+    'Duplicate mesh edges and break connections with the surrounding faces'
     return _node_function(
         'GeometryNodeSplitEdges',
         inputs={
@@ -7948,9 +8444,11 @@ def split_edges(*, mesh: Geometry | Socket[Geometry] | None = None, selection: b
     )
 
 class FunctionNodeSplitStringOutputs(typing.NamedTuple):
+    'Outputs from Split String: Split a string into a list using a separator'
     list: Socket[List[str]]
 
 def split_string(*, string: str | Socket[str] = '', separator: str | Socket[str] = '') -> FunctionNodeSplitStringOutputs:
+    'Split a string into a list using a separator'
     return _node_function(
         'FunctionNodeSplitString',
         inputs={
@@ -7970,11 +8468,12 @@ def split_string(*, string: str | Socket[str] = '', separator: str | Socket[str]
     )
 
 class GeometryNodeSplitToInstancesOutputs(typing.NamedTuple):
+    'Outputs from Split to Instances: Create separate geometries containing the elements from the same group'
     instances: Socket[Geometry]
     group_id: Socket[Field[int]]
 
 def split_to_instances(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, group_id: int | Field[int] | Socket[int | Field[int]] = 0, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeSplitToInstancesOutputs:
-    'Args:\n    domain: Attribute domain for the Selection and Group ID inputs'
+    'Create separate geometries containing the elements from the same group\n\nArgs:\n    domain: Attribute domain for the Selection and Group ID inputs'
     return _node_function(
         'GeometryNodeSplitToInstances',
         inputs={
@@ -7998,10 +8497,12 @@ def split_to_instances(*, geometry: Geometry | Socket[Geometry] | None = None, s
     )
 
 class GeometryNodeCurveStarOutputs(typing.NamedTuple):
+    'Outputs from Star: Generate a poly spline in a star pattern by connecting alternating points of two circles'
     curve: Socket[Geometry]
     outer_points: Socket[Field[bool]]
 
 def star(*, points: int | Socket[int] = 8, inner_radius: float | Socket[float] = 1.0, outer_radius: float | Socket[float] = 2.0, twist: float | Socket[float] = 0.0) -> GeometryNodeCurveStarOutputs:
+    'Generate a poly spline in a star pattern by connecting alternating points of two circles'
     return _node_function(
         'GeometryNodeCurveStar',
         inputs={
@@ -8026,10 +8527,11 @@ def star(*, points: int | Socket[int] = 8, inner_radius: float | Socket[float] =
     )
 
 class NodeStoreBundleItemOutputs(typing.NamedTuple):
+    'Outputs from Store Bundle Item: Store a bundle item by path and data type.'
     bundle: Socket[Bundle]
 
 def store_bundle_item(*, bundle: Bundle | Socket[Bundle] | None = None, path: str | Socket[str] = '', item: float | int | bool | Vector | Color | Rotation | Matrix | str | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound | Socket[float | int | bool | Vector | Color | Rotation | Matrix | str | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound] = 0.0, socket_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None, structure_type: typing.Literal['AUTO', 'DYNAMIC', 'FIELD', 'GRID', 'LIST', 'SINGLE'] = 'AUTO') -> NodeStoreBundleItemOutputs:
-    'Args:\n    socket_type:  Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
+    'Store a bundle item by path and data type.\n\nArgs:\n    socket_type:  Inferred from the linked inputs when None.\n    structure_type: What kind of higher order types are expected to flow through this socket'
     return _node_function(
         'NodeStoreBundleItem',
         inputs={
@@ -8054,10 +8556,11 @@ def store_bundle_item(*, bundle: Bundle | Socket[Bundle] | None = None, path: st
     )
 
 class GeometryNodeStoreNamedAttributeOutputs(typing.NamedTuple):
+    'Outputs from Store Named Attribute: Store the result of a field on a geometry as an attribute with the specified name'
     geometry: Socket[Geometry]
 
 def store_named_attribute(*, geometry: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, name: str | Socket[str] = '', value: float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix] | Socket[float | Field[float] | int | Field[int] | bool | Field[bool] | Vector | Field[Vector] | Color | Field[Color] | Rotation | Field[Rotation] | Matrix | Field[Matrix]] = 0.0, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'FLOAT_VECTOR', 'FLOAT_COLOR', 'QUATERNION', 'FLOAT4X4', 'STRING', 'INT8', 'INT16_2D', 'INT32_2D', 'FLOAT2', 'FLOAT4', 'BYTE_COLOR'] | None = None, domain: typing.Literal['POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'POINT') -> GeometryNodeStoreNamedAttributeOutputs:
-    'Args:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.\n    domain: Which domain to store the data in'
+    'Store the result of a field on a geometry as an attribute with the specified name\n\nArgs:\n    data_type: Type of data stored in attribute Inferred from the linked inputs when None.\n    domain: Which domain to store the data in'
     return _node_function(
         'GeometryNodeStoreNamedAttribute',
         inputs={
@@ -8084,10 +8587,11 @@ def store_named_attribute(*, geometry: Geometry | Socket[Geometry] | None = None
     )
 
 class GeometryNodeStoreNamedGridOutputs(typing.NamedTuple):
+    'Outputs from Store Named Grid: Store grid data in a volume geometry with the specified name'
     volume: Socket[Geometry]
 
 def store_named_grid(*, volume: Geometry | Socket[Geometry] | None = None, name: str | Socket[str] = '', grid: Grid[float] | Grid[bool] | Grid[int] | Grid[Vector] | Socket[Grid[float] | Grid[bool] | Grid[int] | Grid[Vector]] | None = None, data_type: typing.Literal['BOOLEAN', 'FLOAT', 'DOUBLE', 'INT', 'INT64', 'MASK', 'VECTOR_FLOAT', 'VECTOR_DOUBLE', 'VECTOR_INT', 'POINTS', 'UNKNOWN'] | None = None) -> GeometryNodeStoreNamedGridOutputs:
-    'Args:\n    data_type: Type of grid data Inferred from the linked inputs when None.'
+    'Store grid data in a volume geometry with the specified name\n\nArgs:\n    data_type: Type of grid data Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeStoreNamedGrid',
         inputs={
@@ -8111,9 +8615,11 @@ def store_named_grid(*, volume: Geometry | Socket[Geometry] | None = None, name:
     )
 
 class FunctionNodeInputStringOutputs(typing.NamedTuple):
+    'Outputs from String: Provide a string value that can be connected to other nodes in the tree'
     string: Socket[str]
 
 def string_(*, string: str = '') -> FunctionNodeInputStringOutputs:
+    'Provide a string value that can be connected to other nodes in the tree'
     return _node_function(
         'FunctionNodeInputString',
         inputs={
@@ -8130,9 +8636,11 @@ def string_(*, string: str = '') -> FunctionNodeInputStringOutputs:
     )
 
 class FunctionNodeStringLengthOutputs(typing.NamedTuple):
+    'Outputs from String Length: Output the number of characters in the given string'
     length: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def string_length(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '') -> FunctionNodeStringLengthOutputs:
+    'Output the number of characters in the given string'
     return _node_function(
         'FunctionNodeStringLength',
         inputs={
@@ -8150,6 +8658,7 @@ def string_length(*, string: str | Field[str] | Grid[str] | List[str] | Socket[s
     )
 
 class GeometryNodeStringToCurvesOutputs(typing.NamedTuple):
+    'Outputs from String to Curves: Generate a paragraph of text with a specific font, using a curve instance to store each character'
     curve_instances: Socket[Geometry]
     remainder: Socket[str]
     line: Socket[Field[int]]
@@ -8157,6 +8666,7 @@ class GeometryNodeStringToCurvesOutputs(typing.NamedTuple):
     pivot_point: Socket[Field[Vector]]
 
 def string_to_curves(*, string: str | Socket[str] = '', size: float | Socket[float] = 1.0, font: Font | Socket[Font] | None = None, align_x: Menu | Socket[Menu] = 'Left', align_y: Menu | Socket[Menu] = 'Top Baseline', pivot_point: Menu | Socket[Menu] = 'Midpoint', character_spacing: float | Socket[float] = 1.0, word_spacing: float | Socket[float] = 1.0, line_spacing: float | Socket[float] = 1.0, overflow: Menu | Socket[Menu] = 'Overflow', text_box_width: float | Socket[float] = 0.0, text_box_height: float | Socket[float] = 0.0) -> GeometryNodeStringToCurvesOutputs:
+    'Generate a paragraph of text with a specific font, using a curve instance to store each character'
     return _node_function(
         'GeometryNodeStringToCurves',
         inputs={
@@ -8200,11 +8710,12 @@ def string_to_curves(*, string: str | Socket[str] = '', size: float | Socket[flo
     )
 
 class FunctionNodeStringToValueOutputs(typing.NamedTuple):
+    'Outputs from String to Value: Derive a numeric value from a given string representation'
     value: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int]]
     length: Socket[int | Field[int] | Grid[int] | List[int]]
 
 def string_to_value(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', base: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 10, data_type: typing.Literal['FLOAT', 'INT'] | None = None) -> FunctionNodeStringToValueOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Derive a numeric value from a given string representation\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'FunctionNodeStringToValue',
         inputs={
@@ -8227,9 +8738,11 @@ def string_to_value(*, string: str | Field[str] | Grid[str] | List[str] | Socket
     )
 
 class GeometryNodeSubdivideCurveOutputs(typing.NamedTuple):
+    'Outputs from Subdivide Curve: Dividing each curve segment into a specified number of pieces'
     curve: Socket[Geometry]
 
 def subdivide_curve(*, curve: Geometry | Socket[Geometry] | None = None, cuts: int | Field[int] | Socket[int | Field[int]] = 1) -> GeometryNodeSubdivideCurveOutputs:
+    'Dividing each curve segment into a specified number of pieces'
     return _node_function(
         'GeometryNodeSubdivideCurve',
         inputs={
@@ -8249,9 +8762,11 @@ def subdivide_curve(*, curve: Geometry | Socket[Geometry] | None = None, cuts: i
     )
 
 class GeometryNodeSubdivideMeshOutputs(typing.NamedTuple):
+    'Outputs from Subdivide Mesh: Divide mesh faces into smaller ones without changing the shape or volume, using linear interpolation to place the new vertices'
     mesh: Socket[Geometry]
 
 def subdivide_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, level: int | Socket[int] = 1) -> GeometryNodeSubdivideMeshOutputs:
+    'Divide mesh faces into smaller ones without changing the shape or volume, using linear interpolation to place the new vertices'
     return _node_function(
         'GeometryNodeSubdivideMesh',
         inputs={
@@ -8271,9 +8786,11 @@ def subdivide_mesh(*, mesh: Geometry | Socket[Geometry] | None = None, level: in
     )
 
 class GeometryNodeSubdivisionSurfaceOutputs(typing.NamedTuple):
+    'Outputs from Subdivision Surface: Divide mesh faces to form a smooth surface, using the Catmull-Clark subdivision method'
     mesh: Socket[Geometry]
 
 def subdivision_surface(*, mesh: Geometry | Socket[Geometry] | None = None, level: int | Socket[int] = 1, edge_crease: float | Field[float] | Socket[float | Field[float]] = 0.0, vertex_crease: float | Field[float] | Socket[float | Field[float]] = 0.0, limit_surface: bool | Socket[bool] = True, quality: int | Socket[int] = 3, uv_smooth: Menu | Socket[Menu] = 'Keep Boundaries', boundary_smooth: Menu | Socket[Menu] = 'All') -> GeometryNodeSubdivisionSurfaceOutputs:
+    'Divide mesh faces to form a smooth surface, using the Catmull-Clark subdivision method'
     return _node_function(
         'GeometryNodeSubdivisionSurface',
         inputs={
@@ -8305,10 +8822,11 @@ def subdivision_surface(*, mesh: Geometry | Socket[Geometry] | None = None, leve
     )
 
 class GeometryNodeSwitchOutputs(typing.NamedTuple):
+    'Outputs from Switch: Switch between two inputs'
     output: Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound]
 
 def switch(*, switch: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = False, false: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound] = 0.0, true: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | bool | Field[bool] | Grid[bool] | List[bool] | Vector | Field[Vector] | Grid[Vector] | List[Vector] | Color | Field[Color] | Grid[Color] | List[Color] | Rotation | Field[Rotation] | Grid[Rotation] | List[Rotation] | Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | str | Field[str] | Grid[str] | List[str] | Menu | Object | Image | Geometry | Collection | Material | Bundle | Closure | Font | Sound] = 0.0, input_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeSwitchOutputs:
-    'Args:\n    input_type:  Inferred from the linked inputs when None.'
+    'Switch between two inputs\n\nArgs:\n    input_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeSwitch',
         inputs={
@@ -8332,9 +8850,11 @@ def switch(*, switch: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool
     )
 
 class GeometryNodeTagFilterOutputs(typing.NamedTuple):
+    'Outputs from Tag Filter: Check if a filter string matches a list of tags'
     match: Socket[bool]
 
 def tag_filter(*, tag_filter: str | Socket[str] = '', tags: List[str] | Socket[List[str]] | None = None) -> GeometryNodeTagFilterOutputs:
+    'Check if a filter string matches a list of tags'
     return _node_function(
         'GeometryNodeTagFilter',
         inputs={
@@ -8354,10 +8874,12 @@ def tag_filter(*, tag_filter: str | Socket[str] = '', tags: List[str] | Socket[L
     )
 
 class GeometryNodeTransferAttributesOutputs(typing.NamedTuple):
+    'Outputs from Transfer Attributes: Copy attributes from one geometry to another'
     target: Socket[Geometry]
     transferred_names: Socket[List[str]]
 
 def transfer_attributes(*, target: Geometry | Socket[Geometry] | None = None, target_point_id: int | Field[int] | Socket[int | Field[int]] = 0, target_edge_id: int | Field[int] | Socket[int | Field[int]] = 0, target_face_id: int | Field[int] | Socket[int | Field[int]] = 0, target_corner_id: int | Field[int] | Socket[int | Field[int]] = 0, target_curve_id: int | Field[int] | Socket[int | Field[int]] = 0, target_instance_id: int | Field[int] | Socket[int | Field[int]] = 0, source: Geometry | Socket[Geometry] | None = None, source_point_id: int | Field[int] | Socket[int | Field[int]] = 0, source_edge_id: int | Field[int] | Socket[int | Field[int]] = 0, source_face_id: int | Field[int] | Socket[int | Field[int]] = 0, source_corner_id: int | Field[int] | Socket[int | Field[int]] = 0, source_curve_id: int | Field[int] | Socket[int | Field[int]] = 0, source_instance_id: int | Field[int] | Socket[int | Field[int]] = 0, pattern_mode: Menu | Socket[Menu] = 'Wildcard', attribute_names: List[str] | Socket[List[str]] | None = None, exclude_names: bool | Socket[bool] = False) -> GeometryNodeTransferAttributesOutputs:
+    'Copy attributes from one geometry to another'
     return _node_function(
         'GeometryNodeTransferAttributes',
         inputs={
@@ -8408,9 +8930,11 @@ def transfer_attributes(*, target: Geometry | Socket[Geometry] | None = None, ta
     )
 
 class FunctionNodeTransformDirectionOutputs(typing.NamedTuple):
+    'Outputs from Transform Direction: Apply a transformation matrix (excluding translation) to the given vector'
     direction: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def transform_direction(*, direction: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), transform: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeTransformDirectionOutputs:
+    'Apply a transformation matrix (excluding translation) to the given vector'
     return _node_function(
         'FunctionNodeTransformDirection',
         inputs={
@@ -8430,9 +8954,11 @@ def transform_direction(*, direction: Vector | Field[Vector] | Grid[Vector] | Li
     )
 
 class GeometryNodeTransformOutputs(typing.NamedTuple):
+    'Outputs from Transform Geometry: Translate, rotate or scale the geometry'
     geometry: Socket[Geometry]
 
 def transform_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, mode: Menu | Socket[Menu] = 'Components', translation: Vector | Socket[Vector] = (0.0, 0.0, 0.0), rotation: Rotation | Socket[Rotation] = (0.0, 0.0, 0.0), scale: Vector | Socket[Vector] = (1.0, 1.0, 1.0), transform: Matrix | Socket[Matrix] | None = None) -> GeometryNodeTransformOutputs:
+    'Translate, rotate or scale the geometry'
     return _node_function(
         'GeometryNodeTransform',
         inputs={
@@ -8460,9 +8986,11 @@ def transform_geometry(*, geometry: Geometry | Socket[Geometry] | None = None, m
     )
 
 class GeometryNodeGizmoTransformOutputs(typing.NamedTuple):
+    'Outputs from Transform Gizmo: Show a transform gizmo in the viewport'
     transform: Socket[Geometry]
 
 def transform_gizmo(*, value: typing.Sequence[Matrix | Socket[Matrix]] = (), position: Vector | Socket[Vector] = (0.0, 0.0, 0.0), rotation: Rotation | Socket[Rotation] = (0.0, 0.0, 0.0), use_translation_x: bool = True, use_translation_y: bool = True, use_translation_z: bool = True, use_rotation_x: bool = True, use_rotation_y: bool = True, use_rotation_z: bool = True, use_scale_x: bool = True, use_scale_y: bool = True, use_scale_z: bool = True) -> GeometryNodeGizmoTransformOutputs:
+    'Show a transform gizmo in the viewport'
     return _node_function(
         'GeometryNodeGizmoTransform',
         inputs={
@@ -8493,9 +9021,11 @@ def transform_gizmo(*, value: typing.Sequence[Matrix | Socket[Matrix]] = (), pos
     )
 
 class FunctionNodeTransformPointOutputs(typing.NamedTuple):
+    'Outputs from Transform Point: Apply a transformation matrix to the given vector'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def transform_point(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), transform: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeTransformPointOutputs:
+    'Apply a transformation matrix to the given vector'
     return _node_function(
         'FunctionNodeTransformPoint',
         inputs={
@@ -8515,9 +9045,11 @@ def transform_point(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vect
     )
 
 class GeometryNodeTranslateInstancesOutputs(typing.NamedTuple):
+    'Outputs from Translate Instances: Move top-level geometry instances in local or global space'
     instances: Socket[Geometry]
 
 def translate_instances(*, instances: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, translation: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (0.0, 0.0, 0.0), local_space: bool | Field[bool] | Socket[bool | Field[bool]] = True) -> GeometryNodeTranslateInstancesOutputs:
+    'Move top-level geometry instances in local or global space'
     return _node_function(
         'GeometryNodeTranslateInstances',
         inputs={
@@ -8541,9 +9073,11 @@ def translate_instances(*, instances: Geometry | Socket[Geometry] | None = None,
     )
 
 class FunctionNodeTransposeMatrixOutputs(typing.NamedTuple):
+    'Outputs from Transpose Matrix: Flip a matrix over its diagonal, turning columns into rows and vice-versa'
     matrix: Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]]
 
 def transpose_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix] | Socket[Matrix | Field[Matrix] | Grid[Matrix] | List[Matrix]] | None = None) -> FunctionNodeTransposeMatrixOutputs:
+    'Flip a matrix over its diagonal, turning columns into rows and vice-versa'
     return _node_function(
         'FunctionNodeTransposeMatrix',
         inputs={
@@ -8561,9 +9095,11 @@ def transpose_matrix(*, matrix: Matrix | Field[Matrix] | Grid[Matrix] | List[Mat
     )
 
 class GeometryNodeTriangulateOutputs(typing.NamedTuple):
+    'Outputs from Triangulate: Convert all faces in a mesh to triangular faces'
     mesh: Socket[Geometry]
 
 def triangulate(*, mesh: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, quad_method: Menu | Socket[Menu] = 'Shortest Diagonal', n_gon_method: Menu | Socket[Menu] = 'Beauty') -> GeometryNodeTriangulateOutputs:
+    'Convert all faces in a mesh to triangular faces'
     return _node_function(
         'GeometryNodeTriangulate',
         inputs={
@@ -8587,10 +9123,11 @@ def triangulate(*, mesh: Geometry | Socket[Geometry] | None = None, selection: b
     )
 
 class GeometryNodeTrimCurveOutputs(typing.NamedTuple):
+    'Outputs from Trim Curve: Shorten curves by removing portions at the start or end'
     curve: Socket[Geometry]
 
 def trim_curve(*, curve: Geometry | Socket[Geometry] | None = None, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, start: float | Field[float] | Socket[float | Field[float]] = 0.0, end: float | Field[float] | Socket[float | Field[float]] = 1.0, mode: typing.Literal['FACTOR', 'LENGTH'] = 'FACTOR') -> GeometryNodeTrimCurveOutputs:
-    'Args:\n    mode: How to find endpoint positions for the trimmed spline'
+    'Shorten curves by removing portions at the start or end\n\nArgs:\n    mode: How to find endpoint positions for the trimmed spline'
     return _node_function(
         'GeometryNodeTrimCurve',
         inputs={
@@ -8615,9 +9152,11 @@ def trim_curve(*, curve: Geometry | Socket[Geometry] | None = None, selection: b
     )
 
 class FunctionNodeTrimStringOutputs(typing.NamedTuple):
+    'Outputs from Trim String: Remove characters from the beginning and end of a string'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def trim_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', characters: str | Field[str] | Grid[str] | List[str] | Socket[str | Field[str] | Grid[str] | List[str]] = '', whitespace: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True, start: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True, end: bool | Field[bool] | Grid[bool] | List[bool] | Socket[bool | Field[bool] | Grid[bool] | List[bool]] = True) -> FunctionNodeTrimStringOutputs:
+    'Remove characters from the beginning and end of a string'
     return _node_function(
         'FunctionNodeTrimString',
         inputs={
@@ -8643,10 +9182,12 @@ def trim_string(*, string: str | Field[str] | Grid[str] | List[str] | Socket[str
     )
 
 class GeometryNodeMeshUVSphereOutputs(typing.NamedTuple):
+    'Outputs from UV Sphere: Generate a spherical mesh with quads, except for triangles at the top and bottom'
     mesh: Socket[Geometry]
     uv_map: Socket[Field[Vector]]
 
 def uv_sphere(*, segments: int | Socket[int] = 32, rings: int | Socket[int] = 16, radius: float | Socket[float] = 1.0) -> GeometryNodeMeshUVSphereOutputs:
+    'Generate a spherical mesh with quads, except for triangles at the top and bottom'
     return _node_function(
         'GeometryNodeMeshUVSphere',
         inputs={
@@ -8669,9 +9210,11 @@ def uv_sphere(*, segments: int | Socket[int] = 32, rings: int | Socket[int] = 16
     )
 
 class GeometryNodeUVTangentOutputs(typing.NamedTuple):
+    'Outputs from UV Tangent: Generate tangent directions based on a UV map'
     tangent: Socket[Field[Vector]]
 
 def uv_tangent(*, method: Menu | Socket[Menu] = 'Exact', uv: Vector2 | Field[Vector2] | Socket[Vector2 | Field[Vector2]] = (0.0, 0.0)) -> GeometryNodeUVTangentOutputs:
+    'Generate tangent directions based on a UV map'
     return _node_function(
         'GeometryNodeUVTangent',
         inputs={
@@ -8691,9 +9234,11 @@ def uv_tangent(*, method: Menu | Socket[Menu] = 'Exact', uv: Vector2 | Field[Vec
     )
 
 class GeometryNodeUVUnwrapOutputs(typing.NamedTuple):
+    'Outputs from UV Unwrap: Generate a UV map based on seam edges'
     uv: Socket[Field[Vector]]
 
 def uv_unwrap(*, selection: bool | Field[bool] | Socket[bool | Field[bool]] = True, seam: bool | Field[bool] | Socket[bool | Field[bool]] = False, margin: float | Socket[float] = 0.0010000000474974513, fill_holes: bool | Socket[bool] = True, method: Menu | Socket[Menu] = 'Angle Based', iterations: int | Socket[int] = 10, no_flip: bool | Socket[bool] = False) -> GeometryNodeUVUnwrapOutputs:
+    'Generate a UV map based on seam edges'
     return _node_function(
         'GeometryNodeUVUnwrap',
         inputs={
@@ -8723,9 +9268,11 @@ def uv_unwrap(*, selection: bool | Field[bool] | Socket[bool | Field[bool]] = Tr
     )
 
 class ShaderNodeValueOutputs(typing.NamedTuple):
+    'Outputs from Value: Input numerical values to other nodes in the tree'
     value: Socket[float]
 
 def value() -> ShaderNodeValueOutputs:
+    'Input numerical values to other nodes in the tree'
     return _node_function(
         'ShaderNodeValue',
         inputs={
@@ -8741,10 +9288,11 @@ def value() -> ShaderNodeValueOutputs:
     )
 
 class FunctionNodeValueToStringOutputs(typing.NamedTuple):
+    'Outputs from Value to String: Generate a string representation of the given input value'
     string: Socket[str | Field[str] | Grid[str] | List[str]]
 
 def value_to_string(*, value: float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int] | Socket[float | Field[float] | Grid[float] | List[float] | int | Field[int] | Grid[int] | List[int]] = 0.0, decimals: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, base: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 10, padding: int | Field[int] | Grid[int] | List[int] | Socket[int | Field[int] | Grid[int] | List[int]] = 0, data_type: typing.Literal['FLOAT', 'INT'] | None = None) -> FunctionNodeValueToStringOutputs:
-    'Args:\n    data_type:  Inferred from the linked inputs when None.'
+    'Generate a string representation of the given input value\n\nArgs:\n    data_type:  Inferred from the linked inputs when None.'
     return _node_function(
         'FunctionNodeValueToString',
         inputs={
@@ -8770,10 +9318,11 @@ def value_to_string(*, value: float | Field[float] | Grid[float] | List[float] |
     )
 
 class FunctionNodeInputVectorOutputs(typing.NamedTuple):
+    'Outputs from Vector: Provide a vector value that can be connected to other nodes in the tree'
     vector: Socket[Vector]
 
 def vector(*, vector: Vector4 = (0.0, 0.0, 0.0), vector_dimensions: int = 3) -> FunctionNodeInputVectorOutputs:
-    'Args:\n    vector_dimensions: Dimensions of the vector socket'
+    'Provide a vector value that can be connected to other nodes in the tree\n\nArgs:\n    vector_dimensions: Dimensions of the vector socket'
     return _node_function(
         'FunctionNodeInputVector',
         inputs={
@@ -8791,9 +9340,11 @@ def vector(*, vector: Vector4 = (0.0, 0.0, 0.0), vector_dimensions: int = 3) -> 
     )
 
 class ShaderNodeVectorCurveOutputs(typing.NamedTuple):
+    'Outputs from Vector Curves: Map input vector components with curves'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def vector_curves(*, factor: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0)) -> ShaderNodeVectorCurveOutputs:
+    'Map input vector components with curves'
     return _node_function(
         'ShaderNodeVectorCurve',
         inputs={
@@ -8813,10 +9364,12 @@ def vector_curves(*, factor: float | Field[float] | Grid[float] | List[float] | 
     )
 
 class ShaderNodeVectorMathOutputs(typing.NamedTuple):
+    'Outputs from Vector Math: Perform vector math operation'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
     value: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def vector_math(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), vector_2: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), vector_3: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, operation: typing.Literal['ADD', 'SUBTRACT', 'MULTIPLY', 'DIVIDE', 'MULTIPLY_ADD', 'CROSS_PRODUCT', 'PROJECT', 'REFLECT', 'REFRACT', 'FACEFORWARD', 'DOT_PRODUCT', 'DISTANCE', 'LENGTH', 'SCALE', 'NORMALIZE', 'ABSOLUTE', 'POWER', 'SIGN', 'MINIMUM', 'MAXIMUM', 'ROUND', 'FLOOR', 'CEIL', 'FRACTION', 'MODULO', 'WRAP', 'SNAP', 'SINE', 'COSINE', 'TANGENT'] = 'ADD') -> ShaderNodeVectorMathOutputs:
+    'Perform vector math operation'
     return _node_function(
         'ShaderNodeVectorMath',
         inputs={
@@ -8842,10 +9395,11 @@ def vector_math(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] 
     )
 
 class ShaderNodeVectorRotateOutputs(typing.NamedTuple):
+    'Outputs from Vector Rotate: Rotate a vector around a pivot point (center)'
     vector: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
 
 def vector_rotate(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), center: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), axis: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 1.0), angle: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, rotation: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), rotation_type: typing.Literal['AXIS_ANGLE', 'X_AXIS', 'Y_AXIS', 'Z_AXIS', 'EULER_XYZ'] = 'AXIS_ANGLE', invert: bool = False) -> ShaderNodeVectorRotateOutputs:
-    'Args:\n    rotation_type: Type of angle input\n    invert: Invert the rotation angle'
+    'Rotate a vector around a pivot point (center)\n\nArgs:\n    rotation_type: Type of angle input\n    invert: Invert the rotation angle'
     return _node_function(
         'ShaderNodeVectorRotate',
         inputs={
@@ -8873,10 +9427,12 @@ def vector_rotate(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector
     )
 
 class GeometryNodeInputMeshVertexNeighborsOutputs(typing.NamedTuple):
+    'Outputs from Vertex Neighbors: Retrieve topology information relating to each vertex of a mesh'
     vertex_count: Socket[Field[int]]
     face_count: Socket[Field[int]]
 
 def vertex_neighbors() -> GeometryNodeInputMeshVertexNeighborsOutputs:
+    'Retrieve topology information relating to each vertex of a mesh'
     return _node_function(
         'GeometryNodeInputMeshVertexNeighbors',
         inputs={
@@ -8893,9 +9449,11 @@ def vertex_neighbors() -> GeometryNodeInputMeshVertexNeighborsOutputs:
     )
 
 class GeometryNodeVertexOfCornerOutputs(typing.NamedTuple):
+    'Outputs from Vertex of Corner: Retrieve the vertex each face corner is attached to'
     vertex_index: Socket[Field[int]]
 
 def vertex_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]] = 0) -> GeometryNodeVertexOfCornerOutputs:
+    'Retrieve the vertex each face corner is attached to'
     return _node_function(
         'GeometryNodeVertexOfCorner',
         inputs={
@@ -8913,7 +9471,7 @@ def vertex_of_corner(*, corner_index: int | Field[int] | Socket[int | Field[int]
     )
 
 def viewer(*, domain: typing.Literal['AUTO', 'POINT', 'EDGE', 'FACE', 'CORNER', 'CURVE', 'INSTANCE', 'LAYER'] = 'AUTO', **items: typing.Any) -> None:
-    'Args:\n    domain: Domain to evaluate fields on\n    items: Items to add, by name; each socket type is inferred from its value.'
+    'Display the input data in the Spreadsheet Editor\n\nArgs:\n    domain: Domain to evaluate fields on\n    items: Items to add, by name; each socket type is inferred from its value.'
     return _node_function(
         'GeometryNodeViewer',
         inputs={
@@ -8932,11 +9490,13 @@ def viewer(*, domain: typing.Literal['AUTO', 'POINT', 'EDGE', 'FACE', 'CORNER', 
     )
 
 class GeometryNodeViewportTransformOutputs(typing.NamedTuple):
+    'Outputs from Viewport Transform: Retrieve the view direction and location of the 3D viewport'
     projection: Socket[Matrix]
     view: Socket[Matrix]
     is_orthographic: Socket[bool]
 
 def viewport_transform() -> GeometryNodeViewportTransformOutputs:
+    'Retrieve the view direction and location of the 3D viewport'
     return _node_function(
         'GeometryNodeViewportTransform',
         inputs={
@@ -8954,9 +9514,11 @@ def viewport_transform() -> GeometryNodeViewportTransformOutputs:
     )
 
 class GeometryNodeVolumeCubeOutputs(typing.NamedTuple):
+    'Outputs from Volume Cube: Generate a dense volume with a field that controls the density at each grid voxel based on its position'
     volume: Socket[Geometry]
 
 def volume_cube(*, density: float | Field[float] | Socket[float | Field[float]] = 1.0, background: float | Socket[float] = 0.0, min: Vector | Socket[Vector] = (-1.0, -1.0, -1.0), max: Vector | Socket[Vector] = (1.0, 1.0, 1.0), resolution_x: int | Socket[int] = 32, resolution_y: int | Socket[int] = 32, resolution_z: int | Socket[int] = 32) -> GeometryNodeVolumeCubeOutputs:
+    'Generate a dense volume with a field that controls the density at each grid voxel based on its position'
     return _node_function(
         'GeometryNodeVolumeCube',
         inputs={
@@ -8986,9 +9548,11 @@ def volume_cube(*, density: float | Field[float] | Socket[float | Field[float]] 
     )
 
 class GeometryNodeVolumeToMeshOutputs(typing.NamedTuple):
+    'Outputs from Volume to Mesh: Generate a mesh on the "surface" of a volume'
     mesh: Socket[Geometry]
 
 def volume_to_mesh(*, volume: Geometry | Socket[Geometry] | None = None, resolution_mode: Menu | Socket[Menu] = 'Grid', voxel_size: float | Socket[float] = 0.30000001192092896, voxel_amount: float | Socket[float] = 64.0, threshold: float | Socket[float] = 0.10000000149011612, adaptivity: float | Socket[float] = 0.0) -> GeometryNodeVolumeToMeshOutputs:
+    'Generate a mesh on the "surface" of a volume'
     return _node_function(
         'GeometryNodeVolumeToMesh',
         inputs={
@@ -9016,6 +9580,7 @@ def volume_to_mesh(*, volume: Geometry | Socket[Geometry] | None = None, resolut
     )
 
 class ShaderNodeTexVoronoiOutputs(typing.NamedTuple):
+    'Outputs from Voronoi Texture: Generate Worley noise based on the distance to random points. Typically used to generate textures such as stones, water, or biological cells'
     distance: Socket[float | Field[float] | Grid[float] | List[float]]
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     position: Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]]
@@ -9023,7 +9588,7 @@ class ShaderNodeTexVoronoiOutputs(typing.NamedTuple):
     radius: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def voronoi_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, detail: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, roughness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, lacunarity: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 2.0, randomness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, w: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, smoothness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, exponent: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, voronoi_dimensions: typing.Literal['1D', '2D', '3D', '4D'] = '3D', distance: typing.Literal['EUCLIDEAN', 'MANHATTAN', 'CHEBYCHEV', 'MINKOWSKI'] = 'EUCLIDEAN', feature: typing.Literal['F1', 'F2', 'SMOOTH_F1', 'DISTANCE_TO_EDGE', 'N_SPHERE_RADIUS'] = 'F1', normalize: bool = False) -> ShaderNodeTexVoronoiOutputs:
-    'Args:\n    voronoi_dimensions: Number of dimensions to output noise for\n    distance: The distance metric used to compute the texture\n    feature: The Voronoi feature that the node will compute\n    normalize: Normalize output Distance to 0.0 to 1.0 range'
+    'Generate Worley noise based on the distance to random points. Typically used to generate textures such as stones, water, or biological cells\n\nArgs:\n    voronoi_dimensions: Number of dimensions to output noise for\n    distance: The distance metric used to compute the texture\n    feature: The Voronoi feature that the node will compute\n    normalize: Normalize output Distance to 0.0 to 1.0 range'
     return _node_function(
         'ShaderNodeTexVoronoi',
         inputs={
@@ -9065,6 +9630,7 @@ def voronoi_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vect
     )
 
 class GeometryNodeInputVoxelIndexOutputs(typing.NamedTuple):
+    'Outputs from Voxel Index: Retrieve the integer coordinates of the voxel that the field is evaluated on'
     x: Socket[Field[int]]
     y: Socket[Field[int]]
     z: Socket[Field[int]]
@@ -9074,6 +9640,7 @@ class GeometryNodeInputVoxelIndexOutputs(typing.NamedTuple):
     extent_z: Socket[Field[int]]
 
 def voxel_index() -> GeometryNodeInputVoxelIndexOutputs:
+    'Retrieve the integer coordinates of the voxel that the field is evaluated on'
     return _node_function(
         'GeometryNodeInputVoxelIndex',
         inputs={
@@ -9095,10 +9662,11 @@ def voxel_index() -> GeometryNodeInputVoxelIndexOutputs:
     )
 
 class GeometryNodeGridVoxelizeOutputs(typing.NamedTuple):
+    'Outputs from Voxelize Grid: Remove sparseness from a volume grid by making the active tiles into voxels'
     grid: Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]]
 
 def voxelize_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] | Socket[Grid[float] | Grid[int] | Grid[bool] | Grid[Vector]] | None = None, data_type: typing.Literal['FLOAT', 'INT', 'BOOLEAN', 'VECTOR', 'RGBA', 'ROTATION', 'MATRIX', 'STRING', 'MENU', 'SHADER', 'OBJECT', 'IMAGE', 'GEOMETRY', 'COLLECTION', 'TEXTURE', 'MATERIAL', 'BUNDLE', 'CLOSURE', 'FONT', 'SCENE', 'TEXT', 'MASK', 'SOUND', 'INT_VECTOR'] | None = None) -> GeometryNodeGridVoxelizeOutputs:
-    'Args:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
+    'Remove sparseness from a volume grid by making the active tiles into voxels\n\nArgs:\n    data_type: Node socket data type Inferred from the linked inputs when None.'
     return _node_function(
         'GeometryNodeGridVoxelize',
         inputs={
@@ -9118,9 +9686,11 @@ def voxelize_grid(*, grid: Grid[float] | Grid[int] | Grid[bool] | Grid[Vector] |
     )
 
 class GeometryNodeWarningOutputs(typing.NamedTuple):
+    'Outputs from Warning: Create custom warnings in node groups'
     show: Socket[bool]
 
 def warning(*, show: bool | Socket[bool] = True, message: str | Socket[str] = '', warning_type: typing.Literal['ERROR', 'WARNING', 'INFO'] = 'ERROR') -> GeometryNodeWarningOutputs:
+    'Create custom warnings in node groups'
     return _node_function(
         'GeometryNodeWarning',
         inputs={
@@ -9141,10 +9711,12 @@ def warning(*, show: bool | Socket[bool] = True, message: str | Socket[str] = ''
     )
 
 class ShaderNodeTexWaveOutputs(typing.NamedTuple):
+    'Outputs from Wave Texture: Generate procedural bands or rings with noise'
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
     factor: Socket[float | Field[float] | Grid[float] | List[float]]
 
 def wave_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 5.0, distortion: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, detail: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 2.0, detail_scale: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 1.0, detail_roughness: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.5, phase_offset: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, wave_type: typing.Literal['BANDS', 'RINGS'] = 'BANDS', bands_direction: typing.Literal['X', 'Y', 'Z', 'DIAGONAL'] = 'X', rings_direction: typing.Literal['X', 'Y', 'Z', 'SPHERICAL'] = 'X', wave_profile: typing.Literal['SIN', 'SAW', 'TRI'] = 'SIN') -> ShaderNodeTexWaveOutputs:
+    'Generate procedural bands or rings with noise'
     return _node_function(
         'ShaderNodeTexWave',
         inputs={
@@ -9179,11 +9751,12 @@ def wave_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector]
     )
 
 class ShaderNodeTexWhiteNoiseOutputs(typing.NamedTuple):
+    'Outputs from White Noise Texture: Calculate a random value or color based on an input seed'
     value: Socket[float | Field[float] | Grid[float] | List[float]]
     color: Socket[Color | Field[Color] | Grid[Color] | List[Color]]
 
 def white_noise_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[Vector] | Socket[Vector | Field[Vector] | Grid[Vector] | List[Vector]] = (0.0, 0.0, 0.0), w: float | Field[float] | Grid[float] | List[float] | Socket[float | Field[float] | Grid[float] | List[float]] = 0.0, noise_dimensions: typing.Literal['1D', '2D', '3D', '4D'] = '3D') -> ShaderNodeTexWhiteNoiseOutputs:
-    'Args:\n    noise_dimensions: Number of dimensions to output noise for'
+    'Calculate a random value or color based on an input seed\n\nArgs:\n    noise_dimensions: Number of dimensions to output noise for'
     return _node_function(
         'ShaderNodeTexWhiteNoise',
         inputs={
@@ -9205,9 +9778,11 @@ def white_noise_texture(*, vector: Vector | Field[Vector] | Grid[Vector] | List[
     )
 
 class GeometryNodeXPBDSolverOutputs(typing.NamedTuple):
+    'Outputs from XPBD Solver: Simulate physics using the XPBD framework'
     world: Socket[Bundle]
 
 def xpbd_solver(*, world: Bundle | Socket[Bundle] | None = None, delta_time: float | Socket[float] = 0.03999999910593033, filter: str | Socket[str] = '', simulation_to_world: Matrix | Socket[Matrix] | None = None, substeps: int | Socket[int] = 10, constraint_iterations: int | Socket[int] = 1, solver_path: str | Socket[str] = '', begin: float | Socket[float] = 0.0, end: float | Socket[float] = 1.0) -> GeometryNodeXPBDSolverOutputs:
+    'Simulate physics using the XPBD framework'
     return _node_function(
         'GeometryNodeXPBDSolver',
         inputs={

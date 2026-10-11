@@ -32,6 +32,8 @@ from .api.zones import (
     simulation_zone,
 )
 from .api.nodes import *
+from .api.aliases import math
+from .api import agent
 
 from typing import TYPE_CHECKING
 
@@ -104,9 +106,14 @@ def auto_resolve():
                             if text and text.is_modified:
                                 bpy.ops.text.resolve_conflict(resolution='RELOAD')
                                 if bpy.context.space_data.use_live_edit:
-                                    bpy.ops.text.run_script()
-        except:
-            pass
+                                    # agent.run reports errors and keeps the report for
+                                    # agent.status(), where run_script would only fail.
+                                    if text.filepath:
+                                        agent.run(bpy.path.abspath(text.filepath))
+                                    else:
+                                        agent.run(text.as_string(), filename=text.name)
+        except Exception as error:
+            print(f"Geometry Script live edit: {error}")
     return 1
 
 def register():

@@ -91,12 +91,10 @@ def _parameter_item_types(
 ) -> list[str]:
     """Item socket types for body parameters, from annotations, else their values."""
     annotations = resolve_builder_annotations(builder)
-    namespace = getattr(builder, "__globals__", {})
     return [
         item_type(
             annotations.get(parameter.name, inspect.Parameter.empty),
             values[parameter.name],
-            namespace,
             parameter.name,
         )
         for parameter in parameters
@@ -104,7 +102,7 @@ def _parameter_item_types(
 
 
 def _value_item_type(value: Any, name: str) -> str:
-    return item_type(inspect.Parameter.empty, value, {}, name)
+    return item_type(inspect.Parameter.empty, value, name)
 
 
 def _ordered_results(result: Any, names: list[str], zone_name: str) -> list[Any]:

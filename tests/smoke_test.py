@@ -141,8 +141,61 @@ def for_each_tree(geometry: Geometry):
     return {"Balls": out.generated.geometry, "Points": out.main.geometry, "Scale": out.main.scale}
 
 
+@tree("Type Markers")
+def type_markers(
+    a: Geometry,
+    b: Geometry,
+    offset: Vector = (0.0, 0.0, 1.0),
+    tint: Color = (1.0, 0.0, 0.0, 1.0),
+    uv: Field[Vector2] = (0.5, 0.5),
+    density: Grid[float] = 0.0,
+    mode: Menu = "High",
+):
+    picked = menu_switch(menu=mode, items={"Low": a, "High": b}).output
+    moved = set_position(geometry=picked, offset=offset).geometry
+    return {"Geometry": moved, "Tint": tint, "UV": uv, "Density": density, "Pair": (1.0, 2.0)}
+
+
+marker_sockets = {
+    (item.in_out, item.name): item
+    for item in bpy.data.node_groups["Type Markers"].interface.items_tree
+}
+assert [
+    (marker_sockets["INPUT", name].bl_socket_idname, marker_sockets["INPUT", name].structure_type)
+    for name in ("Offset", "Tint", "Uv", "Density", "Mode")
+] == [
+    ("NodeSocketVector", "AUTO"),
+    ("NodeSocketColor", "AUTO"),
+    ("NodeSocketVector2D", "FIELD"),
+    ("NodeSocketFloat", "GRID"),
+    ("NodeSocketMenu", "AUTO"),
+]
+assert tuple(marker_sockets["INPUT", "Uv"].default_value) == (0.5, 0.5)
+assert marker_sockets["INPUT", "Mode"].default_value == "High"
+assert marker_sockets["OUTPUT", "Pair"].bl_socket_idname == "NodeSocketVector2D"
+
+
+@repeat_zone
+def drift(position: Vector, iteration: int):
+    return position + (1.0, 0.0, 0.0)
+
+
+@tree("Vector Zone")
+def vector_zone(geometry: Geometry):
+    return set_position(geometry=geometry, offset=drift((0.0, 0.0, 0.0), iterations=2)).geometry
+
+
+try:
+    @tree("Bad Socket Type")
+    def bad_socket_type(shader: Shader):
+        return shader
+except TypeError as error:
+    assert "cannot have Shader inputs" in str(error), error
+else:
+    raise AssertionError("Shader inputs should be rejected.")
+
 bpy.ops.mesh.primitive_cube_add()
-balls = bpy.context.active_object
+balls =bpy.context.active_object
 balls.modifiers.new("Geometry Script", "NODES").node_group = bpy.data.node_groups["For Each"]
 balls_mesh = balls.evaluated_get(bpy.context.evaluated_depsgraph_get()).data
 # 4 points, one UV sphere (32 x 16 segments: 482 vertices) each.
@@ -164,5 +217,78 @@ modifier.node_group = bpy.data.node_groups["Climb"]
 evaluated = cube.evaluated_get(bpy.context.evaluated_depsgraph_get())
 heights = [vertex.co.z for vertex in evaluated.data.vertices]
 assert (min(heights), max(heights)) == (3.0, 5.0), heights
+
+# Outputs a node lacks with its settings raise when used instead of linking nothing.
+try:
+    @tree("Missing Output")
+    def missing_output(geometry: Geometry, a: Vector):
+        dot = vector_math(operation="DOT_PRODUCT", vector=a, vector_2=a)
+        return set_position(geometry=geometry, offset=dot.vector).geometry
+except TypeError as error:
+    assert "no 'vector' output" in str(error) and "'value'" in str(error), error
+else:
+    raise AssertionError("Using a missing output should fail.")
+assert "Missing Output" not in bpy.data.node_groups, "A failed build left a tree behind."
+
+try:
+    @tree("Unknown Output")
+    def unknown_output(geometry: Geometry):
+        return mesh_to_points(mesh=geometry).geometry
+except AttributeError as error:
+    assert "available: ['points']" in str(error), error
+else:
+    raise AssertionError("Unknown outputs should fail.")
+
+try:
+    @tree("Bad Enum")
+    def bad_enum(geometry: Geometry):
+        return mesh_to_points(mesh=geometry, mode="VERTEX").points
+except TypeError as error:
+    assert "Did you mean 'VERTICES'?" in str(error), error
+else:
+    raise AssertionError("Unknown enum values should fail.")
+
+@tree("Socket Tuple")
+def socket_tuple(geometry: Geometry, height: float = 2.0):
+    return set_position(geometry=geometry, offset=(0.0, 0.0, height)).geometry
+
+assert "ShaderNodeCombineXYZ" in {
+    node.bl_idname for node in bpy.data.node_groups["Socket Tuple"].nodes
+}
+
+# A failed rebuild keeps the previous tree, and modifiers keep their input values.
+height_modifier = cube.modifiers.new("Socket Tuple", "NODES")
+height_modifier.node_group = bpy.data.node_groups["Socket Tuple"]
+
+
+def height_value() -> float:
+    node_tree = height_modifier.node_group
+    identifier = node_tree.interface.items_tree["Height"].identifier
+    return getattr(height_modifier.properties.inputs, identifier).value
+
+
+getattr(
+    height_modifier.properties.inputs,
+    height_modifier.node_group.interface.items_tree["Height"].identifier,
+).value = 5.0
+try:
+    @tree("Socket Tuple")
+    def socket_tuple(geometry: Geometry, height: float = 2.0):
+        return mesh_to_points(mesh=geometry).geometry
+except AttributeError:
+    pass
+assert height_modifier.node_group.name == "Socket Tuple"
+assert "ShaderNodeCombineXYZ" in {node.bl_idname for node in height_modifier.node_group.nodes}
+assert height_value() == 5.0, height_value()
+
+@tree("Socket Tuple")
+def socket_tuple(geometry: Geometry, height: float = 2.0):
+    return set_position(geometry=geometry, offset=(0.0, 0.0, height)).geometry
+
+assert height_value() == 5.0, height_value()
+
+@tree("Math Alias")
+def math_alias(value: float):
+    return math(value=value, value_2=math.pi, operation="MULTIPLY").value
 
 print("Smoke test passed.")

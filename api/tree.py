@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import contextlib
 import functools
 import inspect
 from collections import namedtuple
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from typing import Any
 
 import bpy
@@ -14,17 +15,24 @@ from .naming import attribute_names, class_name, humanize
 from .runtime import (
     BuildContext,
     ItemOutputs,
+    MissingOutput,
     Socket,
     activate_build_context,
     current_build_context,
     reset_build_context,
     resolve_socket,
+    with_output_hints,
 )
 from .socket_types import (
+    INTERFACE_VECTOR_DIMENSIONS,
     interface_socket_spec,
     literal_socket_type,
     resolve_builder_annotations,
 )
+
+
+# Names of the trees built since this list was last cleared, in build order.
+built_tree_names: list[str] = []
 
 
 def tree_output_values(value: Any) -> list[tuple[str, Any]]:
@@ -62,6 +70,89 @@ def _create_or_reuse_tree(name: str) -> bpy.types.GeometryNodeTree:
     return node_tree
 
 
+_MODIFIER_INPUT_FIELDS = ("value", "type", "attribute_name")
+
+
+def _modifier_input_values(node_tree: bpy.types.NodeTree) -> list[tuple[Any, dict[str, dict[str, Any]]]]:
+    """The input values of each modifier using ``node_tree``, by input name.
+
+    Rebuilding gives the interface new socket identifiers, which modifiers use
+    to store their values, so they are carried over by name instead.
+    """
+    saved = []
+    inputs = [
+        item for item in node_tree.interface.items_tree
+        if item.item_type == "SOCKET" and item.in_out == "INPUT"
+    ]
+    for owner in bpy.data.objects:
+        for modifier in owner.modifiers:
+            if modifier.type != "NODES" or modifier.node_group != node_tree:
+                continue
+            values = {}
+            for item in inputs:
+                stored = getattr(modifier.properties.inputs, item.identifier, None)
+                if stored is not None:
+                    values[item.name] = {
+                        field: getattr(stored, field)
+                        for field in _MODIFIER_INPUT_FIELDS
+                        if hasattr(stored, field)
+                    }
+            saved.append((modifier, values))
+    return saved
+
+
+def _restore_modifier_input_values(
+    node_tree: bpy.types.NodeTree, saved: list[tuple[Any, dict[str, dict[str, Any]]]]
+) -> None:
+    inputs = [
+        item for item in node_tree.interface.items_tree
+        if item.item_type == "SOCKET" and item.in_out == "INPUT"
+    ]
+    for modifier, values in saved:
+        if modifier.node_group != node_tree:
+            continue
+        for item in inputs:
+            stored = getattr(modifier.properties.inputs, item.identifier, None)
+            if stored is None:
+                continue
+            if item.name in values:
+                fields = values[item.name]
+            elif hasattr(item, "default_value"):
+                fields = {"value": item.default_value}
+            else:
+                continue
+            for field, value in fields.items():
+                try:
+                    setattr(stored, field, value)
+                except (AttributeError, TypeError, ValueError, RuntimeError):
+                    pass  # The input's type changed; keep its new default.
+
+
+@contextlib.contextmanager
+def _rebuild_transaction(name: str) -> Iterator[bpy.types.GeometryNodeTree]:
+    """Yield the cleared tree ``name``; if the build fails, restore what was there.
+
+    Modifiers using the tree keep their input values either way.
+    """
+    existing = bpy.data.node_groups.get(name)
+    backup = existing.copy() if existing is not None else None
+    saved = _modifier_input_values(existing) if existing is not None else []
+    node_tree = _create_or_reuse_tree(name)
+    try:
+        yield node_tree
+    except BaseException:
+        if node_tree is existing and backup is not None:
+            node_tree.user_remap(backup)
+        bpy.data.node_groups.remove(node_tree)
+        if backup is not None:
+            backup.name = name
+            _restore_modifier_input_values(backup, saved)
+        raise
+    if backup is not None:
+        bpy.data.node_groups.remove(backup)
+    _restore_modifier_input_values(node_tree, saved)
+
+
 def _socket_reference(interface_socket: Any, index: int) -> tuple[str, str, int]:
     return (interface_socket.identifier, interface_socket.name, index)
 
@@ -83,23 +174,47 @@ def _check_parameters(parameters: list[inspect.Parameter]) -> None:
         raise TypeError("@tree functions must use named positional or keyword-only parameters.")
 
 
+def _new_interface_socket(
+    node_tree: bpy.types.GeometryNodeTree, name: str, in_out: str, socket_type: str
+) -> Any:
+    dimensions = INTERFACE_VECTOR_DIMENSIONS.get(socket_type)
+    try:
+        interface_socket = node_tree.interface.new_socket(
+            name=name,
+            in_out=in_out,
+            socket_type="NodeSocketVector" if dimensions else socket_type,
+        )
+    except TypeError:
+        kind = "input" if in_out == "INPUT" else "output"
+        raise TypeError(
+            f"Geometry node groups cannot have {socket_type.removeprefix('NodeSocket')} "
+            f"{kind}s ({name!r})."
+        ) from None
+    if dimensions is not None:
+        # Changing the dimensions replaces the item with a differently typed one.
+        identifier = interface_socket.identifier
+        interface_socket.dimensions = dimensions
+        interface_socket = next(
+            item
+            for item in node_tree.interface.items_tree
+            if item.item_type == "SOCKET" and item.identifier == identifier
+        )
+    return interface_socket
+
+
 def _add_interface_input(
     node_tree: bpy.types.GeometryNodeTree,
     parameter: inspect.Parameter,
     annotation: Any,
-    namespace: Mapping[str, Any],
 ) -> tuple[Any, str]:
     """Add the group input for a builder parameter; returns it and its structure type."""
     socket_type, structure_type = interface_socket_spec(
         annotation,
-        namespace=namespace,
         default=parameter.default,
         parameter_name=parameter.name,
     )
-    interface_socket = node_tree.interface.new_socket(
-        name=humanize(parameter.name),
-        in_out="INPUT",
-        socket_type=socket_type,
+    interface_socket = _new_interface_socket(
+        node_tree, humanize(parameter.name), "INPUT", socket_type
     )
     if structure_type != "AUTO":
         try:
@@ -109,16 +224,23 @@ def _add_interface_input(
                 f"The {structure_type} structure is not supported by "
                 f"{socket_type} for tree input {parameter.name!r}."
             ) from error
-    if parameter.default is not inspect.Parameter.empty:
-        try:
-            interface_socket.default_value = parameter.default
-        except (AttributeError, TypeError, ValueError, RuntimeError) as error:
-            if parameter.default is not None:
-                raise TypeError(
-                    f"Default value {parameter.default!r} is invalid for tree input "
-                    f"{parameter.name!r}."
-                ) from error
+    # A menu input has no items until it is linked to a menu, so its default waits.
+    if socket_type != "NodeSocketMenu":
+        _set_interface_default(interface_socket, parameter)
     return interface_socket, structure_type
+
+
+def _set_interface_default(interface_socket: Any, parameter: inspect.Parameter) -> None:
+    if parameter.default is inspect.Parameter.empty:
+        return
+    try:
+        interface_socket.default_value = parameter.default
+    except (AttributeError, TypeError, ValueError, RuntimeError) as error:
+        if parameter.default is not None:
+            raise TypeError(
+                f"Default value {parameter.default!r} is invalid for tree input "
+                f"{parameter.name!r}."
+            ) from error
 
 
 def _add_interface_outputs(context: BuildContext, result: Any) -> None:
@@ -127,6 +249,8 @@ def _add_interface_outputs(context: BuildContext, result: Any) -> None:
     interface_outputs = []
     sources = []
     for output_name, output_value in tree_output_values(result):
+        if isinstance(output_value, MissingOutput):
+            raise output_value.error()
         if isinstance(output_value, Socket):
             if output_value.context is not context:
                 raise ValueError("A tree output cannot use a socket from another node tree.")
@@ -138,10 +262,8 @@ def _add_interface_outputs(context: BuildContext, result: Any) -> None:
             structure_type = "AUTO"
             source = context.constant_socket(output_value, socket_type)
 
-        interface_socket = node_tree.interface.new_socket(
-            name=output_name,
-            in_out="OUTPUT",
-            socket_type=socket_type,
+        interface_socket = _new_interface_socket(
+            node_tree, output_name, "OUTPUT", socket_type
         )
         if structure_type != "AUTO":
             interface_socket.structure_type = structure_type
@@ -159,24 +281,19 @@ def _add_interface_outputs(context: BuildContext, result: Any) -> None:
         context.link(source, output_input)
 
 
-def _build_tree(
-    name: str, builder: Callable[..., Any]
-) -> tuple[bpy.types.GeometryNodeTree, inspect.Signature, dict[str, Any]]:
-    """Build the node group; returns it, the builder signature and its inputs by parameter."""
-    signature = inspect.signature(builder)
-    parameters = list(signature.parameters.values())
-    _check_parameters(parameters)
-
-    node_tree = _create_or_reuse_tree(name)
+def _fill_tree(
+    node_tree: bpy.types.GeometryNodeTree,
+    builder: Callable[..., Any],
+    parameters: list[inspect.Parameter],
+) -> dict[str, tuple[Any, str]]:
+    """Add the interface and nodes for ``builder``; returns its inputs by parameter."""
     context = BuildContext(node_tree)
     annotations = resolve_builder_annotations(builder)
-    namespace = getattr(builder, "__globals__", {})
     interface_inputs = {
         parameter.name: _add_interface_input(
             node_tree,
             parameter,
             annotations.get(parameter.name, parameter.annotation),
-            namespace,
         )
         for parameter in parameters
     }
@@ -199,6 +316,24 @@ def _build_tree(
     finally:
         reset_build_context(token)
     context.validate_links()
+    for parameter in parameters:
+        interface_socket, _ = interface_inputs[parameter.name]
+        if interface_socket.bl_socket_idname == "NodeSocketMenu":
+            _set_interface_default(interface_socket, parameter)
+    return interface_inputs
+
+
+def _build_tree(
+    name: str, builder: Callable[..., Any]
+) -> tuple[bpy.types.GeometryNodeTree, inspect.Signature, dict[str, Any]]:
+    """Build the node group; returns it, the builder signature and its inputs by parameter."""
+    signature = inspect.signature(builder)
+    parameters = list(signature.parameters.values())
+    _check_parameters(parameters)
+
+    with _rebuild_transaction(name) as node_tree:
+        interface_inputs = _fill_tree(node_tree, builder, parameters)
+    built_tree_names.append(node_tree.name)
 
     interface_sockets = {
         parameter_name: interface_socket
@@ -226,6 +361,7 @@ def _tree_function(name: str, builder: Callable[..., Any]) -> Callable[..., Any]
         )
     }
     output_type_name = f"{class_name(builder.__name__, 'Tree')}Outputs"
+    output_type = with_output_hints(namedtuple(output_type_name, output_names))
 
     @functools.wraps(builder)
     def group_reference(*args: Any, **kwargs: Any) -> Any:
@@ -247,7 +383,7 @@ def _tree_function(name: str, builder: Callable[..., Any]) -> Callable[..., Any]
             return None
         if len(outputs) == 1:
             return outputs[0]
-        return namedtuple(output_type_name, output_names)(*outputs)
+        return output_type(*outputs)
 
     group_reference.__signature__ = signature  # type: ignore[attr-defined]
     group_reference.node_tree = node_tree  # type: ignore[attr-defined]

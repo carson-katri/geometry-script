@@ -2,88 +2,69 @@
 
 An important concept in Geometry Nodes is attributes. Many trees capture attributes or transfer them from one domain to another.
 
-When using these methods, the `data_type` argument must be correctly specified for the transfer to work as intended.
+## Capturing Attributes
+
+*Capture Attribute* evaluates fields on a geometry and keeps the values for later. Pass each value to capture as a keyword argument; its output has the same name.
 
 ```python
-@tree("Skin")
-def skin():
-    # Create a cube
-    c = cube()
-    # Create a sphere
-    sphere = uv_sphere()
-    # Transfer the position to the sphere
-    transferred_position = c.transfer_attribute(
-        data_type=TransferAttribute.DataType.FLOAT_VECTOR,
-        attribute=position()
+@tree("Twist")
+def twist(geometry: Geometry, amount: float = 1.0):
+    captured = capture_attribute(
+        geometry=geometry,
+        height=separate_xyz(vector=position().position).z,
     )
-    # Make the sphere conform to the shape of the cube
-    return sphere.set_position(position=transferred_position)
+    # captured.height still refers to the height before the geometry was moved
+    moved = set_position(geometry=captured.geometry, offset=(0.0, 0.0, 1.0)).geometry
+    return set_position(geometry=moved, offset=(captured.height * amount, 0.0, 0.0)).geometry
 ```
 
-To improve the usability of these nodes, `capture(...)` and `transfer(...)` methods are provided on `Geometry` that simply take the attribute and any other optional arguments.
+> Use the `Geometry` returned from `capture_attribute(...)`, not the original, for the captured values to be available.
+
+You can capture several values at once, and choose the domain:
 
 ```python
-@tree("Skin")
-def skin():
-    # Create a cube
-    c = cube()
-    # Create a sphere
-    sphere = uv_sphere()
-    # Make the sphere conform to the shape of the cube
-    return sphere.set_position(position=c.transfer(position()))
-```
-
-The same is available for `capture(...)`.
-
-```python
-geometry_with_attribute, attribute = c.capture(position())
-```
-
-> You must use the `Geometry` returned from `capture(...)` for the anonymous attribute it creates to be usable.
-
-Any additional keyword arguments can be passed as normal.
-
-```python
-c.transfer(position(), mapping=TransferAttribute.Mapping.INDEX)
+captured = capture_attribute(geometry=mesh, domain="FACE", normal=normal().normal, index=index().index)
+captured.normal, captured.index
 ```
 
 ## Named Attributes
 
-Custom attributes can be created by name.
-The safest way to use named attributes is with the `Attribute` class.
-
-Create a named attribute with a data type and optional domain, then use the `store(...)`, `exists()`, and `__call__(...)` methods to use it.
+Store an attribute by name with *Store Named Attribute*, and read it back with *Named Attribute*. The data type is inferred when storing; set it when reading.
 
 ```python
-# Create the attribute
-my_custom_attribute = Attribute(
-    "my_custom_attribute",
-    NamedAttribute.DataType.FLOAT, # declare the data type once
-    StoreNamedAttribute.Domain.INSTANCE # optional
-)
-# Store a value
-geometry = my_custom_attribute.store(geometry, 0.5)
-# Use the value by calling the attribute
-geometry = geometry.set_position(offset=my_custom_attribute())
+@tree("Named Attributes")
+def named_attributes(geometry: Geometry):
+    # Store a value
+    geometry = store_named_attribute(
+        geometry=geometry,
+        name="my_custom_attribute",
+        value=0.5,
+        domain="POINT",
+    ).geometry
+    # Read it back
+    value = named_attribute(name="my_custom_attribute", data_type="FLOAT").attribute
+    return set_position(geometry=geometry, offset=(0.0, 0.0, value)).geometry
+```
+
+A helper function can keep the name and type in one place:
+
+```python
+def height_attribute():
+    return named_attribute(name="height", data_type="FLOAT").attribute
 ```
 
 ## Attribute Sampling
-In Blender 3.4+, transfer attribute was replaced with a few separate nodes: *Sample Index*, *Sample Nearest*, and *Sample Nearest Surface*.
-
-To avoid inputting data types and geometry manually, you can use the custom `Geometry` subscript.
-
-The structure for these subscripts is:
+To read values from another geometry, use the sampling nodes: *Sample Index*, *Sample Nearest*, *Sample Nearest Surface*, *Geometry Proximity*, and so on.
 
 ```python
-geometry[value : index or sample position : domain, mode, domain]
+# The position of the next point
+next_position = sample_index(geometry=points, value=position().position, index=index().index + 1).value
+
+# The color of the nearest point on another geometry
+nearest = sample_nearest(geometry=other, sample_position=position().position).index
+color = sample_index(geometry=other, value=named_attribute(name="color", data_type="FLOAT_COLOR").attribute, index=nearest).value
+
+# Snap a sphere to the surface of a cube
+snapped = geometry_proximity(geometry=cube().mesh, sample_position=position().position).position
+set_position(geometry=uv_sphere().mesh, position=snapped).geometry
 ```
-
-Only the value argument is required. Other arguments can be supplied as needed.
-
-```python
-geometry[value]
-geometry[value : sample_position, SampleMode.NEAREST]
-geometry[value : index() + 1 : SampleIndex.Domain.EDGE]
-```
-
-Try passing different arguments and see how the resulting nodes are created.

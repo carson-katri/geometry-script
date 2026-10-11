@@ -1,40 +1,31 @@
 # Boolean Math
 
-The *Boolean Math* node gives access to common boolean operations, such as `AND`, `NOT`, `XOR`, etc.
-
-However, it can be cumbersome to use the `boolean_math` function in complex boolean expressions.
+The *Boolean Math* node gives access to common boolean operations, such as `AND`, `NOT`, `XOR`, etc. Use it together with the *Compare* node to build conditions.
 
 ```python
-# Check if the two values equal, or if the first is true.
-x = False
-y = True
-return boolean_math(
-    operation=BooleanMath.Operation.OR
-    boolean=(
-        boolean_math(
-            operation=BooleanMath.Operation.XNOR # Equal
-            boolean=(x, y)
-        ),
-        x
-    )
-)
+@tree("Select Top")
+def select_top(geometry: Geometry, threshold: float = 0.5):
+    z = separate_xyz(vector=position().position).z
+    above = compare(a=z, b=threshold, operation="GREATER_THAN").result
+    is_even = compare(a=index().index % 2, b=0, operation="EQUAL", data_type="INT").result
+    selection = boolean_math(boolean=above, boolean_2=is_even, operation="AND").boolean
+    return delete_geometry(geometry=geometry, selection=selection).geometry
 ```
 
-A few operators are available to make boolean math easier and more readable.
+`NOT` only uses the first input:
 
 ```python
-# Check if the two values equal, or if the first is true.
-x = False
-y = True
-return (x == y) | x
+boolean_math(boolean=above, operation="NOT").boolean
 ```
 
-The operators available are:
+> You *cannot* use the Python keywords `and`, `or`, and `not`, or the comparison operators `<`, `==`, etc. on sockets. The script only builds the node tree, so it never sees the values that would decide the result. Use *Compare* and *Boolean Math* nodes instead.
 
-* `==` - `XNOR`
-* `!=` - `XOR`
-* `|` - `OR`
-* `&` - `AND`
-* `~` - `NOT`
+If a condition gets long, a small helper function keeps it readable:
 
-> You *cannot* use the built-in Python keywords `and`, `or`, and `not`. You must use the custom operators above to create *Boolean Math* nodes.
+```python
+def all_of(*conditions):
+    result = conditions[0]
+    for condition in conditions[1:]:
+        result = boolean_math(boolean=result, boolean_2=condition, operation="AND").boolean
+    return result
+```

@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import inspect
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import Any
 
 import bpy
 
-from . import types as _types
 from .runtime import BuildContext, Socket, literal_kind
 from .socket_types import interface_socket_spec, literal_socket_type
 
@@ -45,9 +44,7 @@ def literal_item_type(value: Any) -> str | None:
     return _SOCKET_KIND_ITEM_TYPES.get(kind, kind) if kind is not None else None
 
 
-def item_type(
-    annotation: Any, value: Any, namespace: Mapping[str, Any], name: str
-) -> str:
+def item_type(annotation: Any, value: Any, name: str) -> str:
     """Choose an item socket_type from an annotation, else from the value."""
     if annotation is inspect.Parameter.empty:
         if isinstance(value, Socket):
@@ -60,7 +57,7 @@ def item_type(
                 "pass a socket or annotate it."
             ) from None
     socket_id, _ = interface_socket_spec(
-        annotation, namespace=namespace, default=value, parameter_name=name
+        annotation, default=value, parameter_name=name
     )
     return _socket_id_item_type(socket_id)
 
@@ -69,7 +66,7 @@ def marker_item_type(marker: Any, name: str) -> str:
     """Item socket_type for a type marker such as ``float``, ``Vector`` or ``"FLOAT"``."""
     if isinstance(marker, str) and marker.isupper():
         return marker
-    return item_type(marker, inspect.Parameter.empty, vars(_types), name)
+    return item_type(marker, inspect.Parameter.empty, name)
 
 
 def data_sockets(sockets: Any) -> list[bpy.types.NodeSocket]:
@@ -126,7 +123,7 @@ def add_items(
         linked: list[Any] = []
         if mode == "values":
             for name, value in values.items():
-                new_item(item_type(inspect.Parameter.empty, value, {}, name), name)
+                new_item(item_type(inspect.Parameter.empty, value, name), name)
                 linked.append(value)
         elif mode == "named":
             for name, value in values.items():

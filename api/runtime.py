@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 from collections.abc import Mapping, Sequence
 from contextvars import ContextVar, Token
 from typing import Any, Generic, TypeVar
@@ -123,6 +124,55 @@ class Socket(Generic[T]):
         return f"Socket({self.node_socket.node.name}.{self.node_socket.name})"
 
 
+class MissingOutput:
+    """An output the node does not have with its current settings.
+
+    Returned in place of a Socket so that using it raises, instead of leaving
+    an input silently unlinked the way None would.
+    """
+
+    __slots__ = ("message",)
+
+    def __init__(self, message: str) -> None:
+        object.__setattr__(self, "message", message)
+
+    def error(self) -> TypeError:
+        return TypeError(self.message)
+
+    def __getattr__(self, name: str) -> Any:
+        raise self.error()
+
+    def __bool__(self) -> bool:
+        return False
+
+    def __repr__(self) -> str:
+        return f"MissingOutput({self.message!r})"
+
+    def _fail(self, *args: Any) -> Any:
+        raise self.error()
+
+    __add__ = __radd__ = __sub__ = __rsub__ = __mul__ = __rmul__ = _fail
+    __truediv__ = __rtruediv__ = __mod__ = __rmod__ = __pow__ = __rpow__ = _fail
+    __neg__ = _fail
+
+
+def _unknown_output(self: tuple[Any, ...], name: str) -> Any:
+    """``__getattr__`` for output namedtuples: name the outputs that do exist."""
+    fields = type(self)._fields  # type: ignore[attr-defined]
+    message = f"{type(self).__name__} has no output {name!r}; available: {list(fields)!r}."
+    close = difflib.get_close_matches(name, fields, n=1)
+    if close:
+        message += f" Did you mean {close[0]!r}?"
+    raise AttributeError(message)
+
+
+def with_output_hints(output_type: type[T]) -> type[T]:
+    """Make unknown attributes on an output namedtuple list the real outputs."""
+    if "__getattr__" not in vars(output_type):
+        output_type.__getattr__ = _unknown_output  # type: ignore[attr-defined]
+    return output_type
+
+
 class ItemOutputs:
     """Outputs of a node with user-defined items.
 
@@ -133,17 +183,21 @@ class ItemOutputs:
 
     __slots__ = ("_values",)
 
-    def __init__(self, values: Mapping[str, Socket[Any] | None]) -> None:
+    def __init__(self, values: Mapping[str, Socket[Any] | MissingOutput | None]) -> None:
         object.__setattr__(self, "_values", dict(values))
 
     def __getattr__(self, name: str) -> Socket[Any]:
         try:
             return self._values[name]  # type: ignore[return-value]
         except KeyError:
-            raise AttributeError(
+            message = (
                 f"{type(self).__name__} has no output {name!r}; "
                 f"available: {list(self._values)!r}."
-            ) from None
+            )
+            close = difflib.get_close_matches(name, self._values, n=1)
+            if close:
+                message += f" Did you mean {close[0]!r}?"
+            raise AttributeError(message) from None
 
     def __getitem__(self, key: str | int) -> Socket[Any]:
         if isinstance(key, int):
@@ -156,7 +210,7 @@ class ItemOutputs:
     def __len__(self) -> int:
         return len(self._values)
 
-    def _asdict(self) -> dict[str, Socket[Any] | None]:
+    def _asdict(self) -> dict[str, Socket[Any] | MissingOutput | None]:
         return dict(self._values)
 
     def __repr__(self) -> str:
@@ -201,14 +255,14 @@ class BuildContext:
 
         if output_type is None and not output_sockets:
             return None
-        outputs = self._outputs(node, output_sockets)
+        outputs = self._outputs(node, output_sockets, properties)
         if output_type is None:
             return tuple(outputs.values())
         if issubclass(output_type, ItemOutputs):
             for socket in item_outputs:
                 outputs[socket.name] = self.wrap(socket)
             return output_type(outputs)
-        return output_type(*outputs.values())
+        return with_output_hints(output_type)(*outputs.values())
 
     def _set_properties(self, node: bpy.types.Node, properties: Mapping[str, Any]) -> None:
         for identifier, value in properties.items():
@@ -218,10 +272,20 @@ class BuildContext:
                 setattr(node, identifier, value)
             except Exception as error:
                 node_type_id = node.bl_idname
+                message = f"Cannot set {node_type_id}.{identifier} to {value!r}."
+                prop = node.bl_rna.properties.get(identifier)
+                if isinstance(prop, bpy.types.EnumProperty):
+                    options = [item.identifier for item in prop.enum_items]
+                    message += f" Expected one of {options!r}."
+                    close = difflib.get_close_matches(str(value), options, n=1)
+                    if close:
+                        message += f" Did you mean {close[0]!r}?"
                 self.node_tree.nodes.remove(node)
-                raise TypeError(
-                    f"Cannot set {node_type_id}.{identifier} to {value!r}."
-                ) from error
+                raise TypeError(message) from error
+
+    @staticmethod
+    def _settings(node: bpy.types.Node, properties: Mapping[str, Any]) -> dict[str, Any]:
+        return {identifier: getattr(node, identifier) for identifier in properties}
 
     def _set_inputs(
         self,
@@ -234,12 +298,9 @@ class BuildContext:
             try:
                 input_socket = resolve_socket(node.inputs, input_sockets[name][:3])
             except LookupError:
-                settings = {
-                    identifier: getattr(node, identifier) for identifier in properties
-                }
                 raise TypeError(
                     f"{node.name!r} has no {name!r} input with its current "
-                    f"settings {settings!r}."
+                    f"settings {self._settings(node, properties)!r}."
                 ) from None
             self.set_input(input_socket, value)
 
@@ -247,17 +308,25 @@ class BuildContext:
         self,
         node: bpy.types.Node,
         output_sockets: Mapping[str, tuple[str, str, int, str]],
-    ) -> dict[str, Socket[Any] | None]:
-        outputs: dict[str, Socket[Any] | None] = {}
+        properties: Mapping[str, Any],
+    ) -> dict[str, Socket[Any] | MissingOutput]:
+        outputs: dict[str, Socket[Any] | MissingOutput] = {}
+        missing = []
         for field_name, reference in output_sockets.items():
             try:
                 output_socket = resolve_socket(node.outputs, reference[:3])
             except LookupError:
                 # This output does not exist with the node's current settings.
-                outputs[field_name] = None
+                missing.append(field_name)
                 continue
             outputs[field_name] = self.wrap(output_socket, reference[3])
-        return outputs
+        for field_name in missing:
+            outputs[field_name] = MissingOutput(
+                f"{node.name!r} has no {field_name!r} output with its current "
+                f"settings {self._settings(node, properties)!r}; available: "
+                f"{[name for name, value in outputs.items() if isinstance(value, Socket)]!r}."
+            )
+        return {name: outputs[name] for name in output_sockets}
 
     def wrap(self, socket: bpy.types.NodeSocket, structure_type: str = "AUTO") -> Socket[Any]:
         """A Socket for a node socket in this tree; AUTO asks Blender for the structure."""
@@ -291,6 +360,8 @@ class BuildContext:
         if isinstance(value, Socket):
             self.link(value, node_input)
             return
+        if isinstance(value, MissingOutput):
+            raise value.error()
 
         if value is None:
             try:
@@ -307,16 +378,40 @@ class BuildContext:
             for item in values:
                 if isinstance(item, Socket):
                     self.link(item, node_input)
+                elif isinstance(item, MissingOutput):
+                    raise item.error()
                 elif item is not None:
                     self.link(
                         self.constant_socket(item, node_input.bl_idname), node_input
                     )
             return
 
+        if _contains_socket(value):
+            self._combine_into(node_input, value)
+            return
+
         try:
             node_input.default_value = value
         except (AttributeError, TypeError, ValueError, RuntimeError):
             self.link(self.constant_socket(value, node_input.bl_idname), node_input)
+
+    def _combine_into(self, node_input: bpy.types.NodeSocket, components: Sequence[Any]) -> None:
+        """Link a sequence holding sockets, e.g. ``(0, 0, height)``, through a Combine node."""
+        socket_id = node_input.bl_idname
+        if node_input.type == "VECTOR" and "Vector4" not in socket_id and len(components) in (2, 3):
+            node_type_id = "ShaderNodeCombineXYZ"
+        elif node_input.type == "RGBA" and len(components) in (3, 4):
+            node_type_id = "FunctionNodeCombineColor"
+        else:
+            raise TypeError(
+                f"{node_input.node.name!r} input {node_input.name!r} ({socket_id}) cannot "
+                f"take a sequence of {len(components)} values that contains sockets; "
+                "combine them with a node first, e.g. combine_xyz(x=..., y=..., z=...).vector."
+            )
+        combine = self.node_tree.nodes.new(node_type_id)
+        for component_input, component in zip(combine.inputs, components):
+            self.set_input(component_input, component)
+        self.link(combine.outputs[0], node_input)
 
     def link(self, source: Socket | bpy.types.NodeSocket, target: bpy.types.NodeSocket) -> None:
         if isinstance(source, Socket):
@@ -384,6 +479,14 @@ class BuildContext:
 
 
 _NO_DEFAULT = object()
+
+
+def _contains_socket(value: Any) -> bool:
+    return (
+        isinstance(value, Sequence)
+        and not isinstance(value, (str, bytes))
+        and any(isinstance(item, (Socket, MissingOutput)) for item in value)
+    )
 
 
 def _is_default(value: Any, reference: tuple[Any, ...]) -> bool:

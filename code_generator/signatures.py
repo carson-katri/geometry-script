@@ -5,6 +5,7 @@ from __future__ import annotations
 import keyword
 import re
 import typing
+import unicodedata
 from dataclasses import dataclass, field
 
 
@@ -80,6 +81,12 @@ class NodeSignature:
 
 def snake_case(value: str, *, fallback: str = "socket") -> str:
     """Convert a UI label or RNA name into a valid, readable Python identifier."""
+    # Keep accented letters as their base letter: "Bézier" -> "bezier".
+    value = "".join(
+        character
+        for character in unicodedata.normalize("NFKD", value)
+        if not unicodedata.combining(character)
+    )
     value = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", value)
     value = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", value)
     value = re.sub(r"[^0-9a-zA-Z_]+", "_", value).strip("_").lower()

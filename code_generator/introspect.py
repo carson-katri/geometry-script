@@ -530,7 +530,11 @@ def _node_type_name(node_type: type) -> str:
 
 
 def _node_description(node_type: type) -> str:
-    description = _safe_str(node_type, "bl_description") or _safe_str(node_type, "__doc__")
+    description = (
+        _safe_str(node_type, "bl_description")
+        or _safe_str(_safe_getattr(node_type, "bl_rna"), "description")
+        or _safe_str(node_type, "__doc__")
+    )
     return description.strip()
 
 
