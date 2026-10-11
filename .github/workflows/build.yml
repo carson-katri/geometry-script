@@ -87,11 +87,25 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           pattern: geometry_script-blender-*
           path: dist
           merge-multiple: true
+
+      # The release doubles as a static extension repository, so a link to one of
+      # its ZIPs with `?repository=./index.json` can be dropped into Blender.
+      # Blender's repository generator is a standalone script, so no Blender download is needed.
+      - name: Generate extension repository
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/blender_ext.py" \
+            https://raw.githubusercontent.com/blender/blender/v5.2.0/scripts/addons_core/bl_pkg/cli/blender_ext.py
+          python3 "$RUNNER_TEMP/blender_ext.py" server-generate --repo-dir dist
+          python3 tools/release_notes.py dist/index.json \
+            --base-url "https://github.com/${{ github.repository }}/releases/download/nightly/" \
+            --commit "${GITHUB_SHA::7}" > "$RUNNER_TEMP/notes.md"
 
       - name: Publish nightly prerelease
         env:
@@ -99,8 +113,8 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           gh release delete nightly --yes --cleanup-tag || true
-          gh release create nightly dist/*.zip \
+          gh release create nightly dist/*.zip dist/index.json \
             --prerelease \
             --target "$GITHUB_SHA" \
             --title "Nightly" \
-            --notes "Built from ${GITHUB_SHA::7}. Install the zip matching your Blender version from Preferences > Get Extensions > Install from Disk."
+            --notes-file "$RUNNER_TEMP/notes.md"
