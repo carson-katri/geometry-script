@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="72" viewBox="0 0 200 72">
+  <rect x="2" y="2" width="196" height="68" rx="10" fill="#151b23" stroke="#4493f8" stroke-width="2" stroke-dasharray="7 5"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="100" y="33" font-size="17" font-weight="600" fill="#f0f6fc">Blender 5.4</text>
+    <text x="100" y="53" font-size="12" fill="#9198a1">Drag into Blender</text>
+  </g>
+</svg>

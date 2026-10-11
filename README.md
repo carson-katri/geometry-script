@@ -34,6 +34,18 @@ def repeat_grid(geometry: Geometry, width: int = 3, height: int = 3):
 ## Installation
 Geometry Script is a Blender extension and requires Blender 5.2 or newer.
 
+Drag the box for your Blender version into Blender to install it:
+
+<p>
+<a href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.2.zip?repository=./index.json&amp;blender_version_min=5.2.0&amp;blender_version_max=5.3.0"><picture><source media="(prefers-color-scheme: dark)" srcset="book/src/images/install/blender-5.2-dark.svg"><img alt="Geometry Script for Blender 5.2" src="book/src/images/install/blender-5.2-light.svg" width="200" height="72"></picture></a>
+<a href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.3.zip?repository=./index.json&amp;blender_version_min=5.3.0&amp;blender_version_max=5.4.0"><picture><source media="(prefers-color-scheme: dark)" srcset="book/src/images/install/blender-5.3-dark.svg"><img alt="Geometry Script for Blender 5.3" src="book/src/images/install/blender-5.3-light.svg" width="200" height="72"></picture></a>
+<a href="https://github.com/carson-katri/geometry-script/releases/download/nightly/geometry_script-1.0.0-blender-5.4.zip?repository=./index.json&amp;blender_version_min=5.4.0&amp;blender_version_max=5.5.0"><picture><source media="(prefers-color-scheme: dark)" srcset="book/src/images/install/blender-5.4-dark.svg"><img alt="Geometry Script for Blender 5.4" src="book/src/images/install/blender-5.4-light.svg" width="200" height="72"></picture></a>
+</p>
+
+Blender asks to allow online access if it's off, then to add the Geometry Script repository, then confirms the install. The [`nightly` release](https://github.com/carson-katri/geometry-script/releases/tag/nightly) always lists the links for every Blender version with a build.
+
+To install manually instead:
+
 1. Download the ZIP matching your Blender version from the [`nightly` release](https://github.com/carson-katri/geometry-script/releases/tag/nightly), e.g. `geometry_script-1.0.0-blender-5.2.zip`
 2. Open *Blender* > *Preferences* > *Get Extensions*
 3. Open the dropdown at the top right, choose *Install from Disk...* and select the downloaded ZIP file
