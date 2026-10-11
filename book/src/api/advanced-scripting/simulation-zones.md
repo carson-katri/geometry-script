@@ -24,7 +24,7 @@ Each frame, the result from the previous frame is passed into the zone's inputs.
 Pass `skip=` to set the *Skip* input of the *Simulation Output* node. When it is true, the simulation keeps its previous state for that frame.
 
 ```python
-paused = compare(a=scene_time().frame, b=50.0, operation="GREATER_THAN").result
+paused = scene_time().frame > 50.0
 fall(geometry, 0.0, skip=paused)
 ```
 

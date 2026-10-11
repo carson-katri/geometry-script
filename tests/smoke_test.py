@@ -315,11 +315,59 @@ assert restored == [(0.1, 0.6, 0.3, 1.0), (1.0, 2.0, 3.0)], restored
 def math_alias(value: float):
     return math(value=value, value_2=math.pi, operation="MULTIPLY").value
 
+# Comparison operators add Compare nodes, typed from both operands.
+@tree("Comparisons")
+def comparisons(geometry: Geometry, threshold: float = 0.5, count: int = 2, label: str = "a"):
+    z = separate_xyz(vector=position().position).z
+    selection = boolean_math(boolean=z > threshold, boolean_2=5 <= count, operation="AND").boolean
+    selection = boolean_math(boolean=selection, boolean_2=label != "b", operation="OR").boolean
+    selection = boolean_math(boolean=selection, boolean_2=count == 1.5, operation="OR").boolean
+    return delete_geometry(geometry=geometry, selection=selection).geometry
+
+
+compares = sorted(
+    (node.data_type, node.operation)
+    for node in bpy.data.node_groups["Comparisons"].nodes
+    if node.bl_idname == "FunctionNodeCompare"
+)
+assert compares == [
+    ("FLOAT", "EQUAL"), ("FLOAT", "GREATER_THAN"), ("INT", "GREATER_EQUAL"), ("STRING", "NOT_EQUAL")
+], compares
+
+
+@tree("Socket Identity")
+def socket_identity(geometry: Geometry):
+    # Sockets stay hashable, and == with things a Compare node cannot take is identity.
+    assert len({geometry, geometry}) == 1 and geometry in [geometry]
+    assert (geometry == None) is False
+    try:
+        geometry < 3
+    except TypeError:
+        pass
+    else:
+        raise AssertionError("Ordering a Geometry socket should raise.")
+    return geometry
+
+
 # Shader trees: node groups, materials and worlds.
 import geometry_script.shader as sh
 import geometry_script.compositor as comp
 
 assert sh.Socket is Socket, "geometry_script.shader loaded a second copy of the runtime."
+
+
+# Shader trees have no Compare node: comparisons use Math nodes.
+@sh.shader("Shader Comparisons")
+def shader_comparisons(x: float = 0.3):
+    return (x > 0.5) + (x <= 0.2) + (x == 0.3)
+
+
+operations = sorted(
+    node.operation
+    for node in bpy.data.node_groups["Shader Comparisons"].nodes
+    if node.bl_idname == "ShaderNodeMath"
+)
+assert operations == ["ADD", "ADD", "COMPARE", "GREATER_THAN", "GREATER_THAN", "SUBTRACT"], operations
 
 
 @sh.shader("Stripes")

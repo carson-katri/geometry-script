@@ -299,7 +299,8 @@ def _add_interface_outputs(context: BuildContext, result: Any) -> None:
         interface_socket = _new_interface_socket(
             node_tree, output_name, "OUTPUT", socket_type
         )
-        if structure_type != "AUTO":
+        # Only Geometry Nodes interfaces have fields, grids and lists.
+        if structure_type != "AUTO" and node_tree.bl_idname == "GeometryNodeTree":
             interface_socket.structure_type = structure_type
         interface_outputs.append(interface_socket)
         sources.append(source)

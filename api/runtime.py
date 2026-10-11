@@ -130,6 +130,113 @@ class Socket(Generic[T]):
     def __rpow__(self, other: Any) -> Socket[Any]:
         return self._binary(other, "POWER", reverse=True)
 
+    def _compare(self, other: Any, operation: str) -> Any:
+        """A Compare node (Math node outside Geometry Nodes) for ``self <operation> other``."""
+        equality = operation in {"EQUAL", "NOT_EQUAL"}
+        if isinstance(other, MissingOutput):
+            raise other.error()
+        if self.context is not current_build_context():
+            if equality:
+                return NotImplemented
+            raise RuntimeError("Socket expressions can only be built while building their tree.")
+
+        kinds = {self.node_socket.type, _operand_kind(other)}
+        if None in kinds:
+            # Not something a comparison node can take, e.g. ``socket == None``.
+            if equality:
+                return NotImplemented
+            raise TypeError(
+                f"Cannot compare {self.node_socket.bl_idname} with {type(other).__name__}."
+            )
+
+        if self.context.node_tree.bl_idname != "GeometryNodeTree":
+            return self._compare_math(other, operation, kinds)
+
+        # Every operand must be comparable, and strings only compare with strings.
+        data_type = None
+        if kinds <= dict(_COMPARE_DATA_TYPES).keys() and not (
+            "STRING" in kinds and len(kinds) > 1
+        ):
+            data_type = next(data_type for kind, data_type in _COMPARE_DATA_TYPES if kind in kinds)
+        if data_type is None or (data_type in {"STRING", "RGBA"} and not equality):
+            if equality:
+                return NotImplemented
+            hint = (
+                " Use compare(operation='BRIGHTER') or 'DARKER' for colors."
+                if data_type == "RGBA"
+                else ""
+            )
+            raise TypeError(
+                f"Ordering comparisons are not supported for {self.node_socket.bl_idname}.{hint}"
+            )
+
+        outputs = self.context.create_node(
+            "FunctionNodeCompare",
+            inputs={"a": self, "b": other},
+            input_sockets={"a": ("", "A", 0), "b": ("", "B", 1)},
+            properties={"operation": operation, "data_type": data_type},
+            output_sockets={"result": ("", "Result", 0, "AUTO")},
+            output_type=None,
+        )
+        return outputs[0]
+
+    def _compare_math(self, other: Any, operation: str, kinds: set[str]) -> Any:
+        """Shader and compositor trees have no Compare node; build it from Math nodes."""
+        if not kinds <= {"VALUE", "INT"}:
+            if operation in {"EQUAL", "NOT_EQUAL"}:
+                return NotImplemented
+            raise TypeError(
+                f"Comparisons in a {tree_label(self.context.node_tree)} are only "
+                f"supported for float sockets, not {self.node_socket.bl_idname}."
+            )
+        # Each operation is a Math operation, optionally inverted with ``1 - x``.
+        math_operation, invert = {
+            "LESS_THAN": ("LESS_THAN", False),
+            "GREATER_THAN": ("GREATER_THAN", False),
+            "LESS_EQUAL": ("GREATER_THAN", True),
+            "GREATER_EQUAL": ("LESS_THAN", True),
+            "EQUAL": ("COMPARE", False),
+            "NOT_EQUAL": ("COMPARE", True),
+        }[operation]
+        if math_operation == "COMPARE":
+            outputs = self.context.create_node(
+                "ShaderNodeMath",
+                inputs={"left": self, "right": other, "epsilon": 0.001},
+                input_sockets={
+                    "left": ("", "Value", 0),
+                    "right": ("", "Value_001", 1),
+                    "epsilon": ("", "Value_002", 2),
+                },
+                properties={"operation": "COMPARE"},
+                output_sockets={"result": ("", "Value", 0, "FIELD")},
+                output_type=None,
+            )
+            result = outputs[0]
+        else:
+            result = self._binary(other, math_operation)
+        return 1.0 - result if invert else result
+
+    def __lt__(self, other: Any) -> Socket[Any]:
+        return self._compare(other, "LESS_THAN")
+
+    def __le__(self, other: Any) -> Socket[Any]:
+        return self._compare(other, "LESS_EQUAL")
+
+    def __gt__(self, other: Any) -> Socket[Any]:
+        return self._compare(other, "GREATER_THAN")
+
+    def __ge__(self, other: Any) -> Socket[Any]:
+        return self._compare(other, "GREATER_EQUAL")
+
+    def __eq__(self, other: Any) -> Socket[Any]:  # type: ignore[override]
+        return self._compare(other, "EQUAL")
+
+    def __ne__(self, other: Any) -> Socket[Any]:  # type: ignore[override]
+        return self._compare(other, "NOT_EQUAL")
+
+    # Defining __eq__ would otherwise make sockets unhashable.
+    __hash__ = object.__hash__
+
     def __neg__(self) -> Socket[Any]:
         if self.node_socket.type == "VECTOR":
             outputs = self.context.create_node(
@@ -148,6 +255,37 @@ class Socket(Generic[T]):
 
     def __repr__(self) -> str:
         return f"Socket({self.node_socket.node.name}.{self.node_socket.name})"
+
+
+# Compare node data types, most general first: an Integer socket compared
+# with a float literal compares as floats.
+_COMPARE_DATA_TYPES = (
+    ("STRING", "STRING"),
+    ("RGBA", "RGBA"),
+    ("VECTOR", "VECTOR"),
+    ("VALUE", "FLOAT"),
+    ("INT", "INT"),
+    ("BOOLEAN", "INT"),
+)
+
+
+def _operand_kind(value: Any) -> str | None:
+    """The socket kind of a comparison operand, or None if it cannot be compared."""
+    if isinstance(value, Socket):
+        return value.node_socket.type
+    if isinstance(value, bool):
+        return "BOOLEAN"
+    if isinstance(value, int):
+        return "INT"
+    if isinstance(value, float):
+        return "VALUE"
+    if isinstance(value, str):
+        return "STRING"
+    if isinstance(value, (tuple, list)) and all(
+        isinstance(item, (int, float, Socket)) for item in value
+    ):
+        return {2: "VECTOR", 3: "VECTOR", 4: "RGBA"}.get(len(value))
+    return None
 
 
 class MissingOutput:
@@ -179,7 +317,7 @@ class MissingOutput:
 
     __add__ = __radd__ = __sub__ = __rsub__ = __mul__ = __rmul__ = _fail
     __truediv__ = __rtruediv__ = __mod__ = __rmod__ = __pow__ = __rpow__ = _fail
-    __neg__ = _fail
+    __neg__ = __lt__ = __le__ = __gt__ = __ge__ = _fail
 
 
 def _unknown_output(self: tuple[Any, ...], name: str) -> Any:

@@ -41,7 +41,7 @@ Sockets are great for passing values between nodes. A `Geometry` socket does not
 
 Sockets cannot be read for their concrete value. A `float` socket does not equal `5` or `10` or `3.14` to our script. If you try to `print(...)` a socket, you will see which node and socket it refers to, such as `Socket(Cube.Mesh)`, but no value.
 
-For the same reason, Python's `if`, `and`, `or` and `not` cannot look at a socket's value. Use nodes such as *Switch*, *Compare* and *Boolean Math* instead.
+For the same reason, Python's `if`, `and`, `or` and `not` cannot look at a socket's value. Use comparisons with nodes such as *Switch* and *Boolean Math* instead.
 
 ## Literals
 
@@ -89,11 +89,30 @@ vector_math(operation="NORMALIZE", vector=direction).vector
 
 ## Comparisons
 
-Comparison operators such as `<` and `==` are *not* overloaded on sockets, since Python would need a concrete `True` or `False`. Use the *Compare* node:
+Comparison operators create a *Compare* node, which outputs a boolean socket:
 
 ```python
-is_tall = compare(a=height, b=2.0, operation="GREATER_THAN").result
+is_tall = height > 2.0
+is_even = index().index % 2 == 0
 ```
+
+These operators are available:
+* Less than (`socket < 2`)
+* Less than or equal (`socket <= 2`)
+* Greater than (`socket > 2`)
+* Greater than or equal (`socket >= 2`)
+* Equal (`socket == 2`)
+* Not equal (`socket != 2`)
+
+They work with float, integer, vector, color and string sockets, and pick the *Compare* node's data type from both sides: an integer socket compared with a `float` compares as floats. Colors and strings only support `==` and `!=`. Equality on floats and vectors uses the node's default epsilon of `0.001`. For other settings, such as a different epsilon or a vector comparison mode, call the node function directly:
+
+```python
+compare(a=direction, b=(0, 0, 1), operation="GREATER_THAN", data_type="VECTOR", mode="DOT_PRODUCT").result
+```
+
+Shader and compositor trees have no *Compare* node, so comparisons on float sockets there use *Math* nodes, which output `1.0` or `0.0`.
+
+The result is still a socket, so Python's `if` cannot use it, and chained comparisons such as `0 < x < 1` do not work. Combine conditions with *Boolean Math* instead.
 
 See [Boolean Math](../advanced-scripting/boolean-math.md) for combining the results.
 

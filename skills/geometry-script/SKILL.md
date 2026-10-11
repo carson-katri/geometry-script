@@ -81,8 +81,10 @@ def scatter_cubes(geometry: Geometry, count: int = 4, size: float = 0.3):
   Type settings (`data_type`, `input_type`) are inferred from what you link, so
   set them only to override.
 - **Arithmetic** (`+ - * / % **`, unary `-`) on float, int and vector sockets
-  adds Math / Vector Math nodes. Fields such as `position().position` and
-  `index().index` are plain sockets.
+  adds Math / Vector Math nodes. Comparisons (`< <= > >= == !=`) add a
+  Compare node and give a boolean socket: `z > 0.5`, `index().index % 2 == 0`.
+  Combine them with `boolean_math`, not `and`/`or`/`not` or `0 < x < 1`.
+  Fields such as `position().position` and `index().index` are plain sockets.
 - **Calling a `@tree` function inside another `@tree`** adds a group node. Those
   take positional arguments: `repeat_grid(geometry)`.
 - **Builds are all-or-nothing:** if a build raises, the previous tree (and its
