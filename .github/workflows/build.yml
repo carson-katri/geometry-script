@@ -13,6 +13,19 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # The repository is also a Claude Code plugin marketplace for the agent skill.
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate the Claude Code plugin
+        run: npx -y @anthropic-ai/claude-code plugin validate .
+
   versions:
     runs-on: ubuntu-latest
     outputs:

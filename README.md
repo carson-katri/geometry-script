@@ -38,6 +38,22 @@ Geometry Script is a Blender extension and requires Blender 5.2 or newer.
 2. Open *Blender* > *Preferences* > *Get Extensions*
 3. Open the dropdown at the top right, choose *Install from Disk...* and select the downloaded ZIP file
 
+### Claude Code skill
+The repository is also a [Claude Code](https://claude.com/claude-code) plugin marketplace with a skill for building node trees with Geometry Script. Install it with:
+
+```
+/plugin install geometry-script --marketplace carson-katri/geometry-script
+```
+
+On Claude Code versions before 2.1.275, add the marketplace first:
+
+```
+/plugin marketplace add carson-katri/geometry-script
+/plugin install geometry-script@geometry-script
+```
+
+The skill runs scripts through Blender's MCP server when it's connected, or in background Blender otherwise. Run `/plugin marketplace update geometry-script` to get the latest version, or turn on auto-update for the marketplace in `/plugin`.
+
 ## What is Geometry Script?
 *Geometry Script* is a robust yet easy to use Python API for creating Geometry Nodes with code.
 

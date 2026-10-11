@@ -51,3 +51,11 @@ Inside Blender, the same is available as `agent.search(...)` and `agent.describe
 ## Agent Skill
 
 The repository includes a skill for AI coding agents in `skills/geometry-script/SKILL.md`. It explains the API and the run-and-fix loop above, including how to use these tools through Blender's MCP server.
+
+For Claude Code, install it as a plugin from this repository:
+
+```
+/plugin install geometry-script --marketplace carson-katri/geometry-script
+```
+
+Other agents can read the skill file directly from a checkout of the repository.

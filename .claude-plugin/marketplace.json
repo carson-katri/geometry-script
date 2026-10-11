@@ -1,0 +1,12 @@
+{
+  "name": "geometry-script",
+  "description": "Geometry Script for Blender: a Python API for node trees, and a skill for building them.",
+  "owner": { "name": "Carson Katri" },
+  "plugins": [
+    {
+      "name": "geometry-script",
+      "source": ".",
+      "description": "Skill for building Blender node trees with Geometry Script."
+    }
+  ]
+}

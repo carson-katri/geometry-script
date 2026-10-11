@@ -21,6 +21,7 @@ paths_exclude_pattern = [
     "/.git/",
     "/*.zip",
     "/.github/",
+    "/.claude-plugin/",
     "/.venv/",
     "/book/",
     "/code_generator/",
