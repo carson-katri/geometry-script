@@ -1,0 +1,41 @@
+.coal {
+    --bg: #1C1C1C !important;
+}
+.extension-drops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.extension-drops a.extension-drop {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 140px;
+    padding: 16px;
+    border: 2px dashed var(--links);
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    cursor: grab;
+}
+
+.extension-drops a.extension-drop:hover {
+    background: var(--theme-hover);
+    text-decoration: none;
+}
+
+.extension-drops a.extension-drop:active {
+    cursor: grabbing;
+}
+
+.extension-drop-title {
+    color: var(--fg);
+    font-weight: bold;
+}
+
+.extension-drop-hint {
+    color: var(--icons);
+    font-size: 0.85em;
+}
