@@ -20,6 +20,8 @@ def cube_tree():
 
 Running the script again rebuilds the tree in place. Modifiers using the tree keep their input values, and if the script raises an error, the previous version of the tree is left untouched.
 
+The nodes are laid out for you each time the tree is built, in columns that flow from the *Group Input* on the left to the *Group Output* on the right, with each zone's nodes kept together. Shader and compositor groups, materials and worlds are arranged the same way.
+
 ## Group Output
 The values you return become the outputs of the tree. Let's try returning a simple cube.
 

@@ -12,8 +12,8 @@ agent.run("/path/to/Repeat Grid.py", object="Cube")
 ```
 
 ```
-built 'Repeat Grid': 14 nodes; in (Geometry: Geometry, Columns: Int = 3, Rows: Int = 3, Spacing X: Float = 0, Spacing Y: Float = 0) -> out (Result: Geometry)
-object 'Cube': instances 9; instance positions (-2, -2, 0)..(2, 2, 0)
+built 'Repeat Grid': 14 nodes; in (Geometry: Geometry, Columns: Int = 3, Rows: Int = 3, Spacing X: Float = 0.5, Spacing Y: Float = 0.5) -> out (Result: Geometry)
+object 'Cube': instances 9; instance positions (-2.5, -2.5, 0)..(2.5, 2.5, 0)
 ```
 
 Shader groups, materials, worlds and compositor groups are reported too:

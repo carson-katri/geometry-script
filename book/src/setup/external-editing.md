@@ -22,9 +22,21 @@ Every node function in Geometry Script is generated with full type hints: its ke
 
 ![A screenshot of the Python > Analysis: Extra Paths setting with the path pasted in](../images/vscode_extra_paths.png)
 
-5. Create a new Python file, such as `Repeat Grid.py` and start writing a script. As you type, you should get helpful suggestions for every available node.
+5. Create a new Python file, such as `Repeat Grid.py` and start writing a script. As you type, you should get helpful suggestions for every available node. Hovering a node function shows its signature and description, for example:
 
-![A screenshot of a script with the documentation for `instance_on_points` appearing as the user types.](../images/vscode_code_completion.png)
+```python
+def instance_on_points(
+    *,
+    points: Geometry | Socket[Geometry] | None = None,
+    selection: bool | Field[bool] | Socket[bool | Field[bool]] = True,
+    instance: Geometry | Socket[Geometry] | None = None,
+    pick_instance: bool | Field[bool] | Socket[bool | Field[bool]] = False,
+    instance_index: int | Field[int] | Socket[int | Field[int]] = 0,
+    rotation: Rotation | Field[Rotation] | Socket[Rotation | Field[Rotation]] = (0.0, 0.0, 0.0),
+    scale: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (1.0, 1.0, 1.0),
+) -> GeometryNodeInstanceOnPointsOutputs:
+    'Generate a reference to geometry at each of the input points, without duplicating its underlying data'
+```
 
 > For completions of `bpy` itself, install [`fake-bpy-module`](https://github.com/nutti/fake-bpy-module) into the Python environment your editor uses.
 

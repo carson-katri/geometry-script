@@ -29,11 +29,6 @@ Blender asks to allow online access if it's off, then offers to add the Geometry
 2. Open *Blender* > *Preferences* > *Get Extensions*
 3. Open the dropdown at the top right, choose *Install from Disk...* and select the downloaded ZIP file
 
-## From Blender Market
-1. After [purchasing the add-on](https://www.blendermarket.com/), download the ZIP file
-2. Open *Blender* > *Preferences* > *Get Extensions*
-3. Open the dropdown at the top right, choose *Install from Disk...* and select the downloaded ZIP file
-
 ## Building it yourself
 To build the extension for a Blender version that has no published ZIP, clone the repository and run:
 
