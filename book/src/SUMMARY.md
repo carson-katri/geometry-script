@@ -22,10 +22,11 @@
     - [Attributes](./api/advanced-scripting/attributes.md)
     - [Boolean Math](./api/advanced-scripting/boolean-math.md)
     - [Item Nodes](./api/advanced-scripting/item-nodes.md)
-    - [Repeat Zones](./api/advanced-scripting/repeat-zones.md)
-    - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
-    - [For Each Element Zones](./api/advanced-scripting/for-each-zones.md)
-    - [Closure Zones](./api/advanced-scripting/closure-zones.md)
+    - [Zones](./api/advanced-scripting/zones.md)
+        - [Repeat Zones](./api/advanced-scripting/repeat-zones.md)
+        - [Simulation Zones](./api/advanced-scripting/simulation-zones.md)
+        - [For Each Element Zones](./api/advanced-scripting/for-each-zones.md)
+        - [Closure Zones](./api/advanced-scripting/closure-zones.md)
     - [Shaders and Compositing](./api/advanced-scripting/shaders-and-compositing.md)
 
 # Tutorials
