@@ -1,7 +1,7 @@
 # Introduction
 
 **Geometry Script** is a scripting API for Blender's Geometry Nodes.
-It makes complicated node trees more managable and easy to share.
+It makes complicated node trees more manageable and easy to share.
 
 * [Full coverage of nodes](./api/basics/using-nodes.md) available in your Blender version
 * Clean, easy to use [Python API](./api/basics.md)

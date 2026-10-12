@@ -5,8 +5,8 @@ def repeat_grid(
     geometry: Geometry,
     columns: int = 3,
     rows: int = 3,
-    spacing_x: float = 0.0,
-    spacing_y: float = 0.0,
+    spacing_x: float = 0.5,
+    spacing_y: float = 0.5,
 ):
     # Measure the geometry's bounds
     bounds = bounding_box(geometry=geometry)
