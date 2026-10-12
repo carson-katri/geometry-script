@@ -1,4 +1,4 @@
-# Generated from Blender 5.2.0 LTS (ShaderNodeTree).
+# Generated from Blender 5.2.2 LTS (ShaderNodeTree).
 # Do not edit: run code_generator/node_functions_generator.py instead.
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import bpy
 from .runtime import ItemOutputs, Socket, node_function as _node_function
 from .types import *
 
-BLENDER_VERSION = (5, 2, 0)
+BLENDER_VERSION = (5, 2, 2)
 
 __all__ = [
     'add_shader',
