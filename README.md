@@ -95,7 +95,13 @@ Use [`uv`](https://docs.astral.sh/uv/) to get `fake-bpy-module` and some pyright
 uv sync
 ```
 
-To build an installable package for a specific Blender version, which regenerates the node modules (`api/nodes.py`, `api/shader_nodes.py` and `api/compositor_nodes.py`) with that Blender and runs the smoke test:
+The node modules (`api/nodes.py`, `api/shader_nodes.py` and `api/compositor_nodes.py`) are generated from Blender and aren't checked in. Loading the add-on from a checkout generates them with that Blender, or you can generate them yourself, e.g. for editor completions:
+
+```sh
+blender -b --factory-startup --python code_generator/node_functions_generator.py
+```
+
+To build an installable package for a specific Blender version, which generates the node modules with that Blender and runs the smoke test:
 
 ```sh
 python tools/build.py --blender /path/to/blender  # writes dist/geometry_script-<version>-blender-<major>.<minor>.zip

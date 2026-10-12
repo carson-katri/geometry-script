@@ -20,6 +20,10 @@ import os
 import webbrowser
 from pathlib import Path
 
+from .api.generated import ensure_node_modules
+
+ensure_node_modules()
+
 from .preferences import GeometryScriptPreferences
 from .api.tree import geometry, tree
 from .api.runtime import Socket
