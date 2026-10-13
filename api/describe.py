@@ -146,7 +146,14 @@ def _check_tree(tree: str) -> None:
 @cache
 def _nodes(tree: str = "geometry") -> dict[str, _Node]:
     _check_tree(tree)
-    module = ast.parse(NODE_MODULES[tree].read_text(encoding="utf-8"))
+    path = NODE_MODULES[tree]
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{path.name} hasn't been generated. Run "
+            "`blender -b --factory-startup --python code_generator/node_functions_generator.py` "
+            "from the repository root, or load the add-on in Blender once."
+        )
+    module = ast.parse(path.read_text(encoding="utf-8"))
     classes = {item.name: item for item in module.body if isinstance(item, ast.ClassDef)}
     nodes = {}
     for item in module.body:
@@ -310,10 +317,14 @@ def main(argv: list[str]) -> int:
         if tree not in NODE_MODULES:
             print(f"--tree must be one of {', '.join(NODE_MODULES)}", file=sys.stderr)
             return 2
-    if argv and argv[0] == "--search":
-        search(" ".join(argv[1:]), tree=tree)
-        return 0
-    describe(*argv, tree=tree)
+    try:
+        if argv and argv[0] == "--search":
+            search(" ".join(argv[1:]), tree=tree)
+        else:
+            describe(*argv, tree=tree)
+    except FileNotFoundError as error:
+        print(error, file=sys.stderr)
+        return 1
     return 0
 
 

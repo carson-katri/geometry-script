@@ -1,11 +1,15 @@
 name: build
 
 # Build and test the extension against every supported Blender series.
-# Pushes to main also replace the assets of the rolling `nightly` prerelease.
+# The node modules aren't tracked: each build generates them with its Blender.
+# Pushes to main, and a weekly run that picks up new Blender releases, also
+# replace the assets of the rolling `nightly` prerelease.
 on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 concurrency:
@@ -82,7 +86,7 @@ jobs:
 
   nightly:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     permissions:
       contents: write
