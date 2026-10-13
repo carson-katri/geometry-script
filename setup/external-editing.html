@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "coal";
             const default_dark_theme = "coal";
-            window.path_to_searchindex_js = "../searchindex-3498ac31.js";
+            window.path_to_searchindex_js = "../searchindex-d8d2945e.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-81b5b8a3.js"></script>
+        <script src="../toc-43114531.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -206,9 +206,20 @@ Using an external code editor is one way to improve the editing experience.</p>
 </ol>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/vscode_extra_paths.png" alt="A screenshot of the Python &gt; Analysis: Extra Paths setting with the path pasted in"><span class="img-wrapper"><img src="../images/vscode_extra_paths.png" alt="A screenshot of the Python &gt; Analysis: Extra Paths setting with the path pasted in"></span></label></p>
 <ol start="5">
-<li>Create a new Python file, such as <code>Repeat Grid.py</code> and start writing a script. As you type, you should get helpful suggestions for every available node.</li>
+<li>Create a new Python file, such as <code>Repeat Grid.py</code> and start writing a script. As you type, you should get helpful suggestions for every available node. Hovering a node function shows its signature and description, for example:</li>
 </ol>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/vscode_code_completion.png" alt="A screenshot of a script with the documentation for instance_on_points appearing as the user types."><span class="img-wrapper"><img src="../images/vscode_code_completion.png" alt="A screenshot of a script with the documentation for instance_on_points appearing as the user types."></span></label></p>
+<pre><code class="language-python">def instance_on_points(
+    *,
+    points: Geometry | Socket[Geometry] | None = None,
+    selection: bool | Field[bool] | Socket[bool | Field[bool]] = True,
+    instance: Geometry | Socket[Geometry] | None = None,
+    pick_instance: bool | Field[bool] | Socket[bool | Field[bool]] = False,
+    instance_index: int | Field[int] | Socket[int | Field[int]] = 0,
+    rotation: Rotation | Field[Rotation] | Socket[Rotation | Field[Rotation]] = (0.0, 0.0, 0.0),
+    scale: Vector | Field[Vector] | Socket[Vector | Field[Vector]] = (1.0, 1.0, 1.0),
+) -&gt; GeometryNodeInstanceOnPointsOutputs:
+    'Generate a reference to geometry at each of the input points, without duplicating its underlying data'
+</code></pre>
 <blockquote>
 <p>For completions of <code>bpy</code> itself, install <a href="https://github.com/nutti/fake-bpy-module"><code>fake-bpy-module</code></a> into the Python environment your editor uses.</p>
 </blockquote>

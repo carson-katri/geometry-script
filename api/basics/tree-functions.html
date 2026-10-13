@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "coal";
             const default_dark_theme = "coal";
-            window.path_to_searchindex_js = "../../searchindex-3498ac31.js";
+            window.path_to_searchindex_js = "../../searchindex-d8d2945e.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-81b5b8a3.js"></script>
+        <script src="../../toc-43114531.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -190,6 +190,7 @@ def cube_tree():
     ...
 </code></pre>
 <p>Running the script again rebuilds the tree in place. Modifiers using the tree keep their input values, and if the script raises an error, the previous version of the tree is left untouched.</p>
+<p>The nodes are laid out for you each time the tree is built, in columns that flow from the <em>Group Input</em> on the left to the <em>Group Output</em> on the right, with each zone’s nodes kept together. Shader and compositor groups, materials and worlds are arranged the same way.</p>
 <h2 id="group-output"><a class="header" href="#group-output">Group Output</a></h2>
 <p>The values you return become the outputs of the tree. Let’s try returning a simple cube.</p>
 <pre><code class="language-python">@tree("Cube Tree")
